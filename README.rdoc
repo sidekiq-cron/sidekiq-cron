@@ -1,6 +1,28 @@
-= sidekiq-cron
+= Sidekiq-cron
 
-Description goes here.
+
+Add-on for [Sidekiq][http://sidekiq.org]
+
+
+Requirements
+-----------------
+
+- Redis 2.4 or greater is required.
+- Sidekiq 2.13.1 or grater is required.
+
+
+Installation
+-----------------
+
+    gem install sidekiq-cron
+
+
+Getting Started
+-----------------
+
+![Web UI](https://github.com/ondrejbartas/sidekiq-cron/raw/master/examples/web-cron-ui.png)
+
+
 
 == Contributing to sidekiq-cron
  
