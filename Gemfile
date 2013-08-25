@@ -10,6 +10,9 @@ group :development do
   gem 'shoulda-context'
   gem "turn"
 
+  gem 'rack'
+  gem 'rack-test'
+
   gem "jeweler", "~> 1.8.3"
   
   gem "sdoc" # sdoc -N .

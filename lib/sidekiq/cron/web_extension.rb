@@ -39,16 +39,36 @@ module Sidekiq
 
         #enque cron job
         app.post '/cron/:name/enque' do |name|
-          Sidekiq::Cron::Job.enque_by_name name
+          if job = Sidekiq::Cron::Job.find(name)
+            job.enque!
+          end
           redirect "#{root_path}cron"
         end
 
         #delete schedule
         app.post '/cron/:name/delete' do |name|
-          Sidekiq::Cron::Job.remove name
+          if job = Sidekiq::Cron::Job.find(name)
+            job.destroy
+          end
           redirect "#{root_path}cron"
         end
 
+        #enable job
+        app.post '/cron/:name/enable' do |name|
+          if job = Sidekiq::Cron::Job.find(name)
+            job.enable!
+          end
+          redirect "#{root_path}cron"
+        end
+
+        #disable job
+        app.post '/cron/:name/disable' do |name|
+          if job = Sidekiq::Cron::Job.find(name)
+            job.disable!
+          end
+          redirect "#{root_path}cron"
+        end
+        
       end
     end
   end

@@ -18,11 +18,14 @@ end
 require "minitest/autorun"
 require 'shoulda-context'
 require 'turn'
+require "rack/test"
 
 #SIDEKIQ Require - need to have sidekiq running!
 require 'celluloid/autostart'
 require 'sidekiq'
 require 'sidekiq/util'
+require 'sidekiq/web'
+
 Sidekiq.logger.level = Logger::ERROR
 
 require 'sidekiq/redis_connection'
@@ -40,3 +43,22 @@ require 'sidekiq-cron'
 
 class Test::Unit::TestCase
 end
+
+
+class CronTestClass
+  include Sidekiq::Worker
+
+  def perform args = {}
+    puts "super croned job #{args}"
+  end
+end
+
+class CronTestClassWithQueue
+  include Sidekiq::Worker
+  sidekiq_options :queue => :super, :retry => false, :backtrace => true
+
+  def perform args = {}
+    puts "super croned job #{args}"
+  end
+end
+
