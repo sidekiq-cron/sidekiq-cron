@@ -1,9 +1,9 @@
-= Sidekiq-cron
-
+Sidekiq-Cron
+============
 
 [![Coverage Status](https://coveralls.io/repos/ondrejbartas/sidekiq-cron/badge.png?branch=master)](https://coveralls.io/r/ondrejbartas/sidekiq-cron?branch=master)
 
-Add-on for [Sidekiq][http://sidekiq.org]
+Add-on for [Sidekiq](http://sidekiq.org)
 
 
 Requirements
@@ -14,7 +14,7 @@ Requirements
 
 
 Installation
------------------
+------------
 
     $ gem install sidekiq-cron
 
@@ -38,7 +38,7 @@ _Job properties_:
 }
 ```
 
-Adding Cron job:
+#### Adding Cron job:
 ```ruby
 
 class HardWorker
@@ -70,7 +70,7 @@ unless job.save
 end
 ```
 
-Finding jobs:
+#### Finding jobs
 ```ruby
 #return array of all jobs
 Sidekiq::Cron::Job.all
@@ -84,7 +84,7 @@ Sidekiq::Cron::Job.find name: "Job Name"
 #if job can't be found nil is returned
 ```
 
-Destroy jobs:
+#### Destroy jobs:
 ```ruby
 #destroys all jobs
 Sidekiq::Cron::Job.destroy_all!
@@ -96,7 +96,7 @@ Sidekiq::Cron::Job.destroy "Job Name"
 Sidekiq::Cron::Job.find('Job name').destroy
 ```
 
-Work with job:
+#### Work with job:
 ```ruby
 job = Sidekiq::Cron::Job.find('Job name')
 
@@ -110,7 +110,6 @@ job.enable!
 job.status
 # => enabled/disabled
 
-
 #enqueue job right now!
 job.enque!
 ```
@@ -120,7 +119,7 @@ Just start sidekiq workers by:
 
     sidekiq
 
-=== Web Ui for Cron Jobs
+### Web Ui for Cron Jobs
 
 If you are using sidekiq web ui and you would like to add cron josb to web too,
 add `require 'sidekiq-cron'` after `require 'sidekiq/web'`.
@@ -129,8 +128,9 @@ By this you will get:
 
 
 
-== Contributing to sidekiq-cron
- 
+## Contributing to sidekiq-cron
+
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.
@@ -139,7 +139,8 @@ By this you will get:
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-== Copyright
+
+## Copyright
 
 Copyright (c) 2013 Ondrej Bartas. See LICENSE.txt for
 further details.
