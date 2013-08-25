@@ -14,16 +14,19 @@ Gem::Specification.new do |s|
   s.email = "ondrej@bartas.cz"
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".document",
     ".travis.yml",
+    "Changes.md",
     "Gemfile",
     "LICENSE.txt",
-    "README.rdoc",
+    "README.md",
     "Rakefile",
+    "VERSION",
     "config.ru",
+    "examples/web-cron-ui.png",
     "lib/sidekiq-cron.rb",
     "lib/sidekiq/cron.rb",
     "lib/sidekiq/cron/job.rb",
@@ -32,6 +35,7 @@ Gem::Specification.new do |s|
     "lib/sidekiq/cron/views/cron.slim",
     "lib/sidekiq/cron/web_extension.rb",
     "lib/sidekiq/launcher.rb",
+    "sidekiq-cron.gemspec",
     "test/test_helper.rb",
     "test/unit/job_test.rb",
     "test/unit/poller_test.rb",
