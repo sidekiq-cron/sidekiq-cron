@@ -5,6 +5,7 @@ Sidekiq-Cron
 
 Add-on for [Sidekiq](http://sidekiq.org)
 
+Allows you to schedule recurring jobs for sidekiq workers using cron notation _* * * * *_.
 
 Requirements
 -----------------
@@ -17,6 +18,10 @@ Installation
 ------------
 
     $ gem install sidekiq-cron
+
+or add to your Gemfile
+
+    gem "sidekiq-cron", "~> 0.1.0"
 
 
 Getting Started
