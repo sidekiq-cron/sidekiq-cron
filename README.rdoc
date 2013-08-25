@@ -1,6 +1,8 @@
 = Sidekiq-cron
 
 
+[![Coverage Status](https://coveralls.io/repos/ondrejbartas/sidekiq-cron/badge.png?branch=master)](https://coveralls.io/r/ondrejbartas/sidekiq-cron?branch=master)
+
 Add-on for [Sidekiq][http://sidekiq.org]
 
 
