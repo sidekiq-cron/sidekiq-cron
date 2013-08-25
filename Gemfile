@@ -19,8 +19,10 @@ group :development do
   
   gem "slim"
   gem "sinatra"
+  
+  gem 'mocha'
+  gem 'coveralls'
 
-  gem "thin"
   gem "shotgun"
 
   # gem 'guard'

@@ -14,11 +14,14 @@ SimpleCov.start do
 
   add_group 'SidekiqCron', 'lib/'
 end
+require 'coveralls'
+Coveralls.wear!
 
 require "minitest/autorun"
 require 'shoulda-context'
 require 'turn'
 require "rack/test"
+require "mocha/setup"
 
 #SIDEKIQ Require - need to have sidekiq running!
 require 'celluloid/autostart'
