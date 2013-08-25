@@ -20,6 +20,7 @@ require 'shoulda-context'
 require 'turn'
 
 #SIDEKIQ Require - need to have sidekiq running!
+require 'celluloid/autostart'
 require 'sidekiq'
 require 'sidekiq/util'
 Sidekiq.logger.level = Logger::ERROR
