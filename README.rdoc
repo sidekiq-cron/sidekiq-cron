@@ -16,12 +16,115 @@ Requirements
 Installation
 -----------------
 
-    gem install sidekiq-cron
+    $ gem install sidekiq-cron
 
 
 Getting Started
 -----------------
 
+
+If you are not using Rails you need to add `require 'sidekiq-cron'` somewhere after `require 'sidekiq'`.
+
+_Job properties_:
+
+```ruby
+{
+ 'name'  => 'name_of_job', #must be uniq!
+ 'cron'  => '1 * * * *',
+ 'klass' => 'MyClass',
+ #OPTIONAL
+ 'queue' => 'name of queue',
+ 'args'  => '[Array or Hash] of arguments hich will be passed to perform method'
+}
+```
+
+Adding Cron job:
+```ruby
+
+class HardWorker
+  include Sidekiq::Worker
+  def perform(name, count)
+    # do something
+  end
+end
+
+Sidekiq::Cron::Job.create( name: 'Hard worker - every 5min', cron: '*/5 * * * *', klass: 'HardWorker')
+# => true
+```
+
+`create` method will return only true/false if job was saved or not.
+
+```ruby
+job = Sidekiq::Cron::Job.new( name: 'Hard worker - every 5min', cron: '*/5 * * * *', klass: 'HardWorker')
+
+if job.valid?
+  job.save
+else
+  puts job.errors
+end
+
+#or simple
+
+unless job.save
+  puts job.errors #will return array of errors
+end
+```
+
+Finding jobs:
+```ruby
+#return array of all jobs
+Sidekiq::Cron::Job.all
+
+#return one job by its uniq name - case sensitive
+Sidekiq::Cron::Job.find "Job Name"
+
+#return one job by its uniq name - you can use hash with 'name' key
+Sidekiq::Cron::Job.find name: "Job Name"
+
+#if job can't be found nil is returned
+```
+
+Destroy jobs:
+```ruby
+#destroys all jobs
+Sidekiq::Cron::Job.destroy_all!
+
+#destroy job by its name
+Sidekiq::Cron::Job.destroy "Job Name"
+
+#destroy founded job
+Sidekiq::Cron::Job.find('Job name').destroy
+```
+
+Work with job:
+```ruby
+job = Sidekiq::Cron::Job.find('Job name')
+
+#disable cron scheduling
+job.disable!
+
+#enable cron scheduling
+job.enable!
+
+#get status of job:
+job.status
+# => enabled/disabled
+
+
+#enqueue job right now!
+job.enque!
+```
+
+How to start scheduling?
+Just start sidekiq workers by:
+
+    sidekiq
+
+=== Web Ui for Cron Jobs
+
+If you are using sidekiq web ui and you would like to add cron josb to web too,
+add `require 'sidekiq-cron'` after `require 'sidekiq/web'`.
+By this you will get:
 ![Web UI](https://github.com/ondrejbartas/sidekiq-cron/raw/master/examples/web-cron-ui.png)
 
 

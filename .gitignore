@@ -9,6 +9,6 @@ coverage/
 vendor/
 .bundle/
 .sass-cache/
-
+Guardfile
 pkg
 .DS_Store
