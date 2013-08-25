@@ -74,6 +74,71 @@ unless job.save
 end
 ```
 
+Load more jobs from hash:
+```ruby
+
+hash = {
+  'name_of_job' => {
+    'class' => 'MyClass',
+    'cron'  => '1 * * * *',
+    'args'  => '(OPTIONAL) [Array or Hash]'
+  },
+  'My super iber cool job' => {
+    'class' => 'SecondClass',
+    'cron'  => '*/5 * * * *'
+  }
+}
+
+Sidekiq::Cron::Job.load_from_hash hash
+```
+
+Load more jobs from array:
+```ruby
+array = [
+  {
+    'name'  => 'name_of_job',
+    'class' => 'MyClass',
+    'cron'  => '1 * * * *',
+    'args'  => '(OPTIONAL) [Array or Hash]'
+  },
+  {
+    'name'  => 'Cool Job for Second Class',
+    'class' => 'SecondClass',
+    'cron'  => '*/5 * * * *'
+  }
+]
+
+Sidekiq::Cron::Job.load_from_array array
+```
+
+or from YML (same notation as Resque-scheduler)
+```yaml
+#config/shedule.yml
+
+my_first_job:
+  cron: "*/5 * * * *"
+  class: "HardWorker"
+  queue: hard_worker
+
+second_job:
+  cron: "*/30 * * * *"
+  class: "HardWorker"
+  queue: hard_worker_long
+  args: 
+    hard: "stuff"
+```
+
+```ruby
+#initializers/sidekiq.rb
+schedule_file = "config/schedule.yml"
+
+if File.exists?(schedule_file)
+  Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+end
+```
+
+
+
 #### Finding jobs
 ```ruby
 #return array of all jobs
