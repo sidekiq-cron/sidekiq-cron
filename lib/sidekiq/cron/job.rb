@@ -116,7 +116,7 @@ module Sidekiq
             end
           end
         end
-        out.select{|j| !j.nil?}
+        out.select{|j| !j.nil? }
       end
 
       def self.count

@@ -25,8 +25,13 @@ module Sidekiq
             Sidekiq::Cron::Job.all.each do |job|
               #test if job should be enequed
               # if yes add job to queue
-              job.test_and_enque_for_time! time_now
-
+              begin
+                job.test_and_enque_for_time! time_now if job && job.valid?
+              rescue => ex
+                #problem somewhere in one job
+                logger.error "CRON JOB: #{ex.message}"
+                logger.error "CRON JOB: #{ex.backtrace.first}"
+              end
             end
 
           rescue => ex
