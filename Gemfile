@@ -1,14 +1,23 @@
-source "http://rubygems.org"
-# Add dependencies required to use your gem here.
-# Example:
-#   gem "activesupport", ">= 2.3.5"
+source 'https://rubygems.org'
 
-# Add dependencies to develop your gem here.
-# Include everything needed to run rake, tests, features, etc.
+
+gem "sidekiq", ">= 2.13.1"
+
 group :development do
-  gem "shoulda", ">= 0"
-  gem "rdoc", "~> 3.12"
-  gem "bundler", "~> 1.0"
-  gem "jeweler", "~> 1.8.7"
-  gem "rcov", ">= 0"
+  gem "rack-test"
+  gem 'shoulda-context'
+  gem "turn", "~> 0.8.2"
+  gem "minitest"
+  gem "ansi", "~> 1.2.5"
+  gem "jeweler", "~> 1.8.3"
+  
+  gem "sinatra"
+
+  gem "fakeweb"
+  gem "thin"
+  gem "shotgun"
+
+  gem 'simplecov'
+  gem 'guard'
+  gem 'guard-minitest'
 end
