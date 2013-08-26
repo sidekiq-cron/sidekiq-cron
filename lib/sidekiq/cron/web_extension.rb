@@ -30,6 +30,9 @@ module Sidekiq
 
         #index page of cron jobs
         app.get '/cron' do 
+
+          require 'slim'
+  
           view_path    = File.join(File.expand_path("..", __FILE__), "views")
 
           @cron_jobs = Sidekiq::Cron::Job.all
