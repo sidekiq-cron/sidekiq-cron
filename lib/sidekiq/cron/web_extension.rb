@@ -37,7 +37,12 @@ module Sidekiq
 
           @cron_jobs = Sidekiq::Cron::Job.all
 
-          render(:slim, File.read(File.join(view_path, "cron.slim")))
+          #if Slim renderer exists and sidekiq has layout.slim in views
+          if defined?(Slim) && File.exists?(File.join(settings.views,"layout.slim"))
+            render(:slim, File.read(File.join(view_path, "cron.slim")))
+          else
+            render(:erb, File.read(File.join(view_path, "cron.erb")))
+          end
         end
 
         #enque cron job
