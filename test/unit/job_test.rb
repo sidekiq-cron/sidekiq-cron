@@ -292,6 +292,45 @@ class CronJobTest < Test::Unit::TestCase
       end
     end
 
+    context "initialize args" do
+      should "from JSON" do
+        args = {
+          name: "Test",
+          cron: "* * * * *",
+          klass: "CronTestClass",
+          args: JSON.dump(["123"])
+        }
+        Sidekiq::Cron::Job.new(args).tap do |job|
+          assert_equal job.args, ["123"]
+          assert_equal job.name, "Test"
+        end
+      end
+      should "from String" do
+        args = {
+          name: "Test",
+          cron: "* * * * *",
+          klass: "CronTestClass",
+          args: "(my funny string)"
+        }
+        Sidekiq::Cron::Job.new(args).tap do |job|
+          assert_equal job.args, ["(my funny string)"]
+          assert_equal job.name, "Test"
+        end
+      end
+      should "from Array" do
+        args = {
+          name: "Test",
+          cron: "* * * * *",
+          klass: "CronTestClass",
+          args: ["This is array"]
+        }
+        Sidekiq::Cron::Job.new(args).tap do |job|
+          assert_equal job.args, ["This is array"]
+          assert_equal job.name, "Test"
+        end
+      end
+    end
+
     context "create & find methods" do
       setup do 
         @args = {
