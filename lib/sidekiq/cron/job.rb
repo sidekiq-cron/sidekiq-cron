@@ -266,7 +266,12 @@ module Sidekiq
             cron = CronParser.new(@cron)
             cron.next(Time.now)
           rescue Exception => e
-            errors << "'cron' -> #{@cron}: #{e.message}"
+            #fix for different versions of cron-parser
+            if e.message == "Bad Vixie-style specification bad"
+              errors << "'cron' -> #{@cron}: not a valid cronline"
+            else
+              errors << "'cron' -> #{@cron}: #{e.message}"
+            end
           end
         end
 

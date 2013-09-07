@@ -524,7 +524,7 @@ class CronJobTest < Test::Unit::TestCase
           @jobs_hash['name_of_job']['cron'] = "bad cron"
           out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
           assert_equal out.size, 1, "should have 1 error"
-          assert_equal out, {"name_of_job"=>["'cron' -> bad cron: Bad Vixie-style specification bad"]}
+          assert_equal out, {"name_of_job"=>["'cron' -> bad cron: not a valid cronline"]}
           assert_equal Sidekiq::Cron::Job.all.size, 1, "Should have only 1 job after load"          
         end
 
