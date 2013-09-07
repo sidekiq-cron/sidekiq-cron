@@ -176,7 +176,7 @@ module Sidekiq
         @last_run_time = Time.parse(args['last_run_time'].to_s) rescue Time.now
 
         #get right arguments for job
-        @args = args["args"].nil? ? [] : (args["args"].is_a?(Array) ? args["args"] : [ args["args"] ])
+        @args = args["args"].nil? ? [] : parse_args( args["args"] )
 
         if args["message"]
           @message = args["message"]
@@ -358,6 +358,25 @@ module Sidekiq
       end
       
       private
+
+      # Try parsing inbound args into an array.
+      # args from Redis will be encoded JSON;
+      # try to load JSON, then failover
+      # to string array.
+      def parse_args(args)
+        case args
+        when String
+          begin
+            Sidekiq.load_json(args)
+          rescue JSON::ParserError
+            [*args]   # cast to string array
+          end
+        when Array
+          args        # do nothing, already array
+        else
+          [*args]     # cast to string array
+        end
+      end
 
       # Redis key for set of all cron jobs
       def self.jobs_key
