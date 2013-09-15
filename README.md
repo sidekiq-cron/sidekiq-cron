@@ -38,7 +38,7 @@ _Job properties_:
  'klass' => 'MyClass',
  #OPTIONAL
  'queue' => 'name of queue',
- 'args'  => '[Array or Hash] of arguments hich will be passed to perform method'
+ 'args'  => '[Array or Hash] of arguments which will be passed to perform method'
 }
 ```
 
