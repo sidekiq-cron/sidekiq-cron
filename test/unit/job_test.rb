@@ -523,9 +523,9 @@ class CronJobTest < Test::Unit::TestCase
           #set something bag to hash
           @jobs_hash['name_of_job']['cron'] = "bad cron"
           out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
-          assert_equal out.size, 1, "should have 1 error"
-          assert_equal out, {"name_of_job"=>["'cron' -> bad cron: not a valid cronline"]}
-          assert_equal Sidekiq::Cron::Job.all.size, 1, "Should have only 1 job after load"          
+          assert_equal 1, out.size, "should have 1 error"
+          assert_equal ({"name_of_job"=>["'cron' -> bad cron: not a valid cronline : 'bad cron'"]}), out
+          assert_equal 1, Sidekiq::Cron::Job.all.size, "Should have only 1 job after load"          
         end
 
         should "create new jobs and then destroy them all" do

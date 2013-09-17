@@ -69,7 +69,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<shotgun>, [">= 0"])
     else
       s.add_dependency(%q<sidekiq>, [">= 2.13.1"])
-      s.add_dependency(%q<parse-cron>, [">= 0.1.2"])
+      s.add_dependency(%q<rufus-scheduler>, [">= 2.0.24"])
       s.add_dependency(%q<bundler>, [">= 0"])
       s.add_dependency(%q<simplecov>, [">= 0"])
       s.add_dependency(%q<shoulda-context>, [">= 0"])
