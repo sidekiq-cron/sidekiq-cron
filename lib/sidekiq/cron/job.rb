@@ -1,7 +1,7 @@
 require 'sidekiq'
 require 'sidekiq/util'
 require 'sidekiq/actor'
-require 'parse-cron'
+require 'rufus-scheduler'
 
 module Sidekiq
   module Cron
@@ -263,8 +263,8 @@ module Sidekiq
           errors << "'cron' must be set" 
         else
           begin 
-            cron = CronParser.new(@cron)
-            cron.next(Time.now)
+            cron = Rufus::CronLine.new(@cron)
+            cron.next_time(Time.now)
           rescue Exception => e
             #fix for different versions of cron-parser
             if e.message == "Bad Vixie-style specification bad"
@@ -339,7 +339,7 @@ module Sidekiq
         # add 1 minute to Time now - Cron parser return last time after minute ends,
         # so by adding 60 second we will get last time after the right time happens 
         # without any delay!
-        CronParser.new(@cron).last(now + 60)
+        Rufus::CronLine.new(@cron).previous_time(now)
       end
 
       def formated_last_time now = Time.now
