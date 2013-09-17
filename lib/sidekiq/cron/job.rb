@@ -336,9 +336,6 @@ module Sidekiq
       # Parse cron specification '* * * * *' and returns
       # time when last run should be performed
       def last_time now = Time.now
-        # add 1 minute to Time now - Cron parser return last time after minute ends,
-        # so by adding 60 second we will get last time after the right time happens 
-        # without any delay!
         Rufus::CronLine.new(@cron).previous_time(now)
       end
 
