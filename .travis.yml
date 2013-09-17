@@ -11,6 +11,8 @@ notifications:
   email:
     recipients:
       - ondrej@bartas.cz
+env:
+  travis: 'yes'
 matrix:
   allow_failures:
     - rvm: jruby-19mode
