@@ -373,6 +373,8 @@ module Sidekiq
           rescue JSON::ParserError
             [*args]   # cast to string array
           end
+        when Hash
+          [args]      # just put hash into array
         when Array
           args        # do nothing, already array
         else
