@@ -263,7 +263,7 @@ module Sidekiq
           errors << "'cron' must be set" 
         else
           begin 
-            cron = Rufus::CronLine.new(@cron)
+            cron = Rufus::Scheduler::CronLine.new(@cron)
             cron.next_time(Time.now)
           rescue Exception => e
             #fix for different versions of cron-parser
@@ -336,7 +336,7 @@ module Sidekiq
       # Parse cron specification '* * * * *' and returns
       # time when last run should be performed
       def last_time now = Time.now
-        Rufus::CronLine.new(@cron).previous_time(now)
+        Rufus::Scheduler::CronLine.new(@cron).previous_time(now)
       end
 
       def formated_last_time now = Time.now
