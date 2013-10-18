@@ -8,23 +8,8 @@ module Sidekiq
         #should be rewritten
         app.helpers do
 
-          alias_method :old_strings, :strings
-
-          def strings
-            #only on first load! 
-            unless @strings
-              #load all locales from Sidekiq
-              old_strings
-
-              Dir["#{File.join(File.expand_path("..", __FILE__), "locales")}/*.yml"].each do |file|
-                YAML.load(File.open(file)).each do |locale, translations|
-                  translations.each do |key, value|
-                    @strings[locale][key] = value
-                  end
-                end
-              end
-            end
-            @strings
+          def no_translation t
+            t
           end
         end
 

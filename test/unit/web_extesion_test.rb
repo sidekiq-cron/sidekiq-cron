@@ -34,7 +34,7 @@ class CronWebExtensionTest < Test::Unit::TestCase
 
     should 'display cron web with message - no cron jobs' do
       get '/cron'
-      assert last_response.body.include?('No cron jobs found')
+      assert last_response.body.include?('NoCronJobsFound')
     end
 
     should 'display cron web with cron jobs table' do
