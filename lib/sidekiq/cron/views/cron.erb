@@ -48,7 +48,7 @@
                 <input class='btn btn-mini pull-left' type="submit" name="enable" value="<%= no_translation('Enable') %>"/>
               </form>
               <form action="<%= root_path %>cron/<%= job.name %>/delete" method="post">
-                <input class='btn btn-mini btn-danger pull-left' type="submit" name="delete" value="<%= no_translation('Delete') %>" data-confirm="<%= no_translation('AreYouSureDeleteCronJob', :job => job.name) %>"/>
+                <input class='btn btn-mini btn-danger pull-left' type="submit" name="delete" value="<%= no_translation('Delete') %>" data-confirm="<%= no_translation('AreYouSureDeleteCronJob') %>"/>
               </form>
             <% end %>
           </td>

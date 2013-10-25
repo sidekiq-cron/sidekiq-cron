@@ -41,7 +41,7 @@ header.row
             form action="#{root_path}cron/#{job.name}/enable" method="post"
               input.btn.btn-small.pull-left type="submit" name="enable" value="#{no_translation('Enable')}"
             form action="#{root_path}cron/#{job.name}/delete" method="post"
-              input.btn.btn-danger.btn-small type="submit" name="delete" value="#{no_translation('Delete')}" data-confirm="#{no_translation('AreYouSureDeleteCronJob', :job => job.name)}"
+              input.btn.btn-danger.btn-small type="submit" name="delete" value="#{no_translation('Delete')}" data-confirm="#{no_translation('AreYouSureDeleteCronJob')}"
 
 - else
   .alert.alert-success = no_translation('NoCronJobsFound')
