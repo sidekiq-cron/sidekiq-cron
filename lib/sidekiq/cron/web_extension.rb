@@ -4,14 +4,7 @@ module Sidekiq
 
       def self.registered(app)
 
-        #very bad way of loading locales for cron jobs
-        #should be rewritten
-        app.helpers do
-
-          def no_translation t
-            t
-          end
-        end
+        app.settings.locales << File.join(File.expand_path("..", __FILE__), "locales")
 
         #index page of cron jobs
         app.get '/cron' do   
