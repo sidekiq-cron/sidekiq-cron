@@ -1,18 +1,18 @@
 <header class='row'>
-  <div class='span5'>
+  <div class='span5 col-sm-5'>
     <h3><%=t 'CronJobs' %></h3>
   </div>
 </header>
 <% if @cron_jobs.size > 0 %>
 
-  <table class="table table-hover table-bordered table-striped">
+  <table class="table table-hover table-bordered table-striped table-white">
     <thead>
       <th><%= t('Status') %></th>
       <th><%= t('Name') %></th>
       <th><%= t('Cron') %></th>
       <th><%= t('Last enque') %></th>
       <th><%= t('Arguments') %></th>
-      <th width="253px"><%= t('Actions')%></th>
+      <th width="253"><%= t('Actions')%></th>
     </thead>
 
     <tbody>
