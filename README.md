@@ -191,7 +191,7 @@ Just start sidekiq workers by:
 ### Web Ui for Cron Jobs
 
 If you are using sidekiq web ui and you would like to add cron josb to web too,
-add `require 'sidekiq-cron'` after `require 'sidekiq/web'`.
+add `require 'sidekiq/cron/web'` after `require 'sidekiq/web'`.
 By this you will get:
 ![Web UI](https://github.com/ondrejbartas/sidekiq-cron/raw/master/examples/web-cron-ui.png)
 
