@@ -34,7 +34,7 @@ module Sidekiq
               end
             end
 
-          rescue => ex
+          rescue Exception => ex
             # Most likely a problem with redis networking.
             # Punt and try again at the next interval
             logger.error ex.message
