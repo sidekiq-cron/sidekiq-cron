@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "sidekiq-cron"
-  s.version = "0.1.7"
+  s.version = "0.1.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ondrej Bartas"]
-  s.date = "2013-11-05"
+  s.date = "2013-11-29"
   s.description = "Enables to set jobs to be run in specified time (using CRON notation)"
   s.email = "ondrej@bartas.cz"
   s.extra_rdoc_files = [
@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
     "lib/sidekiq/cron.rb",
     "lib/sidekiq/cron/job.rb",
     "lib/sidekiq/cron/launcher.rb",
+    "lib/sidekiq/cron/locales/de.yml",
     "lib/sidekiq/cron/locales/en.yml",
     "lib/sidekiq/cron/poller.rb",
     "lib/sidekiq/cron/views/cron.erb",
