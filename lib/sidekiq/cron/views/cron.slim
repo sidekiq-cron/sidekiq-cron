@@ -21,7 +21,7 @@ header.row
         td[style="#{style}"]= job.name
         td[style="#{style}"]
           b == job.cron.gsub(" ", "&nbsp;")
-        td[style="#{style}"]== relative_time(job.last_run_time)
+        td[style="#{style}"]== job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-"
         td[style="#{style}"]
           - if job.message and job.message.to_s.size > 100
             button data-toggle="collapse" data-target=".worker_#{index}" class="btn btn-mini" = t('ShowAll')

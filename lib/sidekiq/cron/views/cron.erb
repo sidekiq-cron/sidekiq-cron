@@ -22,7 +22,7 @@
           <td style="<%= style %>"><%= t job.status %></td>
           <td style="<%= style %>"><%= job.name %></td>
           <td style="<%= style %>"><b><%= job.cron.gsub(" ", "&nbsp;") %></b></td>
-          <td style="<%= style %>"><%= relative_time(job.last_run_time) %></td>
+          <td style="<%= style %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>
           <td style="<%= style %>">
             <% if job.message and job.message.to_s.size > 100 %>
               <button data-toggle="collapse" data-target=".worker_<%= index %>" class="btn btn-xs"><%= t('ShowAll')%></button>

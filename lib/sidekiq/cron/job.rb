@@ -48,6 +48,7 @@ module Sidekiq
       #enque cron job to queue
       def enque! time = Time.now
         @last_run_time = time
+        @last_enqueue_time = time
 
         Sidekiq::Client.push(@message.is_a?(String) ? Sidekiq.load_json(@message) : @message)
 
@@ -158,7 +159,7 @@ module Sidekiq
       end
 
       attr_accessor :name, :cron, :klass, :args, :message
-      attr_reader   :last_run_time
+      attr_reader   :last_run_time, :last_enqueue_time
 
       def initialize input_args = {}
         args = input_args.stringify_keys
@@ -174,6 +175,7 @@ module Sidekiq
 
         #set last run time
         @last_run_time = Time.parse(args['last_run_time'].to_s) rescue Time.now
+        @last_enqueue_time = Time.parse(args['last_enqueue_time'].to_s) rescue nil
 
         #get right arguments for job
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
@@ -247,6 +249,7 @@ module Sidekiq
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
           last_run_time: @last_run_time,
+          last_enqueue_time: @last_enqueue_time,
         }
       end
 
