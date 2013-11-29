@@ -12,14 +12,14 @@
       <th><%= t('Cron') %></th>
       <th><%= t('Last enque') %></th>
       <th><%= t('Arguments') %></th>
-      <th width="253"><%= t('Actions')%></th>
+      <th width="280"><%= t('Actions')%></th>
     </thead>
 
     <tbody>
       <% @cron_jobs.sort{|a,b| a.sort_name <=> b.sort_name }.each_with_index do |job, index| %>
         <% style = "#{job.status == 'disabled' ? "background: #ecc": ""}" %>
         <tr>
-          <td style="<%= style %>"><%= job.status %></td>
+          <td style="<%= style %>"><%= t job.status %></td>
           <td style="<%= style %>"><%= job.name %></td>
           <td style="<%= style %>"><b><%= job.cron.gsub(" ", "&nbsp;") %></b></td>
           <td style="<%= style %>"><%= relative_time(job.last_run_time) %></td>
