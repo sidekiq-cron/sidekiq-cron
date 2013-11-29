@@ -40,6 +40,7 @@ class CronWebExtensionTest < Test::Unit::TestCase
     should 'display cron web with cron jobs table' do
       Sidekiq::Cron::Job.create(@args)
       get '/cron'
+      assert_equal 200, last_response.status
       refute last_response.body.include?('No cron jobs found')
       assert last_response.body.include?('table')
       assert last_response.body.include?("TestNameOfCronJob")
