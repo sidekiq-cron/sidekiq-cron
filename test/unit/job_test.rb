@@ -20,6 +20,7 @@ class CronJobTest < Test::Unit::TestCase
 
     should "be initialized" do
       job = Sidekiq::Cron::Job.new()
+      assert_nil job.last_enqueue_time
       assert job.is_a?(Sidekiq::Cron::Job)
     end
 
@@ -109,8 +110,8 @@ class CronJobTest < Test::Unit::TestCase
       end
 
       should "have to_hash method" do
-        [:name,:klass,:cron,:args,:message,:status, :last_run_time].each do |key|
-          assert @job.to_hash.has_key?(key), "to_hash must have key: #{key}" 
+        [:name,:klass,:cron,:args,:message,:status].each do |key|
+          assert @job.to_hash.has_key?(key), "to_hash must have key: #{key}"
         end
       end
     end
@@ -467,7 +468,11 @@ class CronJobTest < Test::Unit::TestCase
       end
 
       should "remove old enque times + should be enqeued" do
-        assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(@time), "should enqueue"
+        job = Sidekiq::Cron::Job.new(@args)
+        assert_nil job.last_enqueue_time
+        assert job.test_and_enque_for_time!(@time), "should enqueue"
+        assert job.last_enqueue_time
+
         refute Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(@time), "should not enqueue"
         Sidekiq.redis do |conn|
           assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 2, "Should have two enqueued job (first was in save, second in enque)"

@@ -1,12 +1,13 @@
 require './test/test_helper'
 
 class CronWebExtensionTest < Test::Unit::TestCase
+
+  def app
+    Sidekiq::Web
+  end
+
   context 'Cron web' do
     include Rack::Test::Methods
-
-    def app
-      Sidekiq::Web
-    end
 
     setup do
       Sidekiq.redis = REDIS
