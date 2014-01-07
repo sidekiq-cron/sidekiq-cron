@@ -15,18 +15,14 @@ module Sidekiq
 
       #crucial part of whole enquing job
       def should_enque? time
-        out = false
-        Sidekiq.redis do |conn|
-          out = (
-            status == "enabled" && 
-            @last_run_time < last_time(time) && 
-            conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time) )
-          )
+        enqueue = false
+        enqueue = Sidekiq.redis do |conn|
+          status == "enabled" && not_enqueued_after?(time) && conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time))
         end
-        out
+        enqueue
       end
 
-      # remove previous informations about run times 
+      # remove previous informations about run times
       # this will clear redis and make sure that redis will
       # not overflow with memory
       def remove_previous_enques time
@@ -47,7 +43,6 @@ module Sidekiq
 
       #enque cron job to queue
       def enque! time = Time.now
-        @last_run_time = time
         @last_enqueue_time = time
 
         Sidekiq::Client.push(@message.is_a?(String) ? Sidekiq.load_json(@message) : @message)
@@ -159,7 +154,7 @@ module Sidekiq
       end
 
       attr_accessor :name, :cron, :klass, :args, :message
-      attr_reader   :last_run_time, :last_enqueue_time
+      attr_reader   :last_enqueue_time
 
       def initialize input_args = {}
         args = input_args.stringify_keys
@@ -173,9 +168,9 @@ module Sidekiq
         #set status of job
         @status = args['status'] || status_from_redis
 
-        #set last run time
-        @last_run_time = Time.parse(args['last_run_time'].to_s) rescue Time.now
-        @last_enqueue_time = Time.parse(args['last_enqueue_time'].to_s) rescue nil
+        if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
+          @last_enqueue_time = Time.parse(args['last_enqueue_time'])
+        end
 
         #get right arguments for job
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
@@ -248,7 +243,6 @@ module Sidekiq
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
-          last_run_time: @last_run_time,
           last_enqueue_time: @last_enqueue_time,
         }
       end
@@ -361,9 +355,13 @@ module Sidekiq
       def sort_name
         "#{status == "enabled" ? 0 : 1}_#{name}".downcase
       end
-      
+
       private
 
+      def not_enqueued_after?(time)
+        @last_enqueue_time.nil? || @last_enqueue_time < last_time(time)
+      end
+      
       # Try parsing inbound args into an array.
       # args from Redis will be encoded JSON;
       # try to load JSON, then failover
