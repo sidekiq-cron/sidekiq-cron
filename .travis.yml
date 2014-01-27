@@ -4,6 +4,9 @@ rvm:
   - jruby-19mode
   - rbx-19mode
   - 2.0.0
+  - 2.1.0
+services:
+  - redis-server
 branches:
   only:
     - master
@@ -17,4 +20,3 @@ matrix:
   allow_failures:
     - rvm: jruby-19mode
     - rvm: rbx-19mode
-    - rvm: 2.0.0
