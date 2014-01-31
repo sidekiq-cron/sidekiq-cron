@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "sidekiq-cron"
-  s.version = "0.1.9"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ondrej Bartas"]
-  s.date = "2014-01-27"
+  s.date = "2014-01-31"
   s.description = "Enables to set jobs to be run in specified time (using CRON notation)"
   s.email = "ondrej@bartas.cz"
   s.extra_rdoc_files = [
@@ -53,6 +53,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<tilt>, ["< 2.0.0"])
       s.add_runtime_dependency(%q<sidekiq>, [">= 2.17.3"])
       s.add_runtime_dependency(%q<rufus-scheduler>, [">= 2.0.24"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
@@ -69,6 +70,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<coveralls>, [">= 0"])
       s.add_development_dependency(%q<shotgun>, [">= 0"])
     else
+      s.add_dependency(%q<tilt>, ["< 2.0.0"])
       s.add_dependency(%q<sidekiq>, [">= 2.17.3"])
       s.add_dependency(%q<rufus-scheduler>, [">= 2.0.24"])
       s.add_dependency(%q<bundler>, [">= 0"])
@@ -86,6 +88,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<shotgun>, [">= 0"])
     end
   else
+    s.add_dependency(%q<tilt>, ["< 2.0.0"])
     s.add_dependency(%q<sidekiq>, [">= 2.17.3"])
     s.add_dependency(%q<rufus-scheduler>, [">= 2.0.24"])
     s.add_dependency(%q<bundler>, [">= 0"])
