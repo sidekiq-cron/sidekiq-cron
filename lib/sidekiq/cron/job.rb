@@ -168,8 +168,11 @@ module Sidekiq
         #set status of job
         @status = args['status'] || status_from_redis
 
+        #set last enqueue time - from args or from existing job
         if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
           @last_enqueue_time = Time.parse(args['last_enqueue_time'])
+        else
+          @last_enqueue_time = last_enqueue_time_from_redis
         end
 
         #get right arguments for job
@@ -223,15 +226,23 @@ module Sidekiq
       end
 
       def status_from_redis
+        out = "enabled"
         if exists?
-          out = "enabled"
           Sidekiq.redis do |conn|
             out = conn.hget redis_key, "status"
           end
-          out
-        else
-          "enabled"
         end
+        out
+      end
+
+      def last_enqueue_time_from_redis
+        out = nil
+        if exists?
+          Sidekiq.redis do |conn|
+            out = Time.parse(conn.hget(redis_key, "last_enqueue_time")) rescue nil
+          end
+        end
+        out
       end
 
       #export job data to hash
