@@ -10,7 +10,7 @@ Requirements
 -----------------
 
 - Redis 2.4 or greater is required.
-- Sidekiq 2.13.1 or grater is required.
+- Sidekiq 2.17.3 or grater is required.
 
 
 Installation
@@ -20,7 +20,7 @@ Installation
 
 or add to your Gemfile
 
-    gem "sidekiq-cron", "~> 0.1.0"
+    gem "sidekiq-cron", "~> 0.2.0"
 
 
 Getting Started
