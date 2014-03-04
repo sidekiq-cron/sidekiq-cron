@@ -283,9 +283,19 @@ module Sidekiq
           end
         end
 
-        errors << "'klass' (or class) must be set" if @klass.nil? || @klass.size == 0
+        errors << "'klass' (or class) must be set" unless klass_valid
 
         !errors.any?
+      end
+
+      def klass_valid
+        case @klass
+          when Class
+            true
+          when String
+            @klass.size > 0
+          else
+        end
       end
 
       # add job to cron jobs

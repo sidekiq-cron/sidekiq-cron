@@ -73,6 +73,13 @@ class CronJobTest < Test::Unit::TestCase
         @job = Sidekiq::Cron::Job.new()
       end
 
+      should "allow a class instance for the klass" do
+        @job.klass = CronTestClass
+
+        refute @job.valid?
+        refute @job.errors.any?{|e| e.include?("klass")}, "Should not have error for klass"
+      end
+
       should "return false on valid? and errors" do
         refute @job.valid?
         assert @job.errors.is_a?(Array)
