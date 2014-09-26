@@ -113,7 +113,7 @@ Sidekiq::Cron::Job.load_from_array array
 
 or from YML (same notation as Resque-scheduler)
 ```yaml
-#config/shedule.yml
+#config/schedule.yml
 
 my_first_job:
   cron: "*/5 * * * *"
