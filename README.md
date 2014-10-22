@@ -2,13 +2,13 @@ Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.png)](http://
 ================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
 
-Add-on for [Sidekiq](http://sidekiq.org)
+An scheduling add-on for [Sidekiq](http://sidekiq.org).
 
-Allows you to schedule recurring jobs for sidekiq workers using cron notation _* * * * *_.
+Runs a thread along side Sidekiq workers to schedule jobs at specified times (using cron notation _* * * * *_).
 
-Scheduling jobs is working only when at least one sidekiq process is running.
+Checks for new jobs to schedule every 10 seconds and doesn't schedule the same job multiple times when more than one Sidekiq worker is running.
 
-If you have more than one sidekiq process, job will be added only one time when it matches cronline and will be added by first sidekiq process it checks it in 10s interval.
+Scheduling jobs are added only when at least one sidekiq process is running.
 
 If you want to know how scheduling work check [out under the hood](#under-the-hood)
 
