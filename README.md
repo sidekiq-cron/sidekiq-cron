@@ -6,6 +6,12 @@ Add-on for [Sidekiq](http://sidekiq.org)
 
 Allows you to schedule recurring jobs for sidekiq workers using cron notation _* * * * *_.
 
+Scheduling jobs is working only when at least one sidekiq process is running.
+
+If you have more than one sidekiq process, job will be added only one time when it matches cronline and will be added by first sidekiq process it checks it in 10s interval.
+
+If you want to know how scheduling work check [out under the hood](#under-the-hood)
+
 Requirements
 -----------------
 
@@ -195,7 +201,12 @@ add `require 'sidekiq-cron'` after `require 'sidekiq/web'`.
 By this you will get:
 ![Web UI](https://github.com/ondrejbartas/sidekiq-cron/raw/master/examples/web-cron-ui.png)
 
+## Under the hood
 
+When you start sidekiq process it starts one thread with Sidekiq::Poller instance, which perform adding of scheduled jobs to queues, retryes etc.
+
+Sidekiq-Cron add itself into this start procedure and start another thread with Sidekiq::Cron::Poler which checks all enabled sidekiq cron jobs evry 10 seconds,
+if they should be added to queue (their cronline matches time of check).
 
 ## Contributing to sidekiq-cron
 
