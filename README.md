@@ -4,7 +4,7 @@ Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.png)](http://
 
 An scheduling add-on for [Sidekiq](http://sidekiq.org).
 
-Runs a thread along side Sidekiq workers to schedule jobs at specified times (using cron notation _* * * * *_).
+Runs a thread along side Sidekiq workers to schedule jobs at specified times (using cron notation _* * * * *_ parsed by [Rufus-Scheduler](https://github.com/jmettraux/rufus-scheduler), more about [cron notation](http://www.nncron.ru/help/EN/working/cron-format.htm).
 
 Checks for new jobs to schedule every 10 seconds and doesn't schedule the same job multiple times when more than one Sidekiq worker is running.
 
