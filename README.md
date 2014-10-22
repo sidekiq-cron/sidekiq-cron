@@ -119,7 +119,7 @@ Sidekiq::Cron::Job.load_from_array array
 
 or from YML (same notation as Resque-scheduler)
 ```yaml
-#config/shedule.yml
+#config/schedule.yml
 
 my_first_job:
   cron: "*/5 * * * *"
@@ -201,12 +201,35 @@ add `require 'sidekiq-cron'` after `require 'sidekiq/web'`.
 By this you will get:
 ![Web UI](https://github.com/ondrejbartas/sidekiq-cron/raw/master/examples/web-cron-ui.png)
 
+### Forking Processes
+
+If you're using a forking web server like Unicorn you may run into an issue where the Redis connection is used
+before the process forks, causing the following exception
+
+    Redis::InheritedError: Tried to use a connection from a child process without reconnecting. You need to reconnect to Redis after forking.
+
+to occcur. To avoid this, wrap your job creation in the a call to `Sidekiq.configure_server`:
+
+```ruby
+Sidekiq.configure_server do |config|
+  schedule_file = "config/schedule.yml"
+
+  if File.exists?(schedule_file)
+    Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+  end
+end
+```
+
+Note that this API is only available in Sidekiq 3.x.x.
+
 ## Under the hood
 
 When you start sidekiq process it starts one thread with Sidekiq::Poller instance, which perform adding of scheduled jobs to queues, retryes etc.
 
 Sidekiq-Cron add itself into this start procedure and start another thread with Sidekiq::Cron::Poler which checks all enabled sidekiq cron jobs evry 10 seconds,
 if they should be added to queue (their cronline matches time of check).
+
+
 
 ## Contributing to sidekiq-cron
 
