@@ -34,20 +34,20 @@
           </td>
           <td style="<%= style %>">
             <% if job.status == 'enabled' %>
-              <form action="<%= root_path %>cron/<%= job.name %>/enque" method="post">
+              <form action="<%= root_path %>cron/<%= URI::encode job.name %>/enque" method="post">
                 <input class='btn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>"/>
               </form>
-              <form action="<%= root_path %>cron/<%= job.name %>/disable" method="post">
+              <form action="<%= root_path %>cron/<%= URI::encode job.name %>/disable" method="post">
                 <input class='btn btn-xs pull-left' type="submit" name="disable" value="<%= t('Disable') %>"/>
               </form>
             <% else %>
-              <form action="<%= root_path %>cron/<%= job.name %>/enque" method="post">
+              <form action="<%= root_path %>cron/<%= URI::encode job.name %>/enque" method="post">
                 <input class='btn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>"/>
               </form>
-              <form action="<%= root_path %>cron/<%= job.name %>/enable" method="post">
+              <form action="<%= root_path %>cron/<%= URI::encode job.name %>/enable" method="post">
                 <input class='btn btn-xs pull-left' type="submit" name="enable" value="<%= t('Enable') %>"/>
               </form>
-              <form action="<%= root_path %>cron/<%= job.name %>/delete" method="post">
+              <form action="<%= root_path %>cron/<%= URI::encode job.name %>/delete" method="post">
                 <input class='btn btn-xs btn-danger pull-left' type="submit" name="delete" value="<%= t('Delete') %>" data-confirm="<%= t('AreYouSureDeleteCronJob', :job => job.name) %>"/>
               </form>
             <% end %>
