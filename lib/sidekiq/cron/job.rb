@@ -42,7 +42,7 @@ module Sidekiq
       end
 
       #enque cron job to queue
-      def enque! time = Time.now
+      def enque! time = Time.zone.now
         @last_enqueue_time = time
 
         Sidekiq::Client.push(@message.is_a?(String) ? Sidekiq.load_json(@message) : @message)
@@ -272,7 +272,7 @@ module Sidekiq
         else
           begin 
             cron = Rufus::Scheduler::CronLine.new(@cron)
-            cron.next_time(Time.now)
+            cron.next_time(Time.zone.now)
           rescue Exception => e
             #fix for different versions of cron-parser
             if e.message == "Bad Vixie-style specification bad"
@@ -320,7 +320,7 @@ module Sidekiq
           conn.hmset redis_key, *hash_to_redis(to_hash)
 
           #add information about last time! - don't enque right after scheduler poller starts!
-          time = Time.now
+          time = Time.zone.now
           conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s)
         end
         logger.info { "Cron Jobs - add job with name: #{@name}" }
@@ -353,11 +353,11 @@ module Sidekiq
 
       # Parse cron specification '* * * * *' and returns
       # time when last run should be performed
-      def last_time now = Time.now
+      def last_time now = Time.zone.now
         Rufus::Scheduler::CronLine.new(@cron).previous_time(now)
       end
 
-      def formated_last_time now = Time.now
+      def formated_last_time now = Time.zone.now
         last_time(now).getutc
       end
 
