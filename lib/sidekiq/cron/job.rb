@@ -165,6 +165,9 @@ module Sidekiq
         #get class from klass or class
         @klass = args["klass"] || args["class"]
 
+        #get right arguments for job
+        @args = args["args"].nil? ? [] : parse_args( args["args"] )
+
         #set status of job
         @status = args['status'] || status_from_redis
 
@@ -174,9 +177,6 @@ module Sidekiq
         else
           @last_enqueue_time = last_enqueue_time_from_redis
         end
-
-        #get right arguments for job
-        @args = args["args"].nil? ? [] : parse_args( args["args"] )
 
         if args["message"]
           @message = args["message"]
