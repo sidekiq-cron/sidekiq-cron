@@ -583,6 +583,12 @@ class CronJobTest < Test::Unit::TestCase
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs after destroy all"
         end
 
+        should "create new jobs and update old one with same settings with load_from_hash!" do
+          assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+          out = Sidekiq::Cron::Job.load_from_hash! @jobs_hash
+          assert_equal out.size, 0, "should have no errors"
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+        end
       end
 
       context "from array" do

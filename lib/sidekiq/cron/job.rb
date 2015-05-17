@@ -73,6 +73,12 @@ module Sidekiq
         load_from_array array
       end
 
+      # like to {#load_from_hash}
+      # If exists old jobs in redis but removed from args, destroy old jobs
+      def self.load_from_hash! hash
+        destroy_removed_jobs(hash.keys)
+        load_from_hash(hash)
+      end
 
       # load cron jobs from Array
       # input structure should look like:
