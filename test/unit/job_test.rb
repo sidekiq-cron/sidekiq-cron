@@ -188,7 +188,7 @@ class CronJobTest < Test::Unit::TestCase
         end
       end
     end
- 
+
     context "cron test" do
       setup do
         @job = Sidekiq::Cron::Job.new()
