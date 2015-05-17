@@ -209,7 +209,13 @@ class CronJobTest < Test::Unit::TestCase
       should "return previous day" do
         @job.cron = "1 2 * * *"
         time = Time.now
-        assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-02-01-00")
+
+        if time.hour >= 2
+          assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-02-01-00")
+        else
+          yesterday = Date.today - 1
+          assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), yesterday.strftime("%Y-%m-%d-02-01-00")
+        end
       end
 
     end
