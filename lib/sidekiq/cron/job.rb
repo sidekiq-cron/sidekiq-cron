@@ -105,6 +105,13 @@ module Sidekiq
         errors
       end
 
+      # like to {#load_from_array}
+      # If exists old jobs in redis but removed from args, destroy old jobs
+      def self.load_from_array! array
+        job_names = array.map { |job| job["name"] }
+        destroy_removed_jobs(job_names)
+        load_from_array(array)
+      end
 
       # get all cron jobs
       def self.all

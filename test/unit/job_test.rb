@@ -614,6 +614,13 @@ class CronJobTest < Test::Unit::TestCase
           assert_equal out.size, 0, "should have 0 error"
           assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"          
         end
+
+        should "create new jobs and update old one with same settings with load_from_array" do
+          assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+          out = Sidekiq::Cron::Job.load_from_array! @jobs_array
+          assert_equal out.size, 0, "should have 0 error"
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+        end
       end
     end
   end
