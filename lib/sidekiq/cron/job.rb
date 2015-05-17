@@ -351,6 +351,14 @@ module Sidekiq
         logger.info { "Cron Jobs - deleted all jobs" }
       end
 
+      # remove "removed jobs" between current jobs and new jobs
+      def self.destroy_removed_jobs new_job_names
+        current_job_names = Sidekiq::Cron::Job.all.map(&:name)
+        removed_job_names = current_job_names - new_job_names
+        removed_job_names.each { |j| Sidekiq::Cron::Job.destroy(j) }
+        removed_job_names
+      end
+
       # Parse cron specification '* * * * *' and returns
       # time when last run should be performed
       def last_time now = Time.now

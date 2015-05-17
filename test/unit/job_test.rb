@@ -448,6 +448,28 @@ class CronJobTest < Test::Unit::TestCase
 
     end
 
+    context "destroy_removed_jobs" do
+      setup do
+        args1 = {
+          name: "WillBeErasedJob",
+          cron: "* * * * *",
+          klass: "CronTestClass"
+        }
+        Sidekiq::Cron::Job.create(args1)
+
+        args2 = {
+          name: "ContinueRemainingJob",
+          cron: "* * * * *",
+          klass: "CronTestClass"
+        }
+        Sidekiq::Cron::Job.create(args2)
+      end
+
+      should "be destroied removed job that not exists in args" do
+        assert_equal Sidekiq::Cron::Job.destroy_removed_jobs(["ContinueRemainingJob"]), ["WillBeErasedJob"], "Should be destroyed WillBeErasedJob"
+      end
+    end
+
     context "test of enque" do
       setup do 
         @args = {
