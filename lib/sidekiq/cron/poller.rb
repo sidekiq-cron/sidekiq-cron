@@ -19,7 +19,7 @@ module Sidekiq
           add_jitter if first_time
 
           begin
-            time_now = Time.now
+            time_now = Time.zone.now
 
             #go through all jobs
             Sidekiq::Cron::Job.all.each do |job|
