@@ -12,6 +12,8 @@ Scheduling jobs are added only when at least one sidekiq process is running.
 
 If you want to know how scheduling work check [out under the hood](#under-the-hood)
 
+Works with Active jobs (Rails 4.2+)
+
 Requirements
 -----------------
 
@@ -48,11 +50,34 @@ _Job properties_:
 }
 ```
 
-### Timing and cron
+### Time, cron and sidekiq-cron
 
 Cron line is allways evaluated against UTC time. So if you are Prague (timezone +02:00) and you want job to be qneueued at 8:30 AM
 You will need to adjust cronline to `30 6 * * *`.
 
+### What objects/classes can be scheduled
+#### Sidekiq Worker
+In example we were using: `HardWorker` which loooks like:
+```ruby
+class HardWorker
+  include Sidekiq::Worker
+  def perform(*args)
+    # do something
+  end
+end
+```
+
+#### Active Job Worker
+You can schedule: `ExampleJob` which loooks like:
+```ruby
+class ExampleJob < ActiveJob::Base
+  queue_as :default
+
+  def perform(*args)
+    # Do something
+  end
+end
+```
 
 #### Adding Cron job:
 ```ruby
@@ -155,8 +180,6 @@ if File.exists?(schedule_file)
   Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
 end
 ```
-
-
 
 #### Finding jobs
 ```ruby
