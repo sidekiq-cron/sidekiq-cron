@@ -3,7 +3,7 @@ rvm:
   - jruby-19mode
   - rbx-19mode
   - 2.0.0
-  - 2.1.0
+  - 2.2.2
 services:
   - redis-server
 branches:
