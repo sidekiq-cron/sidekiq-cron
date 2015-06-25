@@ -188,7 +188,7 @@ class CronJobTest < Test::Unit::TestCase
         end
       end
     end
- 
+
     context "cron test" do
       setup do
         @job = Sidekiq::Cron::Job.new()
@@ -454,6 +454,28 @@ class CronJobTest < Test::Unit::TestCase
 
     end
 
+    context "destroy_removed_jobs" do
+      setup do
+        args1 = {
+          name: "WillBeErasedJob",
+          cron: "* * * * *",
+          klass: "CronTestClass"
+        }
+        Sidekiq::Cron::Job.create(args1)
+
+        args2 = {
+          name: "ContinueRemainingJob",
+          cron: "* * * * *",
+          klass: "CronTestClass"
+        }
+        Sidekiq::Cron::Job.create(args2)
+      end
+
+      should "be destroied removed job that not exists in args" do
+        assert_equal Sidekiq::Cron::Job.destroy_removed_jobs(["ContinueRemainingJob"]), ["WillBeErasedJob"], "Should be destroyed WillBeErasedJob"
+      end
+    end
+
     context "test of enque" do
       setup do
         @args = {
@@ -567,6 +589,12 @@ class CronJobTest < Test::Unit::TestCase
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs after destroy all"
         end
 
+        should "create new jobs and update old one with same settings with load_from_hash!" do
+          assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+          out = Sidekiq::Cron::Job.load_from_hash! @jobs_hash
+          assert_equal out.size, 0, "should have no errors"
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+        end
       end
 
       context "from array" do
@@ -589,6 +617,13 @@ class CronJobTest < Test::Unit::TestCase
         should "create new jobs and update old one with same settings" do
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
           out = Sidekiq::Cron::Job.load_from_array @jobs_array
+          assert_equal out.size, 0, "should have 0 error"
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+        end
+
+        should "create new jobs and update old one with same settings with load_from_array" do
+          assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+          out = Sidekiq::Cron::Job.load_from_array! @jobs_array
           assert_equal out.size, 0, "should have 0 error"
           assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
         end
