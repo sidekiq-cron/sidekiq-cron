@@ -48,6 +48,12 @@ _Job properties_:
 }
 ```
 
+### Timing and cron
+
+Cron line is allways evaluated against UTC time. So if you are Prague (timezone +02:00) and you want job to be qneueued at 8:30 AM
+You will need to adjust cronline to `30 6 * * *`.
+
+
 #### Adding Cron job:
 ```ruby
 
