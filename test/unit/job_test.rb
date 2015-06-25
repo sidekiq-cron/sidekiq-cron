@@ -4,7 +4,7 @@ require './test/test_helper'
 class CronJobTest < Test::Unit::TestCase
   context "Cron Job" do
 
-    setup do 
+    setup do
       #clear all previous saved data from redis
       Sidekiq.redis do |conn|
         conn.keys("cron_job*").each do |key|
@@ -47,10 +47,10 @@ class CronJobTest < Test::Unit::TestCase
     end
 
     context "instance methods" do
-      setup do 
+      setup do
         @job = Sidekiq::Cron::Job.new()
-      end 
-      
+      end
+
       should "have save method" do
         assert @job.respond_to?(:save)
       end
@@ -68,7 +68,7 @@ class CronJobTest < Test::Unit::TestCase
     end
 
     context "invalid job" do
-      
+
       setup do
         @job = Sidekiq::Cron::Job.new()
       end
@@ -102,7 +102,7 @@ class CronJobTest < Test::Unit::TestCase
     end
 
     context "new" do
-      setup do 
+      setup do
         @args = {
           name: "Test",
           cron: "* * * * *"
@@ -209,13 +209,19 @@ class CronJobTest < Test::Unit::TestCase
       should "return previous day" do
         @job.cron = "1 2 * * *"
         time = Time.now
-        assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-02-01-00")
+
+        if time.hour >= 2
+          assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-02-01-00")
+        else
+          yesterday = Date.today - 1
+          assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), yesterday.strftime("%Y-%m-%d-02-01-00")
+        end
       end
 
     end
 
-    context "save" do 
-      setup do 
+    context "save" do
+      setup do
         @args = {
           name: "Test",
           cron: "* * * * *",
@@ -242,7 +248,7 @@ class CronJobTest < Test::Unit::TestCase
     end
 
     context "disabled/enabled" do
-      setup do 
+      setup do
         @args = {
           name: "Test",
           cron: "* * * * *",
@@ -352,7 +358,7 @@ class CronJobTest < Test::Unit::TestCase
     end
 
     context "create & find methods" do
-      setup do 
+      setup do
         @args = {
           name: "Test",
           cron: "* * * * *",
@@ -391,7 +397,7 @@ class CronJobTest < Test::Unit::TestCase
 
         Sidekiq.redis do |conn|
           conn.sadd Sidekiq::Cron::Job.jobs_key, "some_other_key"
-        end  
+        end
 
         assert_equal Sidekiq::Cron::Job.all.size, 3, "All have to return only valid 3 jobs"
       end
@@ -411,8 +417,8 @@ class CronJobTest < Test::Unit::TestCase
 
     end
 
-    context "destroy" do 
-      setup do 
+    context "destroy" do
+      setup do
         @args = {
           name: "Test",
           cron: "* * * * *",
@@ -449,13 +455,13 @@ class CronJobTest < Test::Unit::TestCase
     end
 
     context "test of enque" do
-      setup do 
+      setup do
         @args = {
           name: "Test",
           cron: "* * * * *",
           klass: "CronTestClass"
         }
-        #first time is allways 
+        #first time is allways
         #after next cron time!
         @time = Time.now + 120
       end
@@ -513,7 +519,7 @@ class CronJobTest < Test::Unit::TestCase
 
         Sidekiq.redis do |conn|
           assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 1, "Should have one enqueued job - old jobs should be deleted"
-        end   
+        end
         assert_equal Sidekiq::Queue.all.first.size, 3, "Sidekiq queue 3 jobs in queue"
       end
     end
@@ -521,7 +527,7 @@ class CronJobTest < Test::Unit::TestCase
     context "load" do
 
       context "from hash" do
-        setup do 
+        setup do
           @jobs_hash = {
             'name_of_job' => {
               'class' => 'MyClass',
@@ -539,7 +545,7 @@ class CronJobTest < Test::Unit::TestCase
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
           out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
           assert_equal out.size, 0, "should have no errors"
-          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"          
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
         end
 
         should "return errors on loaded jobs" do
@@ -549,14 +555,14 @@ class CronJobTest < Test::Unit::TestCase
           out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
           assert_equal 1, out.size, "should have 1 error"
           assert_equal ({"name_of_job"=>["'cron' -> bad cron: not a valid cronline : 'bad cron'"]}), out
-          assert_equal 1, Sidekiq::Cron::Job.all.size, "Should have only 1 job after load"          
+          assert_equal 1, Sidekiq::Cron::Job.all.size, "Should have only 1 job after load"
         end
 
         should "create new jobs and then destroy them all" do
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
           out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
           assert_equal out.size, 0, "should have no errors"
-          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"          
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
           Sidekiq::Cron::Job.destroy_all!
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs after destroy all"
         end
@@ -564,7 +570,7 @@ class CronJobTest < Test::Unit::TestCase
       end
 
       context "from array" do
-        setup do 
+        setup do
           @jobs_array = [
             {
               'name'  => 'name_of_job',
@@ -584,7 +590,7 @@ class CronJobTest < Test::Unit::TestCase
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
           out = Sidekiq::Cron::Job.load_from_array @jobs_array
           assert_equal out.size, 0, "should have 0 error"
-          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"          
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
         end
       end
     end
