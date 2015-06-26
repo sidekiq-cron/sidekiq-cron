@@ -9,7 +9,7 @@ rescue Bundler::BundlerError => e
 end
 
 require 'simplecov'
-SimpleCov.start do 
+SimpleCov.start do
   add_filter "/test/"
 
   add_group 'SidekiqCron', 'lib/'
@@ -19,7 +19,6 @@ Coveralls.wear!
 
 require "minitest/autorun"
 require 'shoulda-context'
-require 'turn'
 require "rack/test"
 require "mocha/setup"
 
@@ -45,10 +44,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'sidekiq-cron'
 
-class Test::Unit::TestCase
-end
-
-
 class CronTestClass
   include Sidekiq::Worker
 
@@ -65,4 +60,3 @@ class CronTestClassWithQueue
     puts "super croned job #{args}"
   end
 end
-
