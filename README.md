@@ -4,7 +4,7 @@ Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.png)](http://
 
 An scheduling add-on for [Sidekiq](http://sidekiq.org).
 
-Runs a thread along side Sidekiq workers to schedule jobs at specified times (using cron notation _* * * * *_ parsed by [Rufus-Scheduler](https://github.com/jmettraux/rufus-scheduler), more about [cron notation](http://www.nncron.ru/help/EN/working/cron-format.htm).
+Runs a thread along side Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` parsed by [Rufus-Scheduler](https://github.com/jmettraux/rufus-scheduler), more about [cron notation](http://www.nncron.ru/help/EN/working/cron-format.htm).
 
 Checks for new jobs to schedule every 10 seconds and doesn't schedule the same job multiple times when more than one Sidekiq worker is running.
 
@@ -20,6 +20,10 @@ Requirements
 - Redis 2.4 or greater is required.
 - Sidekiq 2.17.3 or grater is required.
 
+Change Log
+----------
+before upgrading to new version pls read:
+[Change Log](https://github.com/ondrejbartas/sidekiq-cron/raw/master/Changes.md)
 
 Installation
 ------------
