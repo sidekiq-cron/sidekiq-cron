@@ -1,4 +1,9 @@
+v 0.3.0
+-------
 
+- suport for Active Job
+- sidekiq cron web ui needs to be loaded by: require 'sidekiq/cron/web'
+- add load_from_hash! and load_from_array! which cleanup jobs before adding new ones
 
 v 0.1.1
 -------
