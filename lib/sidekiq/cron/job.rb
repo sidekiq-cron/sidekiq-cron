@@ -45,10 +45,34 @@ module Sidekiq
       def enque! time = Time.now
         @last_enqueue_time = time
 
-        Sidekiq::Client.push(@message.is_a?(String) ? Sidekiq.load_json(@message) : @message)
+        if defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
+          Sidekiq::Client.push(active_job_message)
+        else
+          Sidekiq::Client.push(sidekiq_worker_message)
+        end
 
         save
         logger.debug { "enqueued #{@name}: #{@message}" }
+      end
+
+      # siodekiq worker message
+      def sidekiq_worker_message
+        @message.is_a?(String) ? Sidekiq.load_json(@message) : @message
+      end
+
+      # active job has different structure how it is loading data from sidekiq
+      # queue, it createaswrapper arround job
+      def active_job_message
+        {
+          'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+          'queue' => @queue,
+          'args'  => [{
+            'job_class'  => @klass,
+            'job_id'     => SecureRandom.uuid,
+            'queue_name' => @queue,
+            'arguments'  => @args
+          }]
+        }
       end
 
       # load cron jobs from Hash
@@ -216,7 +240,11 @@ module Sidekiq
 
           #override queue if setted in config
           #only if message is hash - can be string (dumped JSON)
-          message_data['queue'] = args['queue'] if args['queue']
+          if args['queue']
+            @queue = message_data['queue'] = args['queue']
+          else
+            @queue = message_data['queue'] || default
+          end
 
           #dump message as json
           @message = message_data

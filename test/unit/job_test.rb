@@ -203,7 +203,99 @@ describe "Cron Job" do
         assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), yesterday.strftime("%Y-%m-%d-02-01-00")
       end
     end
+  end
 
+  describe '#sidekiq_worker_message' do
+    before do
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        queue: 'super_queue',
+        klass: 'CronTestClass',
+        args:  { foo: 'bar' }
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client' do
+      payload = {
+        "retry" => true,
+        "queue" => "super_queue",
+        "class" => "CronTestClass",
+        "args"  => [{:foo=>"bar"}]
+      }
+      assert_equal @job.sidekiq_worker_message, payload
+    end
+  end
+
+  describe '#active_job_message' do
+    before do
+      SecureRandom.stubs(:uuid).returns('XYZ')
+
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        klass: 'CronTestClass',
+        queue: 'super_queue',
+        args:  { foo: 'bar' }
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client' do
+      payload = {
+        'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'queue' => 'super_queue',
+        'args'  =>[{
+          'job_class'  => 'CronTestClass',
+          'job_id'     => 'XYZ',
+          'queue_name' => 'super_queue',
+          'arguments'  => [{foo: 'bar'}]
+        }]
+      }
+      assert_equal @job.active_job_message, payload
+    end
+  end
+
+  describe '#enque!' do
+    describe 'active job' do
+      before do
+        module ActiveJob
+          class Base; end
+        end
+        class ActiveJobTest < ActiveJob::Base; end
+
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'ActiveJobTest'
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message' do
+        @job.expects(:active_job_message)
+          .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
+
+    describe 'sidekiq worker' do
+      before do
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'CronTestClass'
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message' do
+        @job.expects(:sidekiq_worker_message)
+          .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
   end
 
   describe "save" do
