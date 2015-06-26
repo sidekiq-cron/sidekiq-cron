@@ -48,6 +48,12 @@ _Job properties_:
 }
 ```
 
+### Timing and cron
+
+Cron line is allways evaluated against UTC time. So if you are Prague (timezone +02:00) and you want job to be qneueued at 8:30 AM
+You will need to adjust cronline to `30 6 * * *`.
+
+
 #### Adding Cron job:
 ```ruby
 
@@ -117,6 +123,13 @@ array = [
 Sidekiq::Cron::Job.load_from_array array
 ```
 
+Bang methods will remove jobs that are not present in given hash/array
+updates jobs with same names and create new ones.
+```ruby
+Sidekiq::Cron::Job#load_from_hash! hash
+Sidekiq::Cron::Job#load_from_array! array
+```
+
 or from YML (same notation as Resque-scheduler)
 ```yaml
 #config/schedule.yml
@@ -130,7 +143,7 @@ second_job:
   cron: "*/30 * * * *"
   class: "HardWorker"
   queue: hard_worker_long
-  args: 
+  args:
     hard: "stuff"
 ```
 
