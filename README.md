@@ -23,7 +23,7 @@ Requirements
 Change Log
 ----------
 before upgrading to new version pls read:
-[Change Log](https://github.com/ondrejbartas/sidekiq-cron/raw/master/Changes.md)
+[Change Log](https://github.com/ondrejbartas/sidekiq-cron/blob/master/Changes.md)
 
 Installation
 ------------
