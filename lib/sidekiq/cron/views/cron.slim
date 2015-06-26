@@ -10,7 +10,7 @@ header.row
       th = t('Cron')
       th = t('Last enque')
       th = t('Arguments')
-      th width="253px" 
+      th width="253px"
         = t('Actions')
 
 
@@ -31,16 +31,16 @@ header.row
             = job.message
         td[style="#{style}"]
           -if job.status == 'enabled'
-            form action="#{root_path}cron/#{job.name}/enque" method="post"
+            form action="#{root_path}cron/#{URI::encode job.name}/enque" method="post"
               input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueNow')}"
-            form action="#{root_path}cron/#{job.name}/disable" method="post"
+            form action="#{root_path}cron/#{URI::encode job.name}/disable" method="post"
               input.btn.btn-small.pull-left type="submit" name="disable" value="#{t('Disable')}"
-          -else 
-            form action="#{root_path}cron/#{job.name}/enque" method="post"
+          -else
+            form action="#{root_path}cron/#{URI::encode job.name}/enque" method="post"
               input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueNow')}"
-            form action="#{root_path}cron/#{job.name}/enable" method="post"
+            form action="#{root_path}cron/#{URI::encode job.name}/enable" method="post"
               input.btn.btn-small.pull-left type="submit" name="enable" value="#{t('Enable')}"
-            form action="#{root_path}cron/#{job.name}/delete" method="post"
+            form action="#{root_path}cron/#{URI::encode job.name}/delete" method="post"
               input.btn.btn-danger.btn-small type="submit" name="delete" value="#{t('Delete')}" data-confirm="#{t('AreYouSureDeleteCronJob', :job => job.name)}"
 
 - else
