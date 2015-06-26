@@ -240,7 +240,11 @@ module Sidekiq
 
           #override queue if setted in config
           #only if message is hash - can be string (dumped JSON)
-          message_data['queue'] = args['queue'] if args['queue']
+          if args['queue']
+            @queue = message_data['queue'] = args['queue']
+          else
+            @queue = message_data['queue'] || default
+          end
 
           #dump message as json
           @message = message_data
