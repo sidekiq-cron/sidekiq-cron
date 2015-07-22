@@ -59,6 +59,14 @@ describe "Cron Job" do
     it "have destroy method" do
       assert @job.respond_to?(:destroy)
     end
+    
+    it "have save method" do
+      assert @job.respond_to?(:enabled?)
+    end
+    
+    it "have save method" do
+      assert @job.respond_to?(:disabled?)
+    end
 
     it 'have sort_name - used for sorting enabled disbaled jobs on frontend' do
       job = Sidekiq::Cron::Job.new(name: "TestName")
@@ -149,7 +157,6 @@ describe "Cron Job" do
       job = Sidekiq::Cron::Job.new('klass' => 'UnknownCronClass')
       assert_equal job.message, {"class"=>"UnknownCronClass", "args"=>[], "queue"=>"default"}
     end
-
     it "be initialized with default attributes" do
       job = Sidekiq::Cron::Job.new('klass' => 'CronTestClass')
       assert_equal job.message, {"retry"=>true, "queue"=>"default", "class"=>"CronTestClass", "args"=>[]}
