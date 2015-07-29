@@ -270,6 +270,22 @@ When you start the Sidekiq process, it starts one thread with `Sidekiq::Poller` 
 Sidekiq-Cron adds itself into this start procedure and starts another thread with `Sidekiq::Cron::Poller` which checks all enabled Sidekiq cron jobs every 10 seconds, if they should be added to queue (their cronline matches time of check).
 
 
+## Thanks to
+* [@7korobi](https://github.com/7korobi)
+* [@antulik](https://github.com/antulik)
+* [@felixbuenemann](https://github.com/felixbuenemann)
+* [@gstark](https://github.com/gstark)
+* [@RajRoR](https://github.com/RajRoR)
+* [@romeuhcf](https://github.com/romeuhcf)
+* [@siruguri](https://github.com/siruguri)
+* [@Soliah](https://github.com/Soliah)
+* [@stephankaag](https://github.com/stephankaag)
+* [@sue445](https://github.com/sue445)
+* [@sylg](https://github.com/sylg)
+* [@tmeinlschmidt](https://github.com/tmeinlschmidt)
+* [@zerobearing2](https://github.com/zerobearing2)
+
+
 ## Contributing to sidekiq-cron
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
