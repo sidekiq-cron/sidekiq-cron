@@ -32,15 +32,20 @@ header.row
         td[style="#{style}"]
           -if job.status == 'enabled'
             form action="#{root_path}cron/#{CGI.escape(job.name).gsub('+', '%20')}/enque" method="post"
+              = csrf_tag
               input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueNow')}"
             form action="#{root_path}cron/#{CGI.escape(job.name).gsub('+', '%20')}/disable" method="post"
+              = csrf_tag
               input.btn.btn-small.pull-left type="submit" name="disable" value="#{t('Disable')}"
           -else
             form action="#{root_path}cron/#{CGI.escape(job.name).gsub('+', '%20')}/enque" method="post"
+              = csrf_tag
               input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueNow')}"
             form action="#{root_path}cron/#{CGI.escape(job.name).gsub('+', '%20')}/enable" method="post"
+              = csrf_tag
               input.btn.btn-small.pull-left type="submit" name="enable" value="#{t('Enable')}"
             form action="#{root_path}cron/#{CGI.escape(job.name).gsub('+', '%20')}/delete" method="post"
+              = csrf_tag
               input.btn.btn-danger.btn-small type="submit" name="delete" value="#{t('Delete')}" data-confirm="#{t('AreYouSureDeleteCronJob', :job => job.name)}"
 
 - else
