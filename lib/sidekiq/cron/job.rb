@@ -45,7 +45,7 @@ module Sidekiq
       def enque! time = Time.now
         @last_enqueue_time = time
 
-        if defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
+        if @active_job or defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
           Sidekiq::Client.push(active_job_message)
         else
           Sidekiq::Client.push(sidekiq_worker_message)
@@ -215,6 +215,8 @@ module Sidekiq
         #get right arguments for job
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
 
+        @active_job = args["active_job"] || false
+
         if args["message"]
           @message = args["message"]
           message_data = Sidekiq.load_json(@message) || {}
@@ -297,6 +299,7 @@ module Sidekiq
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
+          active_job: @active_job,
           last_enqueue_time: @last_enqueue_time,
         }
       end
