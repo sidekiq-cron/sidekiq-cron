@@ -267,11 +267,11 @@ module Sidekiq
       end
       
       def enabled?
-        return @status == "enabled"
+        @status == "enabled"
       end
       
       def disabled?
-        return !enabled?
+        !enabled?
       end
       
 
