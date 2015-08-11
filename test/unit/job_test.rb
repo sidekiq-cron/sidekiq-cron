@@ -157,6 +157,7 @@ describe "Cron Job" do
       job = Sidekiq::Cron::Job.new('klass' => 'UnknownCronClass')
       assert_equal job.message, {"class"=>"UnknownCronClass", "args"=>[], "queue"=>"default"}
     end
+    
     it "be initialized with default attributes" do
       job = Sidekiq::Cron::Job.new('klass' => 'CronTestClass')
       assert_equal job.message, {"retry"=>true, "queue"=>"default", "class"=>"CronTestClass", "args"=>[]}
