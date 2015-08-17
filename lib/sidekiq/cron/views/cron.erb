@@ -35,19 +35,24 @@
           <td style="<%= style %>">
             <% if job.status == 'enabled' %>
               <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/enque" method="post">
+                <%= csrf_tag %>
                 <input class='btn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>"/>
               </form>
               <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/disable" method="post">
+                <%= csrf_tag %>
                 <input class='btn btn-xs pull-left' type="submit" name="disable" value="<%= t('Disable') %>"/>
               </form>
             <% else %>
               <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/enque" method="post">
+                <%= csrf_tag %>
                 <input class='btn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>"/>
               </form>
               <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/enable" method="post">
+                <%= csrf_tag %>
                 <input class='btn btn-xs pull-left' type="submit" name="enable" value="<%= t('Enable') %>"/>
               </form>
               <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/delete" method="post">
+                <%= csrf_tag %>
                 <input class='btn btn-xs btn-danger pull-left' type="submit" name="delete" value="<%= t('Delete') %>" data-confirm="<%= t('AreYouSureDeleteCronJob', :job => job.name) %>"/>
               </form>
             <% end %>
