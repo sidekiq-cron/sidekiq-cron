@@ -217,6 +217,8 @@ module Sidekiq
 
         if args["message"]
           @message = args["message"]
+          message_data = Sidekiq.load_json(@message) || {}
+          @queue = message_data['queue'] || default
         elsif @klass
           message_data = {
             "class" => @klass.to_s,
