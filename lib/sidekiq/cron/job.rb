@@ -275,8 +275,6 @@ module Sidekiq
       def disabled?
         !enabled?
       end
-      
-
 
       def status_from_redis
         out = "enabled"
