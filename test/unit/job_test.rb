@@ -53,6 +53,7 @@ describe "Cron Job" do
     it "have save method" do
       assert @job.respond_to?(:save)
     end
+
     it "have valid? method" do
       assert @job.respond_to?("valid?".to_sym)
     end
@@ -60,11 +61,11 @@ describe "Cron Job" do
       assert @job.respond_to?(:destroy)
     end
     
-    it "have save method" do
+    it "have enabled? method" do
       assert @job.respond_to?(:enabled?)
     end
     
-    it "have save method" do
+    it "have disabled? method" do
       assert @job.respond_to?(:disabled?)
     end
 
@@ -364,14 +365,18 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args.merge(status: "disabled"))
       job = Sidekiq::Cron::Job.find(@args)
       assert_equal job.status, "disabled"
+      assert_equal job.disabled?, true
+      assert_equal job.enabled?, false
     end
 
     it "be created with status enabled and disable it afterwards" do
       Sidekiq::Cron::Job.create(@args)
       job = Sidekiq::Cron::Job.find(@args)
       assert_equal job.status, "enabled"
+      assert_equal job.enabled?, true
       job.disable!
       assert_equal job.status, "disabled", "directly after call"
+      assert_equal job.disabled?, true
       job = Sidekiq::Cron::Job.find(@args)
       assert_equal job.status, "disabled", "after find"
     end
