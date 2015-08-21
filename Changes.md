@@ -1,3 +1,9 @@
+v 0.3.1
+-------
+
+- add CSRF tags to forms so it will work with sidekiq >= 3.4.2
+- remove titl dependency
+
 v 0.3.0
 -------
 
