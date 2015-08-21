@@ -280,6 +280,78 @@ describe "Cron Job" do
       end
     end
 
+    describe 'active job via configuration (bool: true)' do
+      before do
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'ActiveJobTest',
+          active_job: true
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message' do
+        @job.expects(:active_job_message)
+          .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
+
+    describe 'active job via configuration (string: true)' do
+      before do
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'ActiveJobTest',
+          active_job: "true"
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message' do
+        @job.expects(:active_job_message)
+          .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
+
+    describe 'active job via configuration (string: yes)' do
+      before do
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'ActiveJobTest',
+          active_job: "yes"
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message' do
+        @job.expects(:active_job_message)
+          .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
+
+    describe 'active job via configuration (number: 1)' do
+      before do
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'ActiveJobTest',
+          active_job: 1
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message' do
+        @job.expects(:active_job_message)
+          .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
+
     describe 'sidekiq worker' do
       before do
         @args = {

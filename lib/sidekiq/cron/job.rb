@@ -215,7 +215,7 @@ module Sidekiq
         #get right arguments for job
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
 
-        @active_job = args["active_job"] || false
+        @active_job = args["active_job"] == true || (args["active_job"] =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
 
         if args["message"]
           @message = args["message"]
