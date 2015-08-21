@@ -57,6 +57,7 @@ describe "Cron Job" do
     it "have valid? method" do
       assert @job.respond_to?("valid?".to_sym)
     end
+
     it "have destroy method" do
       assert @job.respond_to?(:destroy)
     end
