@@ -24,7 +24,6 @@ require "mocha/setup"
 
 #SIDEKIQ Require - need to have sidekiq running!
 require 'celluloid/autostart'
-require 'tilt'
 require 'sidekiq'
 require 'sidekiq/util'
 require 'sidekiq/web'
