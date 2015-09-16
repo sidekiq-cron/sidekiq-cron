@@ -116,7 +116,7 @@ describe "Cron Job" do
     end
 
     it "have to_hash method" do
-      [:name,:klass,:cron,:args,:message,:status].each do |key|
+      [:name,:klass,:cron,:description,:args,:message,:status].each do |key|
         assert @job.to_hash.has_key?(key), "to_hash must have key: #{key}"
       end
     end
@@ -244,9 +244,10 @@ describe "Cron Job" do
 
     it 'should return valid payload for Sidekiq::Client' do
       payload = {
-        'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-        'queue' => 'super_queue',
-        'args'  =>[{
+        'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'queue'       => 'super_queue',
+        'description' => nil,
+        'args'        => [{
           'job_class'  => 'CronTestClass',
           'job_id'     => 'XYZ',
           'queue_name' => 'super_queue',
