@@ -231,11 +231,23 @@ describe "Cron Job" do
   describe '#active_job_message' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
+      module ActiveJob
+        class Base
+          def self.queue_name_prefix
+            @@queue_name_prefix
+          end
+          def self.queue_name_prefix=(queue_name_prefix)
+            @@queue_name_prefix = queue_name_prefix
+          end
+        end
+      end
+      class ActiveJobTest < ActiveJob::Base; end
+      ActiveJob::Base.queue_name_prefix = ""
 
       @args = {
         name:  'Test',
         cron:  '* * * * *',
-        klass: 'CronTestClass',
+        klass: 'ActiveJobTest',
         queue: 'super_queue',
         args:  { foo: 'bar' }
       }
@@ -247,7 +259,7 @@ describe "Cron Job" do
         'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
         'queue' => 'super_queue',
         'args'  =>[{
-          'job_class'  => 'CronTestClass',
+          'job_class'  => 'ActiveJobTest',
           'job_id'     => 'XYZ',
           'queue_name' => 'super_queue',
           'arguments'  => [{foo: 'bar'}]
@@ -261,9 +273,17 @@ describe "Cron Job" do
     describe 'active job' do
       before do
         module ActiveJob
-          class Base; end
+          class Base
+            def self.queue_name_prefix
+              @@queue_name_prefix
+            end
+            def self.queue_name_prefix=(queue_name_prefix)
+              @@queue_name_prefix = queue_name_prefix
+            end
+          end
         end
         class ActiveJobTest < ActiveJob::Base; end
+        ActiveJob::Base.queue_name_prefix = ""
 
         @args = {
           name:  'Test',
@@ -276,6 +296,37 @@ describe "Cron Job" do
       it 'pushes to queue active jobs message' do
         @job.expects(:active_job_message)
           .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
+
+    describe 'active job with queue_name_prefix' do
+      before do
+        module ActiveJob
+          class Base
+            def self.queue_name_prefix
+              @@queue_name_prefix
+            end
+            def self.queue_name_prefix=(queue_name_prefix)
+              @@queue_name_prefix = queue_name_prefix
+            end
+          end
+        end
+        class ActiveJobTest < ActiveJob::Base; end
+        ActiveJob::Base.queue_name_prefix = "prefix"
+
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'ActiveJobTest',
+          queue: 'cron'
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message with queue_name_prefix' do
+        @job.expects(:active_job_message)
+          .returns('class' => 'Test', 'args' => [], 'queue' => 'prefix_cron')
         @job.enque!
       end
     end
@@ -304,7 +355,7 @@ describe "Cron Job" do
           name:  'Test',
           cron:  '* * * * *',
           klass: 'ActiveJobTest',
-          active_job: "true"
+          active_job: 'true'
         }
         @job = Sidekiq::Cron::Job.new(@args)
       end
@@ -322,7 +373,7 @@ describe "Cron Job" do
           name:  'Test',
           cron:  '* * * * *',
           klass: 'ActiveJobTest',
-          active_job: "yes"
+          active_job: 'yes'
         }
         @job = Sidekiq::Cron::Job.new(@args)
       end
@@ -348,6 +399,26 @@ describe "Cron Job" do
       it 'pushes to queue active jobs message' do
         @job.expects(:active_job_message)
           .returns('class' => 'Test', 'args' => [])
+        @job.enque!
+      end
+    end
+
+    describe 'active job via configuration with queue_name_prefix option' do
+      before do
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'ActiveJobTest',
+          queue: 'cron',
+          active_job: true,
+          queue_name_prefix: 'prefix'
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue active jobs message with queue_name_prefix' do
+        @job.expects(:active_job_message)
+          .returns('class' => 'Test', 'args' => [], 'queue' => 'prefix_cron')
         @job.enque!
       end
     end

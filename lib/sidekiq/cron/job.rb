@@ -63,13 +63,21 @@ module Sidekiq
       # active job has different structure how it is loading data from sidekiq
       # queue, it createaswrapper arround job
       def active_job_message
+        if !"#{@active_job_queue_name_prefix}".empty?
+          queue_name = "#{@active_job_queue_name_prefix}_#{@queue}"
+        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !"#{ActiveJob::Base.queue_name_prefix}".empty?
+          queue_name = "#{ActiveJob::Base.queue_name_prefix}_#{@queue}"
+        else
+          queue_name = @queue
+        end
+
         {
           'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
           'queue' => @queue,
           'args'  => [{
             'job_class'  => @klass,
             'job_id'     => SecureRandom.uuid,
-            'queue_name' => @queue,
+            'queue_name' => queue_name,
             'arguments'  => @args
           }]
         }
@@ -216,6 +224,7 @@ module Sidekiq
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
 
         @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
+        @active_job_queue_name_prefix = args["queue_name_prefix"]
 
         if args["message"]
           @message = args["message"]
@@ -300,6 +309,7 @@ module Sidekiq
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
           active_job: @active_job,
+          queue_name_prefix: @active_job_queue_name_prefix,
           last_enqueue_time: @last_enqueue_time,
         }
       end
