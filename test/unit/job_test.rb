@@ -269,6 +269,48 @@ describe "Cron Job" do
     end
   end
 
+  describe '#active_job_message with queue_name_prefix' do
+    before do
+      SecureRandom.stubs(:uuid).returns('XYZ')
+      module ActiveJob
+        class Base
+          def self.queue_name_prefix
+            @@queue_name_prefix
+          end
+          def self.queue_name_prefix=(queue_name_prefix)
+            @@queue_name_prefix = queue_name_prefix
+          end
+        end
+      end
+      class ActiveJobTest < ActiveJob::Base; end
+      ActiveJob::Base.queue_name_prefix = "prefix"
+
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        klass: 'ActiveJobTest',
+        queue: 'super_queue',
+        queue_name_prefix: 'prefix',
+        args:  { foo: 'bar' }
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client' do
+      payload = {
+        'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'queue' => 'prefix_super_queue',
+        'args'  =>[{
+          'job_class'  => 'ActiveJobTest',
+          'job_id'     => 'XYZ',
+          'queue_name' => 'prefix_super_queue',
+          'arguments'  => [{foo: 'bar'}]
+        }]
+      }
+      assert_equal @job.active_job_message, payload
+    end
+  end
+
   describe '#enque!' do
     describe 'active job' do
       before do

@@ -73,7 +73,7 @@ module Sidekiq
 
         {
           'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-          'queue' => @queue,
+          'queue' => queue_name,
           'args'  => [{
             'job_class'  => @klass,
             'job_id'     => SecureRandom.uuid,
