@@ -48,7 +48,7 @@ module Sidekiq
       private
 
       def poll_interval
-        Sidekiq.options[:poll_interval] || POLL_INTERVAL
+        Sidekiq.options[:poll_interval_average] || Sidekiq.options[:poll_interval] || POLL_INTERVAL
       end
 
       def add_jitter
