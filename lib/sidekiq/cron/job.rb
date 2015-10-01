@@ -409,7 +409,7 @@ module Sidekiq
       end
 
       def formated_last_time now = Time.now
-        last_time(now).getutc
+        last_time(now).getutc.iso8601
       end
 
       def self.exists? name
