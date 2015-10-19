@@ -271,6 +271,14 @@ module Sidekiq
         @status = "enabled"
         save
       end
+      
+      def enabled?
+        @status == "enabled"
+      end
+      
+      def disabled?
+        !enabled?
+      end
 
       def status_from_redis
         out = "enabled"
