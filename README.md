@@ -56,7 +56,7 @@ _Job properties_:
 
 ### Time, cron and sidekiq-cron
 
-Cron line is always evaluated against UTC time. So if you are in Prague (timezone +02:00) and you want a job to be enqueued at 8:30 AM, you will need to adjust cronline to `30 6 * * *`.
+sidekiq-cron uses [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) to parse the cronline. By default, the timezone this is evaluated against will be the system time of the machine you are running on. If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline, like this `'0 22 * * 1-5 America/Chicago'`. See [rufus-scheduler documentation](https://github.com/jmettraux/rufus-scheduler#a-note-about-timezones) for more information.
 
 ### What objects/classes can be scheduled
 #### Sidekiq Worker
