@@ -607,6 +607,11 @@ describe "Cron Job" do
       refute Sidekiq::Cron::Job.new(@args).should_enque? @time + 235
     end
 
+    it "should not enqueue jobs that are past" do
+      assert Sidekiq::Cron::Job.new(@args.merge(cron: "*/1 * * * *")).should_enque? @time
+      refute Sidekiq::Cron::Job.new(@args.merge(cron: "0 1,13 * * *")).should_enque? @time
+    end
+
     it "remove old enque times + should be enqeued" do
       job = Sidekiq::Cron::Job.new(@args)
       assert_nil job.last_enqueue_time
