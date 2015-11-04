@@ -72,9 +72,10 @@ module Sidekiq
         end
 
         {
-          'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-          'queue' => queue_name,
-          'args'  => [{
+          'class'        => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+          'queue'        => queue_name,
+          'description'  => @description,
+          'args'         => [{
             'job_class'  => @klass,
             'job_id'     => SecureRandom.uuid,
             'queue_name' => queue_name,
@@ -87,9 +88,10 @@ module Sidekiq
       # input structure should look like:
       # {
       #   'name_of_job' => {
-      #     'class' => 'MyClass',
-      #     'cron'  => '1 * * * *',
-      #     'args'  => '(OPTIONAL) [Array or Hash]'
+      #     'class'       => 'MyClass',
+      #     'cron'        => '1 * * * *',
+      #     'args'        => '(OPTIONAL) [Array or Hash]',
+      #     'description' => '(OPTIONAL) Description of job'
       #   },
       #   'My super iber cool job' => {
       #     'class' => 'SecondClass',
@@ -116,10 +118,11 @@ module Sidekiq
       # input structure should look like:
       # [
       #   {
-      #     'name'  => 'name_of_job',
-      #     'class' => 'MyClass',
-      #     'cron'  => '1 * * * *',
-      #     'args'  => '(OPTIONAL) [Array or Hash]'
+      #     'name'        => 'name_of_job',
+      #     'class'       => 'MyClass',
+      #     'cron'        => '1 * * * *',
+      #     'args'        => '(OPTIONAL) [Array or Hash]',
+      #     'description' => '(OPTIONAL) Description of job'
       #   },
       #   {
       #     'name'  => 'Cool Job for Second Class',
@@ -198,7 +201,7 @@ module Sidekiq
         end
       end
 
-      attr_accessor :name, :cron, :klass, :args, :message
+      attr_accessor :name, :cron, :description, :klass, :args, :message
       attr_reader   :last_enqueue_time
 
       def initialize input_args = {}
@@ -206,6 +209,7 @@ module Sidekiq
 
         @name = args["name"]
         @cron = args["cron"]
+        @description = args["description"] if args["description"]
 
         #get class from klass or class
         @klass = args["klass"] || args["class"]
@@ -279,6 +283,14 @@ module Sidekiq
         save
       end
 
+      def enabled?
+        @status == "enabled"
+      end
+
+      def disabled?
+        !enabled?
+      end
+
       def status_from_redis
         out = "enabled"
         if exists?
@@ -305,6 +317,7 @@ module Sidekiq
           name: @name,
           klass: @klass,
           cron: @cron,
+          description: @description,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
@@ -422,7 +435,7 @@ module Sidekiq
       end
 
       def formated_last_time now = Time.now
-        last_time(now).getutc
+        last_time(now).getutc.iso8601
       end
 
       def self.exists? name

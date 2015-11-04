@@ -53,11 +53,21 @@ describe "Cron Job" do
     it "have save method" do
       assert @job.respond_to?(:save)
     end
+
     it "have valid? method" do
       assert @job.respond_to?("valid?".to_sym)
     end
+
     it "have destroy method" do
       assert @job.respond_to?(:destroy)
+    end
+
+    it "have enabled? method" do
+      assert @job.respond_to?(:enabled?)
+    end
+
+    it "have disabled? method" do
+      assert @job.respond_to?(:disabled?)
     end
 
     it 'have sort_name - used for sorting enabled disbaled jobs on frontend' do
@@ -116,7 +126,7 @@ describe "Cron Job" do
     end
 
     it "have to_hash method" do
-      [:name,:klass,:cron,:args,:message,:status].each do |key|
+      [:name,:klass,:cron,:description,:args,:message,:status].each do |key|
         assert @job.to_hash.has_key?(key), "to_hash must have key: #{key}"
       end
     end
@@ -242,13 +252,14 @@ describe "Cron Job" do
         end
       end
       class ActiveJobTest < ActiveJob::Base; end
-      ActiveJob::Base.queue_name_prefix = ""
+      ActiveJob::Base.queue_name_prefix = ''
 
       @args = {
         name:  'Test',
         cron:  '* * * * *',
         klass: 'ActiveJobTest',
         queue: 'super_queue',
+        description: nil,
         args:  { foo: 'bar' }
       }
       @job = Sidekiq::Cron::Job.new(@args)
@@ -256,9 +267,10 @@ describe "Cron Job" do
 
     it 'should return valid payload for Sidekiq::Client' do
       payload = {
-        'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-        'queue' => 'super_queue',
-        'args'  =>[{
+        'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'queue'       => 'super_queue',
+        'description' => nil,
+        'args'        => [{
           'job_class'  => 'ActiveJobTest',
           'job_id'     => 'XYZ',
           'queue_name' => 'super_queue',
@@ -300,6 +312,7 @@ describe "Cron Job" do
       payload = {
         'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
         'queue' => 'prefix_super_queue',
+        'description' => nil,
         'args'  =>[{
           'job_class'  => 'ActiveJobTest',
           'job_id'     => 'XYZ',
@@ -541,14 +554,18 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args.merge(status: "disabled"))
       job = Sidekiq::Cron::Job.find(@args)
       assert_equal job.status, "disabled"
+      assert_equal job.disabled?, true
+      assert_equal job.enabled?, false
     end
 
     it "be created with status enabled and disable it afterwards" do
       Sidekiq::Cron::Job.create(@args)
       job = Sidekiq::Cron::Job.find(@args)
       assert_equal job.status, "enabled"
+      assert_equal job.enabled?, true
       job.disable!
       assert_equal job.status, "disabled", "directly after call"
+      assert_equal job.disabled?, true
       job = Sidekiq::Cron::Job.find(@args)
       assert_equal job.status, "disabled", "after find"
     end
