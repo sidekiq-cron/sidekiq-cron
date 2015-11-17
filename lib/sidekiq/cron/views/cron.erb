@@ -11,7 +11,6 @@
       <th><%= t('Name') %></th>
       <th><%= t('Cron') %></th>
       <th><%= t('Last enque') %></th>
-      <th><%= t('Arguments') %></th>
       <th width="280"><%= t('Actions')%></th>
     </thead>
 
@@ -20,10 +19,9 @@
         <% style = "#{job.status == 'disabled' ? "background: #ecc": ""}" %>
         <tr>
           <td style="<%= style %>"><%= t job.status %></td>
-          <td style="<%= style %>"><%= job.name %></td>
-          <td style="<%= style %>"><b><%= job.cron.gsub(" ", "&nbsp;") %></b></td>
-          <td style="<%= style %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>
           <td style="<%= style %>">
+            <%= job.name %>
+            <hr style="margin:3px;border:0;border-top: 1px solid #eee;">
             <% if job.message and job.message.to_s.size > 100 %>
               <button data-toggle="collapse" data-target=".worker_<%= index %>" class="btn btn-xs"><%= t('ShowAll')%></button>
               <div class="toggle worker_<%= index %>" style="display: inline;"><%= job.message[0..100] + "... " %></div>
@@ -32,6 +30,8 @@
               <%= job.message %>
             <% end %>
           </td>
+          <td style="<%= style %>"><b><%= job.cron.gsub(" ", "&nbsp;") %></b></td>
+          <td style="<%= style %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>
           <td style="<%= style %>">
             <% if job.status == 'enabled' %>
               <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/enque" method="post">
