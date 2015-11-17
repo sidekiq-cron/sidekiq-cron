@@ -23,7 +23,6 @@ require "rack/test"
 require "mocha/setup"
 
 #SIDEKIQ Require - need to have sidekiq running!
-require 'celluloid/autostart'
 require 'sidekiq'
 require 'sidekiq/util'
 require 'sidekiq/web'
