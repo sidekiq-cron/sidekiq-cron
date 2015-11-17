@@ -18,7 +18,7 @@ Requirements
 -----------------
 
 - Redis 2.4 or greater is required.
-- Sidekiq 2.17.3 or grater is required.
+- Sidekiq 4 or grater is required (for Sidekiq <4 use version sidekiq-cron 0.3.1)
 
 Change Log
 ----------
@@ -47,7 +47,7 @@ _Job properties_:
 {
  'name'  => 'name_of_job', #must be uniq!
  'cron'  => '1 * * * *',
- 'klass' => 'MyClass',
+ 'class' => 'MyClass',
  #OPTIONAL
  'queue' => 'name of queue',
  'args'  => '[Array or Hash] of arguments which will be passed to perform method',
@@ -94,14 +94,14 @@ class HardWorker
   end
 end
 
-Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', klass: 'HardWorker')
+Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker')
 # => true
 ```
 
 `create` method will return only true/false if job was saved or not.
 
 ```ruby
-job = Sidekiq::Cron::Job.new(name: 'Hard worker - every 5min', cron: '*/5 * * * *', klass: 'HardWorker')
+job = Sidekiq::Cron::Job.new(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker')
 
 if job.valid?
   job.save
