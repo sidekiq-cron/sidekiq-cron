@@ -11,7 +11,7 @@
       <th><%= t('Name') %></th>
       <th><%= t('Cron') %></th>
       <th><%= t('Last enque') %></th>
-      <th width="280"><%= t('Actions')%></th>
+      <th width="180"><%= t('Actions')%></th>
     </thead>
 
     <tbody>
@@ -20,8 +20,9 @@
         <tr>
           <td style="<%= style %>"><%= t job.status %></td>
           <td style="<%= style %>">
-            <%= job.name %>
-            <hr style="margin:3px;border:0;border-top: 1px solid #eee;">
+            <b><%= job.name %></b>
+            <hr style="margin:3px;border:0;">
+            <small>
             <% if job.message and job.message.to_s.size > 100 %>
               <button data-toggle="collapse" data-target=".worker_<%= index %>" class="btn btn-xs"><%= t('ShowAll')%></button>
               <div class="toggle worker_<%= index %>" style="display: inline;"><%= job.message[0..100] + "... " %></div>
@@ -29,6 +30,7 @@
             <% else %>
               <%= job.message %>
             <% end %>
+            </small>
           </td>
           <td style="<%= style %>"><b><%= job.cron.gsub(" ", "&nbsp;") %></b></td>
           <td style="<%= style %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>

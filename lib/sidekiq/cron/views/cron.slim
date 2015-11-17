@@ -9,7 +9,7 @@ header.row
       th = t('Name')
       th = t('Cron')
       th = t('Last enque')
-      th width="253px"
+      th width="180px"
         = t('Actions')
 
 
@@ -18,14 +18,15 @@ header.row
       tr
         td[style="#{style}"]= job.status
         td[style="#{style}"]
-          | job.name
-          hr style="margin:3px;border:0;border-top: 1px solid #eee;"
-          - if job.message and job.message.to_s.size > 100
-            button data-toggle="collapse" data-target=".worker_#{index}" class="btn btn-mini" = t('ShowAll')
-            .toggle[class="worker_#{index}" style="display: inline;"]= job.message[0..100] + "... "
-            .toggle[class="worker_#{index}" style="display: none;"]= job.message
-          - else
-            = job.message
+          b job.name
+          hr style="margin:3px;border:0;"
+          small
+            - if job.message and job.message.to_s.size > 100
+              button data-toggle="collapse" data-target=".worker_#{index}" class="btn btn-mini" = t('ShowAll')
+              .toggle[class="worker_#{index}" style="display: inline;"]= job.message[0..100] + "... "
+              .toggle[class="worker_#{index}" style="display: none;"]= job.message
+            - else
+              = job.message
 
         td[style="#{style}"]
           b == job.cron.gsub(" ", "&nbsp;")
