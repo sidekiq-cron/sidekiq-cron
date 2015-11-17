@@ -1,3 +1,9 @@
+v 0.4.0
+-------
+
+- enable to work with sidekiq >= 4.0.0
+- fix readme
+
 v 0.3.1
 -------
 
