@@ -24,12 +24,7 @@ describe 'Cron Poller' do
     }
     @args2 = @args.merge(name: 'with_queue', klass: 'CronTestClassWithQueue', cron: "*/10 * * * *")
 
-    Celluloid.boot
     @poller = Sidekiq::Cron::Poller.new
-  end
-
-  after do
-    Celluloid.shutdown
   end
 
   it 'not enqueue any job - new jobs' do
@@ -40,7 +35,7 @@ describe 'Cron Poller' do
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 
-    @poller.poll
+    @poller.enqueue
 
     Sidekiq.redis do |conn|
       assert_equal 0, conn.llen("queue:default")
@@ -50,7 +45,7 @@ describe 'Cron Poller' do
     #30 seconds after!
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 5, 30)
     Time.stubs(:now).returns(enqueued_time)
-      @poller.poll
+      @poller.enqueue
 
       Sidekiq.redis do |conn|
         assert_equal 0, conn.llen("queue:default")
@@ -66,7 +61,7 @@ describe 'Cron Poller' do
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 
-    @poller.poll
+    @poller.enqueue
 
     Sidekiq.redis do |conn|
       assert_equal 0, conn.llen("queue:default")
@@ -75,7 +70,7 @@ describe 'Cron Poller' do
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 6, 1)
     Time.stubs(:now).returns(enqueued_time)
-    @poller.poll
+    @poller.enqueue
 
     Sidekiq.redis do |conn|
       assert_equal 1, conn.llen("queue:default")
@@ -91,7 +86,7 @@ describe 'Cron Poller' do
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 
-    @poller.poll
+    @poller.enqueue
 
     Sidekiq.redis do |conn|
       assert_equal 0, conn.llen("queue:default")
@@ -100,7 +95,7 @@ describe 'Cron Poller' do
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 10, 5)
     Time.stubs(:now).returns(enqueued_time)
-    @poller.poll
+    @poller.enqueue
 
     Sidekiq.redis do |conn|
       assert_equal 1, conn.llen("queue:default")
@@ -116,7 +111,7 @@ describe 'Cron Poller' do
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 
-    @poller.poll
+    @poller.enqueue
 
     Sidekiq.redis do |conn|
       assert_equal 0, conn.llen("queue:default")
@@ -125,7 +120,7 @@ describe 'Cron Poller' do
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 1)
     Time.stubs(:now).returns(enqueued_time)
-    @poller.poll false
+    @poller.enqueue
     Sidekiq.redis do |conn|
       assert_equal 1, conn.llen("queue:default")
       assert_equal 1, conn.llen("queue:super")
@@ -133,7 +128,7 @@ describe 'Cron Poller' do
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 2)
     Time.stubs(:now).returns(enqueued_time)
-    @poller.poll false
+    @poller.enqueue
     Sidekiq.redis do |conn|
       assert_equal 1, conn.llen("queue:default")
       assert_equal 1, conn.llen("queue:super")
@@ -141,7 +136,7 @@ describe 'Cron Poller' do
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 20)
     Time.stubs(:now).returns(enqueued_time)
-    @poller.poll false
+    @poller.enqueue
     Sidekiq.redis do |conn|
       assert_equal 1, conn.llen("queue:default")
       assert_equal 1, conn.llen("queue:super")
@@ -149,7 +144,7 @@ describe 'Cron Poller' do
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 50)
     Time.stubs(:now).returns(enqueued_time)
-    @poller.poll false
+    @poller.enqueue
     Sidekiq.redis do |conn|
       assert_equal 1, conn.llen("queue:default")
       assert_equal 1, conn.llen("queue:super")

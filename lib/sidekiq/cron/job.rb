@@ -1,6 +1,5 @@
 require 'sidekiq'
 require 'sidekiq/util'
-require 'sidekiq/actor'
 require 'rufus-scheduler'
 
 module Sidekiq
@@ -271,11 +270,11 @@ module Sidekiq
         @status = "enabled"
         save
       end
-      
+
       def enabled?
         @status == "enabled"
       end
-      
+
       def disabled?
         !enabled?
       end

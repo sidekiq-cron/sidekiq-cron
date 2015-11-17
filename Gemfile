@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'sidekiq', '>= 2.17.3'
+gem 'sidekiq', '>= 4.0.0.pre2'
 gem 'rufus-scheduler', '>= 2.0.24'
 
 group :development do
