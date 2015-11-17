@@ -50,7 +50,9 @@ _Job properties_:
  'klass' => 'MyClass',
  #OPTIONAL
  'queue' => 'name of queue',
- 'args'  => '[Array or Hash] of arguments which will be passed to perform method'
+ 'args'  => '[Array or Hash] of arguments which will be passed to perform method',
+ 'active_job' => true,  # enqueue job through rails 4.2+ active job interface
+ 'queue_name_prefix' => 'prefix' # rails 4.2+ active job queue with prefix
 }
 ```
 

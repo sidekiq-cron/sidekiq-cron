@@ -1,7 +1,7 @@
-#require  Sidekiq original launcher
+# require  Sidekiq original launcher
 require 'sidekiq/launcher'
 
-#require cron poller
+# require cron poller
 require 'sidekiq/cron/poller'
 
 # For Cron we need to add some methods to Launcher
@@ -11,39 +11,43 @@ require 'sidekiq/cron/poller'
 # adding start and stop commands to launcher
 module Sidekiq
   class Launcher
-
-    #Add cron poller to launcher
+    # Add cron poller to launcher
     attr_reader :cron_poller
 
-
-    #remember old initialize
+    # remember old initialize
     alias_method :old_initialize, :initialize
 
-    #add cron poller and execute normal initialize of Sidekiq launcher
+    # add cron poller and execute normal initialize of Sidekiq launcher
     def initialize(options)
-      @cron_poller  = Sidekiq::Cron::Poller.new
+      @cron_poller = Sidekiq::Cron::Poller.new
       old_initialize options
     end
 
-
-    #remember old run
+    # remember old run
     alias_method :old_run, :run
 
-    #execute normal run of launcher and run cron poller
+    # execute normal run of launcher and run cron poller
     def run
       old_run
-      cron_poller.async.poll(true)
+      cron_poller.start
     end
 
+    # remember old quiet
+    alias_method :old_quiet, :quiet
 
-    #remember old stop
+    # execute normal quiet of launcher and quiet cron poller
+    def quiet
+      cron_poller.terminate
+      old_quiet
+    end
+
+    # remember old stop
     alias_method :old_stop, :stop
 
-    #execute normal stop of launcher and stop cron poller
+    # execute normal stop of launcher and stop cron poller
     def stop
-      cron_poller.async.terminate if poller.alive?
+      cron_poller.terminate
       old_stop
     end
-
   end
 end

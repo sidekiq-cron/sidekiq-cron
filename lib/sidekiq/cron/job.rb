@@ -1,6 +1,5 @@
 require 'sidekiq'
 require 'sidekiq/util'
-require 'sidekiq/actor'
 require 'rufus-scheduler'
 
 module Sidekiq
@@ -45,7 +44,7 @@ module Sidekiq
       def enque! time = Time.now
         @last_enqueue_time = time
 
-        if defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
+        if @active_job or defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
           Sidekiq::Client.push(active_job_message)
         else
           Sidekiq::Client.push(sidekiq_worker_message)
@@ -63,14 +62,22 @@ module Sidekiq
       # active job has different structure how it is loading data from sidekiq
       # queue, it createaswrapper arround job
       def active_job_message
+        if !"#{@active_job_queue_name_prefix}".empty?
+          queue_name = "#{@active_job_queue_name_prefix}_#{@queue}"
+        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !"#{ActiveJob::Base.queue_name_prefix}".empty?
+          queue_name = "#{ActiveJob::Base.queue_name_prefix}_#{@queue}"
+        else
+          queue_name = @queue
+        end
+
         {
-          'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-          'queue'       => @queue,
-          'description' => @description,
-          'args'        => [{
+          'class'        => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+          'queue'        => queue_name,
+          'description'  => @description,
+          'args'         => [{
             'job_class'  => @klass,
             'job_id'     => SecureRandom.uuid,
-            'queue_name' => @queue,
+            'queue_name' => queue_name,
             'arguments'  => @args
           }]
         }
@@ -219,6 +226,9 @@ module Sidekiq
         #get right arguments for job
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
 
+        @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
+        @active_job_queue_name_prefix = args["queue_name_prefix"]
+
         if args["message"]
           @message = args["message"]
           message_data = Sidekiq.load_json(@message) || {}
@@ -271,11 +281,11 @@ module Sidekiq
         @status = "enabled"
         save
       end
-      
+
       def enabled?
         @status == "enabled"
       end
-      
+
       def disabled?
         !enabled?
       end
@@ -310,6 +320,8 @@ module Sidekiq
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
+          active_job: @active_job,
+          queue_name_prefix: @active_job_queue_name_prefix,
           last_enqueue_time: @last_enqueue_time,
         }
       end
