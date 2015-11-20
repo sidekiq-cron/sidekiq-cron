@@ -18,7 +18,7 @@ Requirements
 -----------------
 
 - Redis 2.8 or greater is required. (Redis 3.0.3 or greater is recommended for large scale use)
-- Sidekiq 4 or grater is required (for Sidekiq <4 use version sidekiq-cron 0.3.1)
+- Sidekiq 4 or greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
 
 Change Log
 ----------
