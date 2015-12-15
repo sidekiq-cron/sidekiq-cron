@@ -132,6 +132,25 @@ describe "Cron Job" do
     end
   end
 
+  describe 'formatted time' do
+    before do
+      @args = {
+        name: "Test",
+        cron: "* * * * *"
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+      @time = Time.new(2015, 1, 2, 3, 4, 5, '+01:00')
+    end
+
+    it 'returns formatted_last_time' do
+      assert_equal '2015-01-02T02:04:00Z', @job.formated_last_time(@time)
+    end
+
+    it 'returns formated_enqueue_time' do
+      assert_equal '1420164240.0', @job.formated_enqueue_time(@time)
+    end
+  end
+
   describe "new with different class inputs" do
     it "be initialized by 'klass' and Class" do
       job = Sidekiq::Cron::Job.new('klass' => CronTestClass)
