@@ -44,7 +44,13 @@ module Sidekiq
       def enque! time = Time.now
         @last_enqueue_time = time
 
-        klass_const = @klass.to_s.constantize rescue nil
+        klass_const =
+            begin
+              @klass.to_s.constantize
+            rescue NameError
+              nil
+            end
+
         if @active_job or defined?(ActiveJob::Base) && klass_const && klass_const < ActiveJob::Base
           Sidekiq::Client.push(active_job_message)
         else
