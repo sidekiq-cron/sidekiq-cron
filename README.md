@@ -17,8 +17,8 @@ Works with ActiveJob (Rails 4.2+)
 Requirements
 -----------------
 
-- Redis 2.4 or greater is required.
-- Sidekiq 2.17.3 or grater is required.
+- Redis 2.8 or greater is required. (Redis 3.0.3 or greater is recommended for large scale use)
+- Sidekiq 4 or greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
 
 Change Log
 ----------
@@ -32,7 +32,7 @@ Installation
 
 or add to your `Gemfile`
 
-    gem "sidekiq-cron", "~> 0.3.0"
+    gem "sidekiq-cron", "~> 0.4.0"
 
 
 Getting Started
@@ -47,10 +47,12 @@ _Job properties_:
 {
  'name'  => 'name_of_job', #must be uniq!
  'cron'  => '1 * * * *',
- 'klass' => 'MyClass',
+ 'class' => 'MyClass',
  #OPTIONAL
  'queue' => 'name of queue',
- 'args'  => '[Array or Hash] of arguments which will be passed to perform method'
+ 'args'  => '[Array or Hash] of arguments which will be passed to perform method',
+ 'active_job' => true,  # enqueue job through rails 4.2+ active job interface
+ 'queue_name_prefix' => 'prefix' # rails 4.2+ active job queue with prefix
 }
 ```
 
@@ -92,14 +94,14 @@ class HardWorker
   end
 end
 
-Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', klass: 'HardWorker')
+Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker')
 # => true
 ```
 
 `create` method will return only true/false if job was saved or not.
 
 ```ruby
-job = Sidekiq::Cron::Job.new(name: 'Hard worker - every 5min', cron: '*/5 * * * *', klass: 'HardWorker')
+job = Sidekiq::Cron::Job.new(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker')
 
 if job.valid?
   job.save
@@ -180,7 +182,7 @@ second_job:
 #initializers/sidekiq.rb
 schedule_file = "config/schedule.yml"
 
-if File.exists?(schedule_file)
+if File.exists?(schedule_file) && Sidekiq.server?
   Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
 end
 ```
