@@ -513,6 +513,23 @@ describe "Cron Job" do
         @job.enque!
       end
     end
+
+    describe 'sidekiq worker unknown class' do
+      before do
+        @args = {
+          name:  'Test',
+          cron:  '* * * * *',
+          klass: 'UnknownClass',
+          queue: 'another'
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it 'pushes to queue sidekiq worker message' do
+        assert_equal @job.sidekiq_worker_message, { 'class' => 'UnknownClass', 'args' => [], 'queue' => 'another' }
+        @job.enque!
+      end
+    end
   end
 
   describe "save" do
