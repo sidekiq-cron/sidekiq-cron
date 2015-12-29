@@ -22,6 +22,8 @@ require 'shoulda-context'
 require "rack/test"
 require "mocha/setup"
 
+ENV['RACK_ENV'] = 'test'
+
 #SIDEKIQ Require - need to have sidekiq running!
 require 'sidekiq'
 require 'sidekiq/util'
