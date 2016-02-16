@@ -72,10 +72,18 @@ module Sidekiq
       # active job has different structure how it is loading data from sidekiq
       # queue, it createaswrapper arround job
       def active_job_message
+        if !"#{@active_job_queue_name_delimiter}".empty?
+          queue_name_delimiter = @active_job_queue_name_delimiter
+        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_delimiter) && !ActiveJob::Base.queue_name_delimiter.empty?
+          queue_name_delimiter = ActiveJob::Base.queue_name_delimiter
+        else
+          queue_name_delimiter = '_'
+        end
+
         if !"#{@active_job_queue_name_prefix}".empty?
-          queue_name = "#{@active_job_queue_name_prefix}_#{@queue}"
+          queue_name = "#{@active_job_queue_name_prefix}#{queue_name_delimiter}#{@queue}"
         elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !"#{ActiveJob::Base.queue_name_prefix}".empty?
-          queue_name = "#{ActiveJob::Base.queue_name_prefix}_#{@queue}"
+          queue_name = "#{ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
         else
           queue_name = @queue
         end
@@ -238,6 +246,7 @@ module Sidekiq
 
         @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @active_job_queue_name_prefix = args["queue_name_prefix"]
+        @active_job_queue_name_delimiter = args["queue_name_delimiter"]
 
         if args["message"]
           @message = args["message"]
@@ -332,6 +341,7 @@ module Sidekiq
           status: @status,
           active_job: @active_job,
           queue_name_prefix: @active_job_queue_name_prefix,
+          queue_name_delimiter: @active_job_queue_name_delimiter,
           last_enqueue_time: @last_enqueue_time,
         }
       end
