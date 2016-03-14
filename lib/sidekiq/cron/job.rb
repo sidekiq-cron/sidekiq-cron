@@ -167,17 +167,19 @@ module Sidekiq
 
       # get all cron jobs
       def self.all
-        out = []
+        job_hashes = nil
         Sidekiq.redis do |conn|
-          out = conn.smembers(jobs_key).collect do |key|
-            if conn.exists key
-              Job.new conn.hgetall(key)
-            else
-              nil
+          set_members = conn.smembers(jobs_key)
+          job_hashes = conn.pipelined do
+            set_members.each do |key|
+              conn.hgetall(key)
             end
           end
         end
-        out.select{|j| !j.nil? }
+        job_hashes.compact.reject(&:empty?).collect do |h|
+          # no need to fetch missing args from redis since we just got this hash from there
+          Sidekiq::Cron::Job.new(h.merge(fetch_missing_args: false))
+        end
       end
 
       def self.count
@@ -219,10 +221,12 @@ module Sidekiq
       end
 
       attr_accessor :name, :cron, :description, :klass, :args, :message
-      attr_reader   :last_enqueue_time
+      attr_reader   :last_enqueue_time, :fetch_missing_args
 
       def initialize input_args = {}
         args = input_args.stringify_keys
+        @fetch_missing_args = args.delete('fetch_missing_args')
+        @fetch_missing_args = true if @fetch_missing_args.nil?
 
         @name = args["name"]
         @cron = args["cron"]
@@ -311,9 +315,10 @@ module Sidekiq
 
       def status_from_redis
         out = "enabled"
-        if exists?
+        if fetch_missing_args
           Sidekiq.redis do |conn|
-            out = conn.hget redis_key, "status"
+            status = conn.hget redis_key, "status"
+            out = status if status
           end
         end
         out
@@ -321,7 +326,7 @@ module Sidekiq
 
       def last_enqueue_time_from_redis
         out = nil
-        if exists?
+        if fetch_missing_args
           Sidekiq.redis do |conn|
             out = Time.parse(conn.hget(redis_key, "last_enqueue_time")) rescue nil
           end
