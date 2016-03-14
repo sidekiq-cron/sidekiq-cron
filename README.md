@@ -1,6 +1,7 @@
 Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](http://badge.fury.io/rb/sidekiq-cron) [![Build Status](https://travis-ci.org/ondrejbartas/sidekiq-cron.svg?branch=master)](https://travis-ci.org/ondrejbartas/sidekiq-cron) [![Coverage Status](https://coveralls.io/repos/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/r/ondrejbartas/sidekiq-cron?branch=master)
 ================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
+## Looking for help to maintain this gem, write me on ondrej@bartas.cz please if you are interested.
 
 A scheduling add-on for [Sidekiq](http://sidekiq.org).
 
