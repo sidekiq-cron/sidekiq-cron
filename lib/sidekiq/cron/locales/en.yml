@@ -3,6 +3,7 @@ en:
   Cron: Cron
   CronJobs: Cron Jobs
   EnqueueNow: Enqueue Now
+  'Cron string': Cron
   AreYouSureDeleteCronJob: Are you sure you want to delete the %{job} cron job?
   NoCronJobsFound: "No cron jobs found"
   Enable: Enabled
