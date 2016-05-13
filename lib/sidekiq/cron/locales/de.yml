@@ -3,6 +3,7 @@ de:
   Cron: Cron
   CronJobs: Cronjobs
   EnqueueNow: In Warteschlange
+  'Cron string': Cron
   AreYouSureDeleteCronJob: Sind Sie sicher, dass sie den Cronjob %{job} löschen wollen?
   NoCronJobsFound: "Keine Cronjobs gefunden"
   Enable: Aktivieren
