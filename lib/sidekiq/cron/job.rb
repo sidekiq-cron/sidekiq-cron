@@ -414,7 +414,7 @@ module Sidekiq
 
           #add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now
-          conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s)
+          conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.exists(job_enqueued_key)
         end
         logger.info { "Cron Jobs - add job with name: #{@name}" }
       end

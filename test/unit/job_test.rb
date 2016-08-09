@@ -835,6 +835,15 @@ describe "Cron Job" do
       refute Sidekiq::Cron::Job.new(@args.merge(cron: "0 1,13 * * *")).should_enque? @time
     end
 
+    it 'doesnt skip enqueuing if job is resaved near next enqueue time' do
+      job = Sidekiq::Cron::Job.new(@args)
+      assert job.test_and_enque_for_time!(@time), "should enqueue"
+
+      Time.stubs(:now).returns(@time + 1 * 60 * 60) # save uses Time.now
+      job.save
+      assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(@time + 1 * 60 * 60 + 30), "should enqueue"
+    end
+
     it "remove old enque times + should be enqeued" do
       job = Sidekiq::Cron::Job.new(@args)
       assert_nil job.last_enqueue_time
@@ -843,7 +852,7 @@ describe "Cron Job" do
 
       refute Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(@time), "should not enqueue"
       Sidekiq.redis do |conn|
-        assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 2, "Should have two enqueued job (first was in save, second in enque)"
+        assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 1, "Should have one enqueued job"
       end
       assert_equal Sidekiq::Queue.all.first.size, 1, "Sidekiq queue 1 job in queue"
 
@@ -852,7 +861,7 @@ describe "Cron Job" do
       refute Sidekiq::Cron::Job.new(@args).test_and_enque_for_time! @time + 1 * 60 * 60
 
       Sidekiq.redis do |conn|
-        assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 3, "Should have two enqueued job + one from start"
+        assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 2, "Should have two enqueued job"
       end
       assert_equal Sidekiq::Queue.all.first.size, 2, "Sidekiq queue 2 jobs in queue"
 
