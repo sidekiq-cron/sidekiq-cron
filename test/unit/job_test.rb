@@ -839,9 +839,10 @@ describe "Cron Job" do
       job = Sidekiq::Cron::Job.new(@args)
       assert job.test_and_enque_for_time!(@time), "should enqueue"
 
-      Time.stubs(:now).returns(@time + 1 * 60 * 60) # save uses Time.now
+      future_now = @time + 1 * 60 * 60
+      Time.stubs(:now).returns(future_now) # save uses Time.now
       job.save
-      assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(@time + 1 * 60 * 60 + 30), "should enqueue"
+      assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(future_now + 30), "should enqueue"
     end
 
     it "remove old enque times + should be enqeued" do
