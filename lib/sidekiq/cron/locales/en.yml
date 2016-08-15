@@ -6,7 +6,7 @@ en:
   'Cron string': Cron
   AreYouSureDeleteCronJob: Are you sure you want to delete the %{job} cron job?
   NoCronJobsFound: "No cron jobs found"
-  Enable: Enabled
+  Enable: Enable
   Disable: Disable
   'Last enque': Last enqueued
   disabled: disabled
