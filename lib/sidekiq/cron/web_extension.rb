@@ -7,7 +7,7 @@ module Sidekiq
         app.settings.locales << File.join(File.expand_path("..", __FILE__), "locales")
 
         #index page of cron jobs
-        app.get '/cron' do   
+        app.get '/cron' do
           view_path    = File.join(File.expand_path("..", __FILE__), "views")
 
           @cron_jobs = Sidekiq::Cron::Job.all
@@ -21,37 +21,37 @@ module Sidekiq
         end
 
         #enque cron job
-        app.post '/cron/:name/enque' do |name|
-          if job = Sidekiq::Cron::Job.find(name)
+        app.post '/cron/:name/enque' do
+          if job = Sidekiq::Cron::Job.find(route_params[:name])
             job.enque!
           end
           redirect "#{root_path}cron"
         end
 
         #delete schedule
-        app.post '/cron/:name/delete' do |name|
-          if job = Sidekiq::Cron::Job.find(name)
+        app.post '/cron/:name/delete' do
+          if job = Sidekiq::Cron::Job.find(route_params[:name])
             job.destroy
           end
           redirect "#{root_path}cron"
         end
 
         #enable job
-        app.post '/cron/:name/enable' do |name|
-          if job = Sidekiq::Cron::Job.find(name)
+        app.post '/cron/:name/enable' do
+          if job = Sidekiq::Cron::Job.find(route_params[:name])
             job.enable!
           end
           redirect "#{root_path}cron"
         end
 
         #disable job
-        app.post '/cron/:name/disable' do |name|
-          if job = Sidekiq::Cron::Job.find(name)
+        app.post '/cron/:name/disable' do
+          if job = Sidekiq::Cron::Job.find(route_params[:name])
             job.disable!
           end
           redirect "#{root_path}cron"
         end
-        
+
       end
     end
   end
