@@ -32,7 +32,7 @@ require 'sidekiq/web'
 Sidekiq.logger.level = Logger::ERROR
 
 require 'sidekiq/redis_connection'
-redis_url = ENV['REDIS_URL'] || 'redis://localhost/15'
+redis_url = ENV['REDIS_URL'] || 'redis://0.0.0.0:6379'
 REDIS = Sidekiq::RedisConnection.create(:url => redis_url, :namespace => 'testy')
 
 Sidekiq.configure_client do |config|
@@ -60,4 +60,33 @@ class CronTestClassWithQueue
   def perform args = {}
     puts "super croned job #{args}"
   end
+end
+
+module ActiveJob
+  class Base
+    def self.queue_name_prefix
+      @queue_name_prefix
+    end
+
+    def self.queue_name_prefix=(queue_name_prefix)
+      @queue_name_prefix = queue_name_prefix
+    end
+
+    def self.set(options)
+      @queue = options['queue']
+
+      self
+    end
+
+    def self.perform_later(*args)
+      {
+        "job_class"  => self.class.name,
+        "queue_name" => @queue,
+        "args"  => [*args],
+      }
+    end
+  end
+end
+
+class ActiveJobCronTestClass < ActiveJob::Base
 end
