@@ -54,14 +54,34 @@ module Sidekiq
               nil
             end
 
-        if @active_job or defined?(ActiveJob::Base) && klass_const && klass_const < ActiveJob::Base
-          Sidekiq::Client.push(active_job_message)
+        if klass_const
+          if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
+            enqueue_active_job(klass_const)
+          else
+            enqueue_sidekiq_worker(klass_const)
+          end
         else
-          Sidekiq::Client.push(sidekiq_worker_message)
+          if @active_job
+            Sidekiq::Client.push(active_job_message)
+          else
+            Sidekiq::Client.push(sidekiq_worker_message)
+          end
         end
 
         save
         logger.debug { "enqueued #{@name}: #{@message}" }
+      end
+
+      def enqueue_active_job(klass_const)
+        klass_const.set(queue: @queue_name_with_prefix).perform_later(*@args)
+
+        true
+      end
+
+      def enqueue_sidekiq_worker(klass_const)
+        klass_const.set(queue: @queue_name_with_prefix).perform_async(*@args)
+
+        true
       end
 
       # siodekiq worker message
@@ -69,9 +89,7 @@ module Sidekiq
         @message.is_a?(String) ? Sidekiq.load_json(@message) : @message
       end
 
-      # active job has different structure how it is loading data from sidekiq
-      # queue, it createaswrapper arround job
-      def active_job_message
+      def queue_name_with_prefix
         if !"#{@active_job_queue_name_delimiter}".empty?
           queue_name_delimiter = @active_job_queue_name_delimiter
         elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_delimiter) && !ActiveJob::Base.queue_name_delimiter.empty?
@@ -88,14 +106,20 @@ module Sidekiq
           queue_name = @queue
         end
 
+        queue_name
+      end
+
+      # active job has different structure how it is loading data from sidekiq
+      # queue, it createaswrapper arround job
+      def active_job_message
         {
           'class'        => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-          'queue'        => queue_name,
+          'queue'        => @queue_name_with_prefix,
           'description'  => @description,
           'args'         => [{
             'job_class'  => @klass,
             'job_id'     => SecureRandom.uuid,
-            'queue_name' => queue_name,
+            'queue_name' => @queue_name_with_prefix,
             'arguments'  => @args
           }]
         }
@@ -284,6 +308,8 @@ module Sidekiq
           else
             @queue = message_data['queue'] || default
           end
+
+          @queue_name_with_prefix = queue_name_with_prefix
 
           #dump message as json
           @message = message_data
