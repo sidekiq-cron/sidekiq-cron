@@ -72,6 +72,12 @@ module Sidekiq
         logger.debug { "enqueued #{@name}: #{@message}" }
       end
 
+      def is_active_job?
+        @active_job || defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
+      rescue NameError
+        false
+      end
+
       def enqueue_active_job(klass_const)
         klass_const.set(queue: @queue_name_with_prefix).perform_later(*@args)
 
@@ -90,6 +96,8 @@ module Sidekiq
       end
 
       def queue_name_with_prefix
+        return @queue unless is_active_job?
+
         if !"#{@active_job_queue_name_delimiter}".empty?
           queue_name_delimiter = @active_job_queue_name_delimiter
         elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_delimiter) && !ActiveJob::Base.queue_name_delimiter.empty?
@@ -309,12 +317,11 @@ module Sidekiq
             @queue = message_data['queue'] || default
           end
 
-          @queue_name_with_prefix = queue_name_with_prefix
-
           #dump message as json
           @message = message_data
         end
 
+        @queue_name_with_prefix = queue_name_with_prefix
       end
 
       def status
