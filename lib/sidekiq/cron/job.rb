@@ -309,12 +309,10 @@ module Sidekiq
             @queue = message_data['queue'] || default
           end
 
-          @queue_name_with_prefix = queue_name_with_prefix
-
           #dump message as json
           @message = message_data
         end
-
+        @queue_name_with_prefix = queue_name_with_prefix
       end
 
       def status
