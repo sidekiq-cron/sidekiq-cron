@@ -24,6 +24,14 @@ describe 'Cron web' do
       klass: "CronTestClass"
     }
 
+
+    @cron_args = {
+      name: "TesQueueNameOfCronJob",
+      cron: "*/2 * * * *",
+      klass: "CronQueueTestClass",
+      queue: "cron"
+    }
+
   end
 
   it 'display cron web' do
@@ -38,6 +46,7 @@ describe 'Cron web' do
 
   it 'display cron web with cron jobs table' do
     Sidekiq::Cron::Job.create(@args)
+
     get '/cron'
     assert_equal 200, last_response.status
     refute last_response.body.include?('No cron jobs found')
@@ -51,6 +60,10 @@ describe 'Cron web' do
       @job = Sidekiq::Cron::Job.new(@args.merge(status: "enabled"))
       @job.save
       @name = "TestNameOfCronJob"
+
+      @cron_job = Sidekiq::Cron::Job.new(@cron_args.merge(status: "enabled"))
+      @cron_job.save
+      @cron_job_name = "TesQueueNameOfCronJob"
     end
 
     it "disable and enable cron job" do
@@ -78,11 +91,19 @@ describe 'Cron web' do
       Sidekiq.redis do |conn|
         assert_equal 2, conn.llen("queue:default"), "Queue should have 2 job"
       end
+
+      #should enqueue to cron job queue
+      post "/cron/#{@cron_job_name}/enque"
+
+      Sidekiq.redis do |conn|
+        assert_equal 1, conn.llen("queue:cron"), "Queue should have 1 cron job"
+      end
     end
 
     it "destroy job" do
-      assert_equal Sidekiq::Cron::Job.all.size, 1, "Should have 1 job"
+      assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 job"
       post "/cron/#{@name}/delete"
+      post "/cron/#{@cron_job_name}/delete"
       assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have zero jobs"
     end
   end
