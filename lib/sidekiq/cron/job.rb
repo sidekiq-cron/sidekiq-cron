@@ -73,7 +73,7 @@ module Sidekiq
       end
 
       def enqueue_active_job(klass_const)
-        klass_const.set(queue: queue_name_with_prefix).perform_later(*@args)
+        klass_const.set(queue: @queue).perform_later(*@args)
 
         true
       end
