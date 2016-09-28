@@ -114,7 +114,7 @@ module Sidekiq
           queue_name = @queue
         end
 
-        @queue_name_with_prefix
+        queue_name
       end
 
       # active job has different structure how it is loading data from sidekiq
