@@ -72,6 +72,12 @@ module Sidekiq
         logger.debug { "enqueued #{@name}: #{@message}" }
       end
 
+      def is_active_job?
+        @active_job || defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
+      rescue NameError
+        false
+      end
+
       def enqueue_active_job(klass_const)
         klass_const.set(queue: @queue).perform_later(*@args)
 
@@ -90,24 +96,22 @@ module Sidekiq
       end
 
       def queue_name_with_prefix
-        if "#{@queue_name_with_prefix}".empty?
-          if !"#{@active_job_queue_name_delimiter}".empty?
-            queue_name_delimiter = @active_job_queue_name_delimiter
-          elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_delimiter) && !ActiveJob::Base.queue_name_delimiter.empty?
-            queue_name_delimiter = ActiveJob::Base.queue_name_delimiter
-          else
-            queue_name_delimiter = '_'
-          end
+        return @queue unless is_active_job?
 
-          if !"#{@active_job_queue_name_prefix}".empty?
-            queue_name = "#{@active_job_queue_name_prefix}#{queue_name_delimiter}#{@queue}"
-          elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !"#{ActiveJob::Base.queue_name_prefix}".empty?
-            queue_name = "#{ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
-          else
-            queue_name = @queue
-          end
+        if !"#{@active_job_queue_name_delimiter}".empty?
+          queue_name_delimiter = @active_job_queue_name_delimiter
+        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_delimiter) && !ActiveJob::Base.queue_name_delimiter.empty?
+          queue_name_delimiter = ActiveJob::Base.queue_name_delimiter
+        else
+          queue_name_delimiter = '_'
+        end
 
-          @queue_name_with_prefix = queue_name
+        if !"#{@active_job_queue_name_prefix}".empty?
+          queue_name = "#{@active_job_queue_name_prefix}#{queue_name_delimiter}#{@queue}"
+        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !"#{ActiveJob::Base.queue_name_prefix}".empty?
+          queue_name = "#{ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
+        else
+          queue_name = @queue
         end
 
         @queue_name_with_prefix
@@ -118,12 +122,12 @@ module Sidekiq
       def active_job_message
         {
           'class'        => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-          'queue'        => queue_name_with_prefix,
+          'queue'        => @queue_name_with_prefix,
           'description'  => @description,
           'args'         => [{
             'job_class'  => @klass,
             'job_id'     => SecureRandom.uuid,
-            'queue_name' => queue_name_with_prefix,
+            'queue_name' => @queue_name_with_prefix,
             'arguments'  => @args
           }]
         }
@@ -302,7 +306,6 @@ module Sidekiq
                 #Unknown class
                 message_data.merge("queue"=>"default")
               end
-
           end
 
           #override queue if setted in config
@@ -316,6 +319,8 @@ module Sidekiq
           #dump message as json
           @message = message_data
         end
+
+        @queue_name_with_prefix = queue_name_with_prefix
       end
 
       def status
