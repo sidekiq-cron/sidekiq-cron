@@ -79,13 +79,13 @@ module Sidekiq
       end
 
       def enqueue_active_job(klass_const)
-        klass_const.set(queue: @queue_name_with_prefix).perform_later(*@args)
+        klass_const.set(queue: @queue).perform_later(*@args)
 
         true
       end
 
       def enqueue_sidekiq_worker(klass_const)
-        klass_const.set(queue: @queue_name_with_prefix).perform_async(*@args)
+        klass_const.set(queue: queue_name_with_prefix).perform_async(*@args)
 
         true
       end
@@ -306,7 +306,6 @@ module Sidekiq
                 #Unknown class
                 message_data.merge("queue"=>"default")
               end
-
           end
 
           #override queue if setted in config

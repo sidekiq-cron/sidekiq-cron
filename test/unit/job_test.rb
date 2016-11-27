@@ -256,6 +256,30 @@ describe "Cron Job" do
     end
   end
 
+  describe '#sidekiq_worker_message settings overwrite queue name' do
+    before do
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        queue: 'super_queue',
+        klass: 'CronTestClassWithQueue',
+        args:  { foo: 'bar' }
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client with overwrite queue name' do
+      payload = {
+        "retry" => false,
+        "backtrace"=>true,
+        "queue" => "super_queue",
+        "class" => "CronTestClassWithQueue",
+        "args"  => [{:foo=>"bar"}]
+      }
+      assert_equal @job.sidekiq_worker_message, payload
+    end
+  end
+
   describe '#active_job_message' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
@@ -910,6 +934,38 @@ describe "Cron Job" do
         assert_equal out.size, 0, "should have 0 error"
         assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
       end
+    end
+
+    describe "from array with queue_name" do
+      before do
+        @jobs_array = [
+          {
+            'name'  => 'name_of_job',
+            'class' => 'CronTestClassWithQueue',
+            'cron'  => '1 * * * *',
+            'args'  => '(OPTIONAL) [Array or Hash]',
+            'queue' => 'from_array'
+          }
+        ]
+      end
+
+      it "create new jobs and update old one with same settings" do
+        assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+        out = Sidekiq::Cron::Job.load_from_array @jobs_array
+        assert_equal out.size, 0, "should have 0 error"
+        assert_equal Sidekiq::Cron::Job.all.size, 1, "Should have 2 jobs after load"
+
+        payload = {
+          "retry" => false,
+          "backtrace"=>true,
+          "queue" => "from_array",
+          "class" => "CronTestClassWithQueue",
+          "args"  => ['(OPTIONAL) [Array or Hash]']
+        }
+
+        assert_equal Sidekiq::Cron::Job.all.first.sidekiq_worker_message, payload
+      end
+
     end
   end
 end
