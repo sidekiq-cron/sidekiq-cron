@@ -517,7 +517,7 @@ module Sidekiq
       private
 
       def not_enqueued_after?(time)
-        @last_enqueue_time.nil? || @last_enqueue_time < last_time(time)
+        @last_enqueue_time.nil? || @last_enqueue_time.to_i < last_time(time).to_i
       end
 
       # Try parsing inbound args into an array.
