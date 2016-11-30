@@ -517,7 +517,7 @@ module Sidekiq
       private
 
       def not_enqueued_after?(time)
-        @last_enqueue_time.nil? || @last_enqueue_time < last_time(time)
+        @last_enqueue_time.nil? || @last_enqueue_time.to_i < last_time(time).to_i
       end
 
       # Try parsing inbound args into an array.
@@ -543,7 +543,7 @@ module Sidekiq
 
       def not_past_scheduled_time?(current_time)
         last_cron_time = Rufus::Scheduler::CronLine.new(@cron).previous_time(current_time)
-        return false if (current_time - last_cron_time) > 60
+        return false if (current_time.to_i - last_cron_time.to_i) > 60
         true
       end
 
