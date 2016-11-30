@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'sidekiq', '>= 4.2.1'
-gem 'rufus-scheduler', '>= 2.0.24'
+gem 'rufus-scheduler', '>= 3.3.0'
 gem 'redis-namespace', '>= 1.5.2'
 
 group :development do
