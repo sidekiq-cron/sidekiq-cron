@@ -17,6 +17,8 @@ If you want to know how scheduling work, check out [under the hood](#under-the-h
 
 Works with ActiveJob (Rails 4.2+)
 
+You don't need Sidekiq PRO, you can use this gem with plain __Sidekiq__.
+
 Requirements
 -----------------
 
