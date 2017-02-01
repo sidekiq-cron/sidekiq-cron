@@ -160,7 +160,7 @@ Sidekiq::Cron::Job.load_from_array array
 ```
 
 Bang-suffixed methods will remove jobs that are not present in the given hash/array,
-updates jobs that have the same names, and creates new ones when the names are previously unknown.
+update jobs that have the same names, and create new ones when the names are previously unknown.
 
 ```ruby
 Sidekiq::Cron::Job#load_from_hash! hash
