@@ -21,7 +21,7 @@ module Sidekiq
       private
 
       def enqueue_job(job)
-        job.test_and_enque_for_time! Time.now if job && job.valid?
+        job.test_and_enque_for_time! Time.now.utc if job && job.valid?
       rescue => ex
         # problem somewhere in one job
         logger.error "CRON JOB: #{ex.message}"
