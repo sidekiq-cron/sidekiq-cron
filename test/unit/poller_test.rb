@@ -28,7 +28,7 @@ describe 'Cron Poller' do
   end
 
   it 'not enqueue any job - new jobs' do
-    now = Time.now
+    now = Time.now.utc
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!
@@ -54,7 +54,7 @@ describe 'Cron Poller' do
   end
 
   it 'should enqueue only job with cron */2' do
-    now = Time.now
+    now = Time.now.utc
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!
@@ -79,7 +79,7 @@ describe 'Cron Poller' do
   end
 
   it 'should enqueue both jobs' do
-    now = Time.now
+    now = Time.now.utc
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 8, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!
@@ -104,7 +104,7 @@ describe 'Cron Poller' do
   end
 
   it 'should enqueue both jobs but only one time each' do
-    now = Time.now
+    now = Time.now.utc
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 8, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!

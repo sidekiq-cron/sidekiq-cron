@@ -210,19 +210,19 @@ describe "Cron Job" do
 
     it "return previous minute" do
       @job.cron = "* * * * *"
-      time = Time.now
+      time = Time.now.utc
       assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-%H-%M-00")
     end
 
     it "return previous hour" do
       @job.cron = "1 * * * *"
-      time = Time.now
+      time = Time.now.utc
       assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-%H-01-00")
     end
 
     it "return previous day" do
       @job.cron = "1 2 * * *"
-      time = Time.now
+      time = Time.now.utc
 
       if time.hour >= 2
         assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-02-01-00")
@@ -777,7 +777,7 @@ describe "Cron Job" do
       }
       #first time is allways
       #after next cron time!
-      @time = Time.now + 120
+      @time = Time.now.utc + 120
     end
     it "be allways false when status is disabled" do
       refute Sidekiq::Cron::Job.new(@args.merge(status: 'disabled')).should_enque? @time
@@ -816,7 +816,7 @@ describe "Cron Job" do
       assert job.test_and_enque_for_time!(@time), "should enqueue"
 
       future_now = @time + 1 * 60 * 60
-      Time.stubs(:now).returns(future_now) # save uses Time.now
+      Time.stubs(:now).returns(future_now) # save uses Time.now.utc
       job.save
       assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(future_now + 30), "should enqueue"
     end
