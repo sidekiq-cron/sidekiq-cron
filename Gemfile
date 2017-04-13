@@ -13,7 +13,7 @@ group :development do
   gem 'rack'
   gem 'rack-test'
 
-  gem 'jeweler', '~> 1.8.3'
+  gem 'jeweler'
 
   gem 'minitest'
   gem 'test-unit'
