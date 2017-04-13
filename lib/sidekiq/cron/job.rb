@@ -287,7 +287,7 @@ module Sidekiq
         if args["message"]
           @message = args["message"]
           message_data = Sidekiq.load_json(@message) || {}
-          @queue = message_data['queue'] || default
+          @queue = message_data['queue'] || "default"
         elsif @klass
           message_data = {
             "class" => @klass.to_s,
@@ -313,7 +313,7 @@ module Sidekiq
           if args['queue']
             @queue = message_data['queue'] = args['queue']
           else
-            @queue = message_data['queue'] || default
+            @queue = message_data['queue'] || "default"
           end
 
           #dump message as json
