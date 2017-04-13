@@ -2,12 +2,12 @@ source 'https://rubygems.org'
 
 gem 'sidekiq', '>= 4.2.1'
 gem 'rufus-scheduler', '>= 3.3.0'
-gem 'redis-namespace', '>= 1.5.2'
 
 group :development do
   gem 'bundler'
   gem 'simplecov'
 
+  gem 'redis-namespace', '>= 1.5.2'
   gem 'shoulda-context'
 
   gem 'rack'
