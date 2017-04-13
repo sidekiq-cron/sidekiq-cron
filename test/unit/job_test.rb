@@ -221,13 +221,13 @@ describe "Cron Job" do
     end
 
     it "return previous day" do
-      @job.cron = "1 2 * * *"
+      @job.cron = "1 2 * * * Etc/GMT"
       time = Time.now.utc
 
       if time.hour >= 2
         assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-02-01-00")
       else
-        yesterday = Date.today - 1
+        yesterday = (Date.today - 1)
         assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), yesterday.strftime("%Y-%m-%d-02-01-00")
       end
     end

@@ -397,7 +397,7 @@ module Sidekiq
         else
           begin
             cron = Rufus::Scheduler::CronLine.new(@cron)
-            cron.next_time(Time.now.utc)
+            cron.next_time(Time.now.utc).utc
           rescue Exception => e
             #fix for different versions of cron-parser
             if e.message == "Bad Vixie-style specification bad"
@@ -487,7 +487,7 @@ module Sidekiq
       # Parse cron specification '* * * * *' and returns
       # time when last run should be performed
       def last_time now = Time.now.utc
-        Rufus::Scheduler::CronLine.new(@cron).previous_time(now)
+        Rufus::Scheduler::CronLine.new(@cron).previous_time(now.utc).utc
       end
 
       def formated_enqueue_time now = Time.now.utc
@@ -542,7 +542,7 @@ module Sidekiq
       end
 
       def not_past_scheduled_time?(current_time)
-        last_cron_time = Rufus::Scheduler::CronLine.new(@cron).previous_time(current_time)
+        last_cron_time = Rufus::Scheduler::CronLine.new(@cron).previous_time(current_time).utc
         return false if (current_time.to_i - last_cron_time.to_i) > 60
         true
       end
