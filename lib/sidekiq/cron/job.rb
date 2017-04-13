@@ -68,7 +68,7 @@ module Sidekiq
           end
         end
 
-        save
+        save_last_enqueue_time
         logger.debug { "enqueued #{@name}: #{@message}" }
       end
 
@@ -449,6 +449,13 @@ module Sidekiq
           conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.exists(job_enqueued_key)
         end
         logger.info { "Cron Jobs - add job with name: #{@name}" }
+      end
+
+      def save_last_enqueue_time
+        Sidekiq.redis do |conn|
+          # update last enqueue time
+          conn.hset redis_key, 'last_enqueue_time', @last_enqueue_time
+        end
       end
 
       # remove job from cron jobs by name

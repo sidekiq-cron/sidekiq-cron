@@ -46,6 +46,7 @@ describe 'Perfromance Poller' do
       assert_equal X, conn.llen("queue:default"), 'Queue should be full'
     end
 
+    puts "Perfomance test finished in #{bench.real}"
     assert_operator 30, :>, bench.real
   end
 end
