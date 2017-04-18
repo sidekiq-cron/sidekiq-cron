@@ -5,6 +5,8 @@ require 'sidekiq/scheduled'
 
 module Sidekiq
   module Cron
+    POLL_INTERVAL = 30
+
     # The Poller checks Redis every N seconds for sheduled cron jobs
     class Poller < Sidekiq::Scheduled::Poller
       def enqueue
@@ -27,6 +29,10 @@ module Sidekiq
         # problem somewhere in one job
         logger.error "CRON JOB: #{ex.message}"
         logger.error "CRON JOB: #{ex.backtrace.first}"
+      end
+
+      def poll_interval_average
+         Sidekiq.options[:poll_interval] || POLL_INTERVAL
       end
     end
   end
