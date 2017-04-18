@@ -281,6 +281,10 @@ When you start the Sidekiq process, it starts one thread with `Sidekiq::Poller` 
 
 Sidekiq-Cron adds itself into this start procedure and starts another thread with `Sidekiq::Cron::Poller` which checks all enabled Sidekiq cron jobs every 10 seconds, if they should be added to queue (their cronline matches time of check).
 
+Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
+```
+Sidekiq.options[:poll_interval] = 10
+```
 
 ## Thanks to
 * [@7korobi](https://github.com/7korobi)
