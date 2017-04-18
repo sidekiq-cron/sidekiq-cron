@@ -1,7 +1,7 @@
 v 0.6.0
 -------
 
-- set poller to check jobs every 30s by default (púossible to override by `Sidekiq.options[:poll_interval] = 10`)
+- set poller to check jobs every 30s by default (possible to override by `Sidekiq.options[:poll_interval] = 10`)
 - add group actions (enqueue, enable, disable, delete) all in web view
 - fix poller to enqueu all jobs in poll start time
 - add performance test for enqueue of jobs (10 000 jobs in less than 19s)
