@@ -1,3 +1,28 @@
+v 0.6.0
+-------
+
+- set poller to check jobs every 30s by default (púossible to override by `Sidekiq.options[:poll_interval] = 10`)
+- add group actions (enqueue, enable, disable, delete) all in web view
+- fix poller to enqueu all jobs in poll start time
+- add performance test for enqueue of jobs (10 000 jobs in less than 19s)
+- fix problem with default queue
+- remove redis-namespace from dependencies
+- update ruby versions in travis
+
+v 0.5.0
+-------
+- add docker support
+- all crons are now evaluated in UTC
+- fix rufus scheduler & timezones problems
+- add support for sidekiq 4.2.1
+- fix readme
+- add Russian locale
+- user Rack.env in tests
+- faster enque of jobs
+- permit to use ActiveJob::Base.queue_name_delimiter
+- fix problem with multiple times enque #84
+- fix problem with enque of unknown class
+
 v 0.4.0
 -------
 
