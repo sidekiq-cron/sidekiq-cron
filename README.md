@@ -197,6 +197,8 @@ if File.exists?(schedule_file) && Sidekiq.server?
 end
 ```
 
+or you can use for loading jobs from yml file [sidekiq-cron-tasks](https://github.com/coverhound/sidekiq-cron-tasks) which will add rake task `bundle exec rake sidekiq_cron:load` to your rails application.
+
 #### Finding jobs
 ```ruby
 #return array of all jobs
