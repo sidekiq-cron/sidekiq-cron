@@ -51,7 +51,7 @@ _Job properties_:
 ```ruby
 {
  'name'  => 'name_of_job', #must be uniq!
- 'cron'  => '1 * * * *',
+ 'cron'  => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, 15:01...etc(HH:MM)
  'class' => 'MyClass',
  #OPTIONAL
  'queue' => 'name of queue',
@@ -104,7 +104,7 @@ class HardWorker
   end
 end
 
-Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker')
+Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker') # execute at every 5 minutes, ex: 12:05, 12:10, 12:15...etc
 # => true
 ```
 
@@ -181,7 +181,7 @@ my_first_job:
   queue: hard_worker
 
 second_job:
-  cron: "*/30 * * * *"
+  cron: "*/30 * * * *" # execute at every 30 minutes
   class: "HardWorker"
   queue: hard_worker_long
   args:
