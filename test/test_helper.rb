@@ -44,9 +44,11 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'sidekiq-cron'
 require 'sidekiq/cron/web'
+require 'pp'
 
 class CronTestClass
   include Sidekiq::Worker
+  sidekiq_options retry: true
 
   def perform args = {}
     puts "super croned job #{args}"
@@ -55,7 +57,7 @@ end
 
 class CronTestClassWithQueue
   include Sidekiq::Worker
-  sidekiq_options :queue => :super, :retry => false, :backtrace => true
+  sidekiq_options queue: :super, retry: false, backtrace: true
 
   def perform args = {}
     puts "super croned job #{args}"

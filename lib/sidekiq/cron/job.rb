@@ -1,6 +1,7 @@
 require 'sidekiq'
 require 'sidekiq/util'
 require 'rufus-scheduler'
+require 'sidekiq/cron/support'
 
 module Sidekiq
   module Cron
@@ -49,7 +50,7 @@ module Sidekiq
 
         klass_const =
             begin
-              @klass.to_s.constantize
+              Sidekiq::Cron::Support.constantize(@klass.to_s)
             rescue NameError
               nil
             end
@@ -73,7 +74,7 @@ module Sidekiq
       end
 
       def is_active_job?
-        @active_job || defined?(ActiveJob::Base) && @klass.to_s.constantize < ActiveJob::Base
+        @active_job || defined?(ActiveJob::Base) && Sidekiq::Cron::Support.constantize(@klass.to_s) < ActiveJob::Base
       rescue NameError
         false
       end
@@ -296,18 +297,19 @@ module Sidekiq
 
           #get right data for message
           #only if message wasn't specified before
-          message_data = case @klass
+          klass_data = case @klass
             when Class
-              @klass.get_sidekiq_options.merge(message_data)
+              @klass.get_sidekiq_options
             when String
               begin
-                @klass.constantize.get_sidekiq_options.merge(message_data)
-              rescue
+                Sidekiq::Cron::Support.constantize(@klass).get_sidekiq_options
+              rescue Exception => e
                 #Unknown class
-                message_data.merge("queue"=>"default")
+                {"queue"=>"default"}
               end
           end
 
+          message_data = klass_data.merge(message_data)
           #override queue if setted in config
           #only if message is hash - can be string (dumped JSON)
           if args['queue']
