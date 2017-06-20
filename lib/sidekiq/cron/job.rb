@@ -256,7 +256,7 @@ module Sidekiq
       attr_reader   :last_enqueue_time, :fetch_missing_args
 
       def initialize input_args = {}
-        args = input_args.stringify_keys
+        args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
         @fetch_missing_args = args.delete('fetch_missing_args')
         @fetch_missing_args = true if @fetch_missing_args.nil?
 
