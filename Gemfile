@@ -27,6 +27,6 @@ group :development do
 
   gem 'shotgun'
 
-  # gem 'guard'
-  # gem 'guard-minitest'
+  gem 'guard'
+  gem 'guard-minitest'
 end
