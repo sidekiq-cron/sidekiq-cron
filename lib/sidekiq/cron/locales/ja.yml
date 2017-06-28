@@ -1,0 +1,18 @@
+ja:
+  Job: ジョブ
+  Cron: Cron
+  CronJobs: Cronジョブ
+  EnqueueNow: すぐにキューに入れる
+  EnableAll: すべて有効
+  DisableAll: すべて無効
+  EnqueueAll: すべてキュー
+  DeleteAll: すべて削除
+  'Cron string': Cron
+  AreYouSureDeleteCronJobs: 本当にすべてのcronジョブを削除しますか？
+  AreYouSureDeleteCronJob: 本当に%{job}のcronジョブを削除しますか？
+  NoCronJobsFound: Cronジョブが見つかりませんでした
+  Enable: 有効にする
+  Disable: 無効にする
+  'Last enque': 最後のキュー
+  disabled: 無効
+  enabled: 有効
