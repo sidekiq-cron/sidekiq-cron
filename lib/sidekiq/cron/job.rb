@@ -93,7 +93,7 @@ module Sidekiq
 
       # siodekiq worker message
       def sidekiq_worker_message
-        @message.is_a?(String) ? Sidekiq.load_json(@message) : @message
+        @message
       end
 
       def queue_name_with_prefix
@@ -255,7 +255,7 @@ module Sidekiq
       end
 
       attr_accessor :name, :cron, :description, :klass, :args, :message
-      attr_reader   :last_enqueue_time, :fetch_missing_args
+      attr_reader   :last_enqueue_time, :fetch_missing_args, :secret_args
 
       def initialize input_args = {}
         args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
@@ -281,19 +281,19 @@ module Sidekiq
 
         #get right arguments for job
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
+        @secret_args = args["secret_args"].nil? ? [] : parse_args(args["secret_args"] )
 
         @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @active_job_queue_name_prefix = args["queue_name_prefix"]
         @active_job_queue_name_delimiter = args["queue_name_delimiter"]
 
         if args["message"]
-          @message = args["message"]
-          message_data = Sidekiq.load_json(@message) || {}
-          @queue = message_data['queue'] || "default"
+          @message = Sidekiq.load_json(args["message"] || {})
+          @queue = @message['queue'] || "default"
         elsif @klass
           message_data = {
             "class" => @klass.to_s,
-            "args"  => @args,
+            "args"  => @args
           }
 
           #get right data for message
@@ -387,6 +387,10 @@ module Sidekiq
         end
       end
 
+      def masked_message
+        @masked_message ||= mask(@message, @secret_args)
+      end
+
       #export job data to hash
       def to_hash
         {
@@ -394,8 +398,9 @@ module Sidekiq
           klass: @klass,
           cron: @cron,
           description: @description,
-          args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
-          message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
+          args: Sidekiq.dump_json(@args || []),
+          secret_args: Sidekiq.dump_json(@secret_args || []),
+          message: Sidekiq.dump_json(@message || {}),
           status: @status,
           active_job: @active_job,
           queue_name_prefix: @active_job_queue_name_prefix,
@@ -588,6 +593,18 @@ module Sidekiq
         DateTime.strptime(timestamp, LAST_ENQUEUE_TIME_FORMAT).to_time.utc
       rescue ArgumentError
         DateTime.strptime(timestamp, LAST_ENQUEUE_TIME_FORMAT_OLD).to_time.utc
+      end
+
+      def mask(message, secret_names)
+        masked_message = message.dup
+        masked_message["args"] = masked_message["args"].map do |arg|
+          if arg.kind_of? Hash
+            arg.each_with_object({}) { |(k, v), acc| acc[k] = secret_names.include?(k) ? '***' : v }
+          else
+            arg
+          end
+        end
+        Sidekiq.dump_json(masked_message)
       end
 
       def not_past_scheduled_time?(current_time)

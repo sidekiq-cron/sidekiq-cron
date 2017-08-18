@@ -61,6 +61,7 @@ _Job properties_:
  #OPTIONAL
  'queue' => 'name of queue',
  'args'  => '[Array or Hash] of arguments which will be passed to perform method',
+ 'secret_args' => '[Array]' of names of arguments (passed in Hash) values of which should be masked,
  'active_job' => true,  # enqueue job through rails 4.2+ active job interface
  'queue_name_prefix' => 'prefix', # rails 4.2+ active job queue with prefix
  'queue_name_delimiter' => '.'  # rails 4.2+ active job queue with custom delimiter
@@ -195,6 +196,9 @@ second_job:
   queue: hard_worker_long
   args:
     hard: "stuff"
+    password: "avadakedavra"
+  secret_args:
+    - password  
 ```
 
 ```ruby

@@ -46,12 +46,12 @@
             </a>
             <hr style="margin:3px;border:0;">
             <small>
-            <% if job.message and job.message.to_s.size > 100 %>
+            <% if job.masked_message and job.masked_message.size > 100 %>
               <button data-toggle="collapse" data-target=".worker_<%= index %>" class="btn btn-xs"><%= t('ShowAll')%></button>
-              <div class="toggle worker_<%= index %>" style="display: inline;"><%= job.message[0..100] + "... " %></div>
-              <div class="toggle worker_<%= index %>" style="display: none;"><%= job.message %></div>
+              <div class="toggle worker_<%= index %>" style="display: inline;"><%= job.masked_message[0..100] + "... " %></div>
+              <div class="toggle worker_<%= index %>" style="display: none;"><%= job.masked_message %></div>
             <% else %>
-              <%= job.message %>
+              <%= job.masked_message %>
             <% end %>
             </small>
           </td>

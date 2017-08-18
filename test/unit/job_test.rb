@@ -278,6 +278,40 @@ describe "Cron Job" do
     end
   end
 
+  describe '#sidekiq_worker_message with secret args' do
+    before do
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        queue: 'super_queue',
+        klass: 'CronTestClass',
+        args:  { foo: 'bar', baz: 'qux' },
+        secret_args: %i[baz]
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client' do
+      payload = {
+        "retry" => true,
+        "queue" => "super_queue",
+        "class" => "CronTestClass",
+        "args"  => [{:foo=>"bar",:baz=>"qux"}]
+      }
+      assert_equal @job.sidekiq_worker_message, payload
+    end
+
+    it 'uses masked secret args for presentation in Web UI' do
+      payload = Sidekiq.dump_json(
+        "retry" => true,
+        "queue" => "super_queue",
+        "class" => "CronTestClass",
+        "args"  => [{:foo=>"bar",:baz=>"***"}]
+      )
+      assert_equal @job.masked_message, payload
+    end
+  end
+
   describe '#sidekiq_worker_message settings overwrite queue name' do
     before do
       @args = {
