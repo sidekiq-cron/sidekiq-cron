@@ -11,7 +11,7 @@ Runs a thread alongside Sidekiq workers to schedule jobs at specified times (usi
 
 Checks for new jobs to schedule every 10 seconds and doesn't schedule the same job multiple times when more than one Sidekiq worker is running.
 
-Scheduling jobs are added only when at least one Sidekiq process is running.
+Scheduling jobs are added only when at least one Sidekiq process is running, but it is safe to use Sidekiq-Cron in environments where multiple Sidekiq processes or nodes are running.
 
 If you want to know how scheduling work, check out [under the hood](#under-the-hood)
 
@@ -287,6 +287,8 @@ Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can chang
 ```
 Sidekiq.options[:poll_interval] = 10
 ```
+
+Sidekiq-Cron is safe to use with multiple sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
 
 ## Thanks to
 * [@7korobi](https://github.com/7korobi)
