@@ -64,6 +64,7 @@ _Job properties_:
 
 ### Time, cron and sidekiq-cron
 
+For testing your cron notation you can use [crontab.guru](https://crontab.guru)
 sidekiq-cron uses [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) to parse the cronline.
 By default, the timezone this is evaluated against UTC.
 If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline,
