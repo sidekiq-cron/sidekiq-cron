@@ -267,7 +267,7 @@ before the process forks, causing the following exception
 
     Redis::InheritedError: Tried to use a connection from a child process without reconnecting. You need to reconnect to Redis after forking.
 
-to occcur. To avoid this, wrap your job creation in the call to `Sidekiq.configure_server`:
+to occur. To avoid this, wrap your job creation in the call to `Sidekiq.configure_server`:
 
 ```ruby
 Sidekiq.configure_server do |config|
