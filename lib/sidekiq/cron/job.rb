@@ -273,7 +273,7 @@ module Sidekiq
 
         #set last enqueue time - from args or from existing job
         if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
-          @last_enqueue_time = Time.strptime(args['last_enqueue_time'], '%M/%d/%Y')
+          @last_enqueue_time = Time.strptime(args['last_enqueue_time'], '%m/%d/%Y')
         else
           @last_enqueue_time = last_enqueue_time_from_redis
         end
@@ -362,7 +362,7 @@ module Sidekiq
         out = nil
         if fetch_missing_args
           Sidekiq.redis do |conn|
-            out = Time.strptime(conn.hget(redis_key, "last_enqueue_time"), '%M/%d/%Y') rescue nil
+            out = Time.strptime(conn.hget(redis_key, "last_enqueue_time"), '%m/%d/%Y') rescue nil
           end
         end
         out
