@@ -2,6 +2,7 @@ require 'sidekiq'
 require 'sidekiq/util'
 require 'rufus-scheduler'
 require 'sidekiq/cron/support'
+require 'time'
 
 module Sidekiq
   module Cron
