@@ -13,6 +13,7 @@ module Sidekiq
 
       #how long we would like to store informations about previous enqueues
       REMEMBER_THRESHOLD = 24 * 60 * 60
+      LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
       #crucial part of whole enquing job
       def should_enque? time
@@ -47,7 +48,7 @@ module Sidekiq
 
       #enque cron job to queue
       def enque! time = Time.now.utc
-        @last_enqueue_time = time
+        @last_enqueue_time = time.strftime(LAST_ENQUEUE_TIME_FORMAT)
 
         klass_const =
             begin
@@ -274,7 +275,7 @@ module Sidekiq
 
         #set last enqueue time - from args or from existing job
         if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
-          @last_enqueue_time = Time.strptime(args['last_enqueue_time'], '%Y-%m-%d %H:%M:%S')
+          @last_enqueue_time = Time.strptime(args['last_enqueue_time'], LAST_ENQUEUE_TIME_FORMAT)
         else
           @last_enqueue_time = last_enqueue_time_from_redis
         end
@@ -363,7 +364,7 @@ module Sidekiq
         out = nil
         if fetch_missing_args
           Sidekiq.redis do |conn|
-            out = Time.strptime(conn.hget(redis_key, "last_enqueue_time"), '%Y-%m-%d %H:%M:%S') rescue nil
+            out = Time.strptime(conn.hget(redis_key, "last_enqueue_time"), LAST_ENQUEUE_TIME_FORMAT) rescue nil
           end
         end
         out
