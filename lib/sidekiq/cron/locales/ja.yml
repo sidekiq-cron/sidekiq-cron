@@ -3,9 +3,9 @@ ja:
   Cron: Cron
   CronJobs: Cronジョブ
   EnqueueNow: すぐにキューに入れる
-  EnableAll: すべて有効
-  DisableAll: すべて無効
-  EnqueueAll: すべてキュー
+  EnableAll: すべて有効にする
+  DisableAll: すべて無効にする
+  EnqueueAll: すべてキューに入れる
   DeleteAll: すべて削除
   'Cron string': Cron
   AreYouSureDeleteCronJobs: 本当にすべてのcronジョブを削除しますか？
