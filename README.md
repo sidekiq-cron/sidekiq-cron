@@ -196,7 +196,7 @@ second_job:
 #initializers/sidekiq.rb
 schedule_file = "config/schedule.yml"
 
-if File.exists?(schedule_file) && Sidekiq.server?
+if File.exist?(schedule_file) && Sidekiq.server?
   Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
 end
 ```
@@ -273,7 +273,7 @@ to occur. To avoid this, wrap your job creation in the call to `Sidekiq.configur
 Sidekiq.configure_server do |config|
   schedule_file = "config/schedule.yml"
 
-  if File.exists?(schedule_file)
+  if File.exist?(schedule_file)
     Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
   end
 end
