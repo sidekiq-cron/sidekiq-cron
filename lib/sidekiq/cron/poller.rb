@@ -19,6 +19,7 @@ module Sidekiq
         # Punt and try again at the next interval
         logger.error ex.message
         logger.error ex.backtrace.first
+        handle_exception(ex) if respond_to?(:handle_exception)
       end
 
       private
@@ -29,6 +30,7 @@ module Sidekiq
         # problem somewhere in one job
         logger.error "CRON JOB: #{ex.message}"
         logger.error "CRON JOB: #{ex.backtrace.first}"
+        handle_exception(ex) if respond_to?(:handle_exception)
       end
 
       def poll_interval_average
