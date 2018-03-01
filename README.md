@@ -67,7 +67,7 @@ _Job properties_:
 For testing your cron notation you can use [crontab.guru](https://crontab.guru).
 
 sidekiq-cron uses [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) to parse the cronline.
-By default, the timezone this is evaluated against UTC.
+If using Rails, this is evaluated against the timezone configured in Rails, otherwise the default is UTC.
 
 If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline,
 like this `'0 22 * * 1-5 America/Chicago'`.
