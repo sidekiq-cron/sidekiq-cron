@@ -124,6 +124,7 @@ module Sidekiq
       def active_job_message
         {
           'class'        => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+          'wrapped'      => @klass,
           'queue'        => @queue_name_with_prefix,
           'description'  => @description,
           'args'         => [{

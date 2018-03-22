@@ -299,6 +299,7 @@ describe "Cron Job" do
     it 'should return valid payload for Sidekiq::Client' do
       payload = {
         'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'wrapped'     => 'ActiveJobCronTestClass',
         'queue'       => 'super_queue',
         'description' => nil,
         'args'        => [{
@@ -330,10 +331,11 @@ describe "Cron Job" do
 
     it 'should return valid payload for Sidekiq::Client' do
       payload = {
-        'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-        'queue' => 'prefix_super_queue',
+        'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'wrapped'     => 'ActiveJobCronTestClass',
+        'queue'       => 'prefix_super_queue',
         'description' => nil,
-        'args'  =>[{
+        'args'        => [{
           'job_class'  => 'ActiveJobCronTestClass',
           'job_id'     => 'XYZ',
           'queue_name' => 'prefix_super_queue',
