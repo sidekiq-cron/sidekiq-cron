@@ -883,7 +883,7 @@ describe "Cron Job" do
         @jobs_hash['name_of_job']['cron'] = "bad cron"
         out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
         assert_equal 1, out.size, "should have 1 error"
-        assert_equal ({"name_of_job"=>["'cron' -> bad cron: not a valid cronline : 'bad cron'"]}), out
+        assert_equal ({"name_of_job"=>["'cron' -> \"bad cron\" -> ArgumentError: not a cron string \"bad cron\""]}), out
         assert_equal 1, Sidekiq::Cron::Job.all.size, "Should have only 1 job after load"
       end
 
