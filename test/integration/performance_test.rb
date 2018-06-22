@@ -47,6 +47,6 @@ describe 'Performance Poller' do
     end
 
     puts "Perfomance test finished in #{bench.real}"
-    assert_operator 30, :>, bench.real
+    assert_operator bench.real, :<, 30
   end
 end
