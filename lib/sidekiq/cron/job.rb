@@ -399,7 +399,7 @@ module Sidekiq
           errors << "'cron' must be set"
         else
           begin
-            Fugit.do_parse_cron(@cron).next_time.utc
+            @parsed_cron = Fugit.do_parse_cron(@cron)
           rescue => e
             errors << "'cron' -> #{@cron.inspect} -> #{e.class}: #{e.message}"
           end
@@ -491,7 +491,7 @@ module Sidekiq
       # Parse cron specification '* * * * *' and returns
       # time when last run should be performed
       def last_time now = Time.now.utc
-        Fugit.parse_cron(@cron).previous_time(now.utc).utc
+        parsed_cron.previous_time(now.utc).utc
       end
 
       def formated_enqueue_time now = Time.now.utc
@@ -520,6 +520,10 @@ module Sidekiq
 
       private
 
+      def parsed_cron
+        @parsed_cron ||= Fugit.parse_cron(@cron)
+      end
+
       def not_enqueued_after?(time)
         @last_enqueue_time.nil? || @last_enqueue_time.to_i < last_time(time).to_i
       end
@@ -546,7 +550,7 @@ module Sidekiq
       end
 
       def not_past_scheduled_time?(current_time)
-        last_cron_time = Fugit.parse(@cron).previous_time(current_time).utc
+        last_cron_time = parsed_cron.previous_time(current_time).utc
           # or could it be?
         #last_cron_time = last_time(current_time)
         return false if (current_time.to_i - last_cron_time.to_i) > 60
