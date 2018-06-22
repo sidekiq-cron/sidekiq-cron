@@ -2,7 +2,7 @@
 require './test/test_helper'
 require 'benchmark'
 
-describe 'Perfromance Poller' do
+describe 'Performance Poller' do
   X = 10000
   before do
     Sidekiq.redis = REDIS
