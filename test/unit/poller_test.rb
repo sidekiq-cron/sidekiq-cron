@@ -45,12 +45,13 @@ describe 'Cron Poller' do
     #30 seconds after!
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 30)
     Time.stubs(:now).returns(enqueued_time)
-      @poller.enqueue
 
-      Sidekiq.redis do |conn|
-        assert_equal 0, conn.llen("queue:default")
-        assert_equal 0, conn.llen("queue:super")
-      end
+    @poller.enqueue
+
+    Sidekiq.redis do |conn|
+      assert_equal 0, conn.llen("queue:default")
+      assert_equal 0, conn.llen("queue:super")
+    end
   end
 
   it 'should enqueue only job with cron */2' do
