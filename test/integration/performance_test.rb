@@ -28,8 +28,8 @@ describe 'Performance Poller' do
     end
 
     @poller = Sidekiq::Cron::Poller.new
-    now = Time.now.utc
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 10, 5)
+    now = Time.now.utc + 3600
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 10, 5)
     Time.stubs(:now).returns(enqueued_time)
   end
 
