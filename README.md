@@ -1,4 +1,4 @@
-Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](http://badge.fury.io/rb/sidekiq-cron) [![Build Status](https://travis-ci.org/ondrejbartas/sidekiq-cron.svg?branch=master)](https://travis-ci.org/ondrejbartas/sidekiq-cron) [![Coverage Status](https://coveralls.io/repos/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/r/ondrejbartas/sidekiq-cron?branch=master) [![Dependency Status](https://dependencyci.com/github/ondrejbartas/sidekiq-cron/badge)](https://dependencyci.com/github/ondrejbartas/sidekiq-cron)
+Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](http://badge.fury.io/rb/sidekiq-cron) [![Build Status](https://travis-ci.org/ondrejbartas/sidekiq-cron.svg?branch=master)](https://travis-ci.org/ondrejbartas/sidekiq-cron) [![Coverage Status](https://coveralls.io/repos/github/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/github/ondrejbartas/sidekiq-cron?branch=master) [![Dependency Status](https://dependencyci.com/github/ondrejbartas/sidekiq-cron/badge)](https://dependencyci.com/github/ondrejbartas/sidekiq-cron)
 ================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
 [![Join the chat at https://gitter.im/ondrejbartas/sidekiq-cron](https://badges.gitter.im/ondrejbartas/sidekiq-cron.svg)](https://gitter.im/ondrejbartas/sidekiq-cron?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -7,7 +7,7 @@ Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](http://
 
 A scheduling add-on for [Sidekiq](http://sidekiq.org).
 
-Runs a thread alongside Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` parsed by [Rufus-Scheduler](https://github.com/jmettraux/rufus-scheduler), more about [cron notation](http://www.nncron.ru/help/EN/working/cron-format.htm).
+Runs a thread alongside Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` parsed by [Fugit](https://github.com/floraison/fugit), more about [cron notation](http://www.nncron.ru/help/EN/working/cron-format.htm).
 
 Checks for new jobs to schedule every 30 seconds and doesn't schedule the same job multiple times when more than one Sidekiq worker is running.
 
@@ -66,13 +66,13 @@ _Job properties_:
 
 For testing your cron notation you can use [crontab.guru](https://crontab.guru).
 
-sidekiq-cron uses [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) to parse the cronline.
+sidekiq-cron uses [Fugit](https://github.com/floraison/fugit) to parse the cronline.
 If using Rails, this is evaluated against the timezone configured in Rails, otherwise the default is UTC.
 
 If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline,
 like this `'0 22 * * 1-5 America/Chicago'`.
 
-See [rufus-scheduler documentation](https://github.com/jmettraux/rufus-scheduler#a-note-about-timezones) for more information.
+See [rufus-scheduler documentation](https://github.com/jmettraux/rufus-scheduler#a-note-about-timezones) for more information. (note. Rufus scheduler is using Fugit under the hood, so documentation for Rufus Scheduler can help you also)
 
 ### What objects/classes can be scheduled
 #### Sidekiq Worker
