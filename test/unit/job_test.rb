@@ -210,24 +210,24 @@ describe "Cron Job" do
 
     it "return previous minute" do
       @job.cron = "* * * * *"
-      time = Time.now.utc
+      time = Time.new(2018, 8, 10, 13, 24, 56).utc
       assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-%H-%M-00")
     end
 
     it "return previous hour" do
       @job.cron = "1 * * * *"
-      time = Time.now.utc
+      time = Time.new(2018, 8, 10, 13, 24, 56).utc
       assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-%H-01-00")
     end
 
     it "return previous day" do
       @job.cron = "1 2 * * * Etc/GMT"
-      time = Time.now.utc
+      time = Time.new(2018, 8, 10, 13, 24, 56).utc
 
       if time.hour >= 2
         assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), time.strftime("%Y-%m-%d-02-01-00")
       else
-        yesterday = (Date.today - 1)
+        yesterday = time - 1.day
         assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), yesterday.strftime("%Y-%m-%d-02-01-00")
       end
     end
@@ -523,7 +523,6 @@ describe "Cron Job" do
     it "be saved" do
       assert @job.save
     end
-
 
     it "be saved and found by name" do
       assert @job.save, "not saved"
