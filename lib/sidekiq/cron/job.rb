@@ -1,6 +1,6 @@
+require 'fugit'
 require 'sidekiq'
 require 'sidekiq/util'
-require 'rufus-scheduler'
 require 'sidekiq/cron/support'
 
 module Sidekiq
@@ -392,7 +392,7 @@ module Sidekiq
       end
 
       def valid?
-        #clear previos errors
+        #clear previous errors
         @errors = []
 
         errors << "'name' must be set" if @name.nil? || @name.size == 0
@@ -400,21 +400,15 @@ module Sidekiq
           errors << "'cron' must be set"
         else
           begin
-            cron = Rufus::Scheduler::CronLine.new(@cron)
-            cron.next_time(Time.now.utc).utc
-          rescue Exception => e
-            #fix for different versions of cron-parser
-            if e.message == "Bad Vixie-style specification bad"
-              errors << "'cron' -> #{@cron}: not a valid cronline"
-            else
-              errors << "'cron' -> #{@cron}: #{e.message}"
-            end
+            @parsed_cron = Fugit.do_parse_cron(@cron)
+          rescue => e
+            errors << "'cron' -> #{@cron.inspect} -> #{e.class}: #{e.message}"
           end
         end
 
         errors << "'klass' (or class) must be set" unless klass_valid
 
-        !errors.any?
+        errors.empty?
       end
 
       def klass_valid
@@ -498,7 +492,7 @@ module Sidekiq
       # Parse cron specification '* * * * *' and returns
       # time when last run should be performed
       def last_time now = Time.now.utc
-        Rufus::Scheduler::CronLine.new(@cron).previous_time(now.utc).utc
+        parsed_cron.previous_time(now.utc).utc
       end
 
       def formated_enqueue_time now = Time.now.utc
@@ -527,6 +521,10 @@ module Sidekiq
 
       private
 
+      def parsed_cron
+        @parsed_cron ||= Fugit.parse_cron(@cron)
+      end
+
       def not_enqueued_after?(time)
         @last_enqueue_time.nil? || @last_enqueue_time.to_i < last_time(time).to_i
       end
@@ -553,7 +551,9 @@ module Sidekiq
       end
 
       def not_past_scheduled_time?(current_time)
-        last_cron_time = Rufus::Scheduler::CronLine.new(@cron).previous_time(current_time).utc
+        last_cron_time = parsed_cron.previous_time(current_time).utc
+          # or could it be?
+        #last_cron_time = last_time(current_time)
         return false if (current_time.to_i - last_cron_time.to_i) > 60
         true
       end

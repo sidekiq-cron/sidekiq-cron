@@ -2,7 +2,7 @@
 require './test/test_helper'
 require 'benchmark'
 
-describe 'Perfromance Poller' do
+describe 'Performance Poller' do
   X = 10000
   before do
     Sidekiq.redis = REDIS
@@ -28,8 +28,8 @@ describe 'Perfromance Poller' do
     end
 
     @poller = Sidekiq::Cron::Poller.new
-    now = Time.now.utc
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 10, 5)
+    now = Time.now.utc + 3600
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 10, 5)
     Time.stubs(:now).returns(enqueued_time)
   end
 
@@ -46,7 +46,7 @@ describe 'Perfromance Poller' do
       assert_equal X, conn.llen("queue:default"), 'Queue should be full'
     end
 
-    puts "Perfomance test finished in #{bench.real}"
-    assert_operator 30, :>, bench.real
+    puts "Performance test finished in #{bench.real}"
+    assert_operator bench.real, :<, 30
   end
 end

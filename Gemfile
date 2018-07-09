@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'sidekiq', '>= 4.2.1'
-gem 'rufus-scheduler', '>= 3.3.0'
+gem 'fugit', '~> 1.1'
 
 group :development do
   gem 'bundler'

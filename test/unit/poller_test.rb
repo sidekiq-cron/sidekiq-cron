@@ -28,8 +28,8 @@ describe 'Cron Poller' do
   end
 
   it 'not enqueue any job - new jobs' do
-    now = Time.now.utc
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 5, 1)
+    now = Time.now.utc + 3600
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!
     Sidekiq::Cron::Job.create(@args)
@@ -43,19 +43,20 @@ describe 'Cron Poller' do
     end
 
     #30 seconds after!
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 5, 30)
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 30)
     Time.stubs(:now).returns(enqueued_time)
-      @poller.enqueue
 
-      Sidekiq.redis do |conn|
-        assert_equal 0, conn.llen("queue:default")
-        assert_equal 0, conn.llen("queue:super")
-      end
+    @poller.enqueue
+
+    Sidekiq.redis do |conn|
+      assert_equal 0, conn.llen("queue:default")
+      assert_equal 0, conn.llen("queue:super")
+    end
   end
 
   it 'should enqueue only job with cron */2' do
-    now = Time.now.utc
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 5, 1)
+    now = Time.now.utc + 3600
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!
     Sidekiq::Cron::Job.create(@args)
@@ -68,7 +69,7 @@ describe 'Cron Poller' do
       assert_equal 0, conn.llen("queue:super")
     end
 
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 6, 1)
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 6, 1)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
 
@@ -79,8 +80,8 @@ describe 'Cron Poller' do
   end
 
   it 'should enqueue both jobs' do
-    now = Time.now.utc
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 8, 1)
+    now = Time.now.utc + 3600
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 8, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!
     Sidekiq::Cron::Job.create(@args)
@@ -93,7 +94,7 @@ describe 'Cron Poller' do
       assert_equal 0, conn.llen("queue:super")
     end
 
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 10, 5)
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 10, 5)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
 
@@ -104,8 +105,8 @@ describe 'Cron Poller' do
   end
 
   it 'should enqueue both jobs but only one time each' do
-    now = Time.now.utc
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 8, 1)
+    now = Time.now.utc + 3600
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 8, 1)
     Time.stubs(:now).returns(enqueued_time)
     #new jobs!
     Sidekiq::Cron::Job.create(@args)
@@ -118,7 +119,7 @@ describe 'Cron Poller' do
       assert_equal 0, conn.llen("queue:super")
     end
 
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 1)
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 1)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
@@ -126,7 +127,7 @@ describe 'Cron Poller' do
       assert_equal 1, conn.llen("queue:super")
     end
 
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 2)
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 2)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
@@ -134,7 +135,7 @@ describe 'Cron Poller' do
       assert_equal 1, conn.llen("queue:super")
     end
 
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 20)
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 20)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
@@ -142,7 +143,7 @@ describe 'Cron Poller' do
       assert_equal 1, conn.llen("queue:super")
     end
 
-    enqueued_time = Time.new(now.year, now.month, now.day, now.hour + 1, 20, 50)
+    enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 50)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
