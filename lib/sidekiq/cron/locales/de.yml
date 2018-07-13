@@ -5,7 +5,7 @@ de:
   EnqueueNow: In Warteschlange
   'Cron string': Cron
   AreYouSureDeleteCronJob: Sind Sie sicher, dass sie den Cronjob %{job} löschen wollen?
-  NoCronJobsFound: "Keine Cronjobs gefunden"
+  NoCronJobsWereFound: Keine Cronjobs gefunden
   Enable: Aktivieren
   Disable: Deaktivieren
   'Last enque': Eingereiht
