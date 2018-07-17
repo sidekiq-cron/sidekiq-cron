@@ -39,7 +39,9 @@
         <tr>
           <td style="<%= style %>"><%= t job.status %></td>
           <td style="<%= style %>">
-            <b><%= job.name %></b>
+            <a href="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>">
+              <b><%= job.name %></b>
+            </a>
             <hr style="margin:3px;border:0;">
             <small>
             <% if job.message and job.message.to_s.size > 100 %>

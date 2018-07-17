@@ -58,19 +58,20 @@ module Sidekiq
 
         if klass_const
           if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
-            enqueue_active_job(klass_const)
+            jid = enqueue_active_job(klass_const).provider_job_id
           else
-            enqueue_sidekiq_worker(klass_const)
+            jid = enqueue_sidekiq_worker(klass_const)
           end
         else
           if @active_job
-            Sidekiq::Client.push(active_job_message)
+            jid = Sidekiq::Client.push(active_job_message)
           else
-            Sidekiq::Client.push(sidekiq_worker_message)
+            jid = Sidekiq::Client.push(sidekiq_worker_message)
           end
         end
 
         save_last_enqueue_time
+        add_jid_history jid
         logger.debug { "enqueued #{@name}: #{@message}" }
       end
 
@@ -82,14 +83,10 @@ module Sidekiq
 
       def enqueue_active_job(klass_const)
         klass_const.set(queue: @queue).perform_later(*@args)
-
-        true
       end
 
       def enqueue_sidekiq_worker(klass_const)
         klass_const.set(queue: queue_name_with_prefix).perform_async(*@args)
-
-        true
       end
 
       # siodekiq worker message
@@ -349,6 +346,12 @@ module Sidekiq
         !enabled?
       end
 
+      def pretty_message
+        JSON.pretty_generate(JSON.parse(message))
+      rescue JSON::ParserError
+        message
+      end
+
       def status_from_redis
         out = "enabled"
         if fetch_missing_args
@@ -368,6 +371,16 @@ module Sidekiq
           end
         end
         out
+      end
+
+      def jid_history_from_redis
+        out = nil
+        Sidekiq.redis do |conn|
+          out = conn.lrange(jid_history_key, 0, -1) rescue nil
+        end
+        out&.map do |jid_history_raw|
+          JSON.parse(jid_history_raw)
+        end
       end
 
       #export job data to hash
@@ -453,6 +466,19 @@ module Sidekiq
         Sidekiq.redis do |conn|
           # update last enqueue time
           conn.hset redis_key, 'last_enqueue_time', @last_enqueue_time
+        end
+      end
+
+      def add_jid_history(jid)
+        jid_history = {
+          jid: jid,
+          last_enqueue_time: @last_enqueue_time
+        }
+        Sidekiq.redis do |conn|
+          conn.lpush jid_history_key,
+                     Sidekiq.dump_json(jid_history)
+          # keep only last 10 entries in a fifo manner
+          conn.ltrim jid_history_key, 0, 9
         end
       end
 
@@ -579,10 +605,18 @@ module Sidekiq
         "cron_job:#{name}:enqueued"
       end
 
+      def self.jid_history_key name
+        "cron_job:#{name}:jid_history"
+      end
+
       # Redis key for storing one cron job run times
       # (when poller added job to queue)
       def job_enqueued_key
         self.class.job_enqueued_key @name
+      end
+
+      def jid_history_key
+        self.class.jid_history_key @name
       end
 
       # Give Hash
