@@ -79,6 +79,12 @@ describe 'Cron web' do
       assert last_response.body.include?(jid)
     end
 
+    it 'redirects to cron path when name not found' do
+      get '/cron/some-fake-name'
+
+      assert_match %r{\/cron\z}, last_response['Location']
+    end
+
     it "disable and enable all cron jobs" do
       post "/cron/__all__/disable"
       assert_equal Sidekiq::Cron::Job.find(@name).status, "disabled"
