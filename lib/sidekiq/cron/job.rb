@@ -474,11 +474,12 @@ module Sidekiq
           jid: jid,
           enqueued: @last_enqueue_time
         }
+        @history_size ||= Sidekiq.options[:cron_history_size]&.to_i&.-(1)
         Sidekiq.redis do |conn|
           conn.lpush jid_history_key,
                      Sidekiq.dump_json(jid_history)
           # keep only last 10 entries in a fifo manner
-          conn.ltrim jid_history_key, 0, 9
+          conn.ltrim jid_history_key, 0, @history_size || 9
         end
       end
 
