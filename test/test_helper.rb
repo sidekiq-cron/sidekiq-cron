@@ -87,6 +87,10 @@ module ActiveJob
       self
     end
 
+    def try(method, *args, &block)
+      send method, *args, &block if respond_to? method
+    end
+
     def self.perform_later(*args)
       new do |instance|
         instance.job_class = self.class.name
