@@ -56,19 +56,20 @@ module Sidekiq
               nil
             end
 
-        if klass_const
-          if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
-            jid = enqueue_active_job(klass_const).try :provider_job_id
+        jid =
+          if klass_const
+            if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
+              jid = enqueue_active_job(klass_const).try :provider_job_id
+            else
+              jid = enqueue_sidekiq_worker(klass_const)
+            end
           else
-            jid = enqueue_sidekiq_worker(klass_const)
+            if @active_job
+              jid = Sidekiq::Client.push(active_job_message)
+            else
+              jid = Sidekiq::Client.push(sidekiq_worker_message)
+            end
           end
-        else
-          if @active_job
-            jid = Sidekiq::Client.push(active_job_message)
-          else
-            jid = Sidekiq::Client.push(sidekiq_worker_message)
-          end
-        end
 
         save_last_enqueue_time
         add_jid_history jid
@@ -374,10 +375,12 @@ module Sidekiq
       end
 
       def jid_history_from_redis
-        out = nil
-        Sidekiq.redis do |conn|
-          out = conn.lrange(jid_history_key, 0, -1) rescue nil
-        end
+        out =
+          Sidekiq.redis do |conn|
+            conn.lrange(jid_history_key, 0, -1) rescue nil
+          end
+
+        # returns nil if out nil
         out && out.map do |jid_history_raw|
           Sidekiq.load_json jid_history_raw
         end
