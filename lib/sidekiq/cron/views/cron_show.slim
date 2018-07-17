@@ -47,12 +47,12 @@ header.row
   table.table.table-hover.table-bordered.table-striped
     thead
       tr
-        th= t 'Last enque'
+        th= t 'Enqueued'
         th= t 'JID'
     tbody
       - @job.jid_history_from_redis.each do |jid_history|
         tr
-          td= jid_history['last_enqueue_time']
+          td= jid_history['enqueued']
           td= jid_history['jid']
 - else
   .alert.alert-success= t 'NoHistoryWereFound'

@@ -66,14 +66,14 @@
   <table class="table table-hover table-bordered table-striped">
     <thead>
     <tr>
-      <th><%= t 'Last enque' %></th>
+      <th><%= t 'Enqueued' %></th>
       <th><%= t 'JID' %></th>
     </tr>
     </thead>
     <tbody>
     <% @job.jid_history_from_redis.each do |jid_history| %>
       <tr>
-        <td><%= jid_history['last_enqueue_time'] %></td>
+        <td><%= jid_history['enqueued'] %></td>
         <td><%= jid_history['jid'] %></td>
       </tr>
     <% end %>
