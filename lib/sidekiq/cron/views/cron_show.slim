@@ -43,13 +43,16 @@ header.row
   .col-sm-12
     h4= t 'History'
 
-table.table.table-hover.table-bordered.table-striped
-  thead
-    tr
-      th= t 'Last enque'
-      th= t 'JID'
-  tbody
-    - @job.jid_history_from_redis.each do |jid_history|
+- if @job.jid_history_from_redis.size > 0
+  table.table.table-hover.table-bordered.table-striped
+    thead
       tr
-        td= jid_history['last_enqueue_time']
-        td= jid_history['jid']
+        th= t 'Last enque'
+        th= t 'JID'
+    tbody
+      - @job.jid_history_from_redis.each do |jid_history|
+        tr
+          td= jid_history['last_enqueue_time']
+          td= jid_history['jid']
+- else
+  .alert.alert-success= t 'NoHistoryWereFound'

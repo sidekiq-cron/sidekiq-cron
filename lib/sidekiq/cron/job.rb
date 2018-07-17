@@ -493,6 +493,9 @@ module Sidekiq
           #delete runned timestamps
           conn.del job_enqueued_key
 
+          # delete jid_history
+          conn.del jid_history_key
+
           #delete main job
           conn.del redis_key
         end
