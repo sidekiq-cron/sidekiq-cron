@@ -12,7 +12,7 @@ module Sidekiq
 
       #how long we would like to store informations about previous enqueues
       REMEMBER_THRESHOLD = 24 * 60 * 60
-      LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+      LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
       #crucial part of whole enquing job
       def should_enque? time
