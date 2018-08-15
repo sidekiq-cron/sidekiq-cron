@@ -1,3 +1,8 @@
+v 1.0.4
+-------
+
+- fix problem with upgrading to 1.0.x - parsing last enqued time didn't count with old time format stored in redis
+
 v 1.0.0
 -------
 
