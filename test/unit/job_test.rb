@@ -601,13 +601,14 @@ describe "Cron Job" do
     it "last_enqueue_time shouldn't be rewritten after save" do
       #adding last_enqueue_time to initialize is only for test purpose
       last_enqueue_time = '2013-01-01 23:59:59'
+      expected_enqueue_time = DateTime.parse(last_enqueue_time).to_time.utc
       Sidekiq::Cron::Job.create(@args.merge('last_enqueue_time' => last_enqueue_time))
       job = Sidekiq::Cron::Job.find(@args)
-      assert_equal job.last_enqueue_time, Time.parse(last_enqueue_time)
+      assert_equal job.last_enqueue_time, expected_enqueue_time
 
       Sidekiq::Cron::Job.create(@args)
       job = Sidekiq::Cron::Job.find(@args)
-      assert_equal job.last_enqueue_time, Time.parse(last_enqueue_time), "after second create should have same time"
+      assert_equal job.last_enqueue_time, expected_enqueue_time, "after second create should have same time"
     end
   end
 
