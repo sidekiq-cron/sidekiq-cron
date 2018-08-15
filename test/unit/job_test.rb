@@ -131,6 +131,28 @@ describe "Cron Job" do
     end
   end
 
+  describe 'parse_enqueue_time' do
+    before do
+      @args = {
+        name: "Test",
+        cron: "* * * * *"
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should correctly parse new format' do
+      assert_equal @job.send(:parse_enqueue_time, '2017-01-02 15:23:43 UTC'), Time.new(2017, 1, 2, 15, 23, 43, '+00:00')
+    end
+
+    it 'should correctly parse new format with different timezone' do
+      assert_equal @job.send(:parse_enqueue_time, '2017-01-02 15:23:43 +01:00'), Time.new(2017, 1, 2, 15, 23, 43, '+01:00')
+    end
+
+    it 'should correctly parse old format' do
+      assert_equal @job.send(:parse_enqueue_time, '2017-01-02 15:23:43'), Time.new(2017, 1, 2, 15, 23, 43, '+00:00')
+    end
+  end
+
   describe 'formatted time' do
     before do
       @args = {
