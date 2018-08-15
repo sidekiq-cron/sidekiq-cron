@@ -10,7 +10,7 @@ en:
   'Cron string': Cron
   AreYouSureDeleteCronJobs: Are you sure you want to delete ALL cron jobs?
   AreYouSureDeleteCronJob: Are you sure you want to delete the %{job} cron job?
-  NoCronJobsFound: "No cron jobs found"
+  NoCronJobsWereFound: No cron jobs were found
   Enable: Enable
   Disable: Disable
   'Last enque': Last enqueued

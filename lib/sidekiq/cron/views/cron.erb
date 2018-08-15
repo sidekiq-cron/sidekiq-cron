@@ -3,22 +3,24 @@
     <h3><%=t 'CronJobs' %></h3>
   </div>
   <div class='col-sm-7 pull-right' style="margin-top: 20px; margin-bottom: 10px;">
-    <form action="<%= root_path %>cron/__all__/delete" method="post" class="pull-right">
-      <%= csrf_tag if respond_to?(:csrf_tag) %>
-      <input class="btn btn-small btn-danger" type="submit" name="delete" value="<%= t('DeleteAll') %>" data-confirm="<%= t('AreYouSureDeleteCronJobs') %>">
-    </form>
-    <form action="<%= root_path %>cron/__all__/disable" method="post" class="pull-right">
-      <%= csrf_tag if respond_to?(:csrf_tag) %>
-      <input class="btn btn-small" type="submit" name="enque" value="<%= t('DisableAll') %>" />
-    </form>
-    <form action="<%= root_path %>cron/__all__/enable" method="post" class="pull-right">
-      <%= csrf_tag if respond_to?(:csrf_tag) %>
-      <input class="btn btn-small" type="submit" name="enque" value="<%= t('EnableAll') %>" />
-    </form>
-    <form action="<%= root_path %>cron/__all__/enque" method="post" class="pull-right">
-      <%= csrf_tag if respond_to?(:csrf_tag) %>
-      <input class="btn btn-small" type="submit" name="enque" value="<%= t('EnqueueAll') %>" />
-    </form>
+    <% if @cron_jobs.size > 0 %>
+      <form action="<%= root_path %>cron/__all__/delete" method="post" class="pull-right">
+        <%= csrf_tag if respond_to?(:csrf_tag) %>
+        <input class="btn btn-small btn-danger" type="submit" name="delete" value="<%= t('DeleteAll') %>" data-confirm="<%= t('AreYouSureDeleteCronJobs') %>">
+      </form>
+      <form action="<%= root_path %>cron/__all__/disable" method="post" class="pull-right">
+        <%= csrf_tag if respond_to?(:csrf_tag) %>
+        <input class="btn btn-small" type="submit" name="enque" value="<%= t('DisableAll') %>" />
+      </form>
+      <form action="<%= root_path %>cron/__all__/enable" method="post" class="pull-right">
+        <%= csrf_tag if respond_to?(:csrf_tag) %>
+        <input class="btn btn-small" type="submit" name="enque" value="<%= t('EnableAll') %>" />
+      </form>
+      <form action="<%= root_path %>cron/__all__/enque" method="post" class="pull-right">
+        <%= csrf_tag if respond_to?(:csrf_tag) %>
+        <input class="btn btn-small" type="submit" name="enque" value="<%= t('EnqueueAll') %>" />
+      </form>
+    <% end %>
   </div>
 </header>
 
@@ -83,6 +85,6 @@
     </tbody>
   </table>
 <% else %>
-  <span class='alert alert-success'><%= t('NoCronJobsFound') %></span>
+  <div class='alert alert-success'><%= t('NoCronJobsWereFound') %></div>
 <% end %>
 

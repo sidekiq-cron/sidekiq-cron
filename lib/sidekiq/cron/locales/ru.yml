@@ -6,7 +6,7 @@ ru:
   'Cron string': Периодичность (синтаксис Cron)
   EnqueueNow: Запустить
   AreYouSureDeleteCronJob: Вы действительно хотите удалить задачу «%{job}»?
-  NoCronJobsFound: "Не найдено периодических задач"
+  NoCronJobsWereFound: Не найдено периодических задач
   Enable: Включить
   Disable: Отключить
   'Last enque': Последний запуск

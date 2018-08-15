@@ -41,7 +41,7 @@ describe 'Cron web' do
 
   it 'display cron web with message - no cron jobs' do
     get '/cron'
-    assert last_response.body.include?('No cron jobs found')
+    assert last_response.body.include?('No cron jobs were found')
   end
 
   it 'display cron web with cron jobs table' do
@@ -49,7 +49,7 @@ describe 'Cron web' do
 
     get '/cron'
     assert_equal 200, last_response.status
-    refute last_response.body.include?('No cron jobs found')
+    refute last_response.body.include?('No cron jobs were found')
     assert last_response.body.include?('table')
     assert last_response.body.include?("TestNameOfCronJob")
   end

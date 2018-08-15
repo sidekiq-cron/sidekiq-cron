@@ -10,7 +10,7 @@ zh-CN:
   'Cron string': 定时策略
   AreYouSureDeleteCronJobs: 你确定删除所有的定时任务吗？
   AreYouSureDeleteCronJob: 你确定删除定时任务（%{job}）吗？
-  NoCronJobsFound: 没有定时任务
+  NoCronJobsWereFound: 没有定时任务
   Enable: 启用
   Disable: 禁用
   'Last enque': 放入队列时间
