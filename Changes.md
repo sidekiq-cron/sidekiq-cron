@@ -1,3 +1,12 @@
+v 1.0.0
+-------
+
+- use [fugit](https://github.com/floraison/fugit) instead of [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) - API of cron didn't change (rufus scheduler is using fugit)
+- better working with Timezones
+- translations for JA, zh-CN
+- cron without timezone are considered as UTC, to add Timezone to cron use format `* * * * * Europe/Berlin`
+- be aware that this release can change when your jobs are enqueued (for me it didn't change but it is in one project, in other it can shift by different timezone setup)
+
 v 0.6.0
 -------
 
