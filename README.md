@@ -19,6 +19,11 @@ Works with ActiveJob (Rails 4.2+)
 
 You don't need Sidekiq PRO, you can use this gem with plain __Sidekiq__.
 
+Upgrade from <0.6x to 1.0.x
+---------------------------
+
+Be aware that there was change from rufus-scheduler to fugit. Also there was change in handling Timezones, so after upgrade check that your jobs are enqueued in correct times. Best thing to do is correctly set timezone in cron notations.
+
 Requirements
 -----------------
 
