@@ -59,15 +59,15 @@ module Sidekiq
         jid =
           if klass_const
             if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
-              jid = enqueue_active_job(klass_const).try :provider_job_id
+              enqueue_active_job(klass_const).try :provider_job_id
             else
-              jid = enqueue_sidekiq_worker(klass_const)
+              enqueue_sidekiq_worker(klass_const)
             end
           else
             if @active_job
-              jid = Sidekiq::Client.push(active_job_message)
+              Sidekiq::Client.push(active_job_message)
             else
-              jid = Sidekiq::Client.push(sidekiq_worker_message)
+              Sidekiq::Client.push(sidekiq_worker_message)
             end
           end
 
