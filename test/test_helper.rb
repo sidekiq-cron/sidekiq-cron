@@ -66,6 +66,13 @@ end
 
 module ActiveJob
   class Base
+    attr_accessor *%i[job_class provider_job_id queue_name arguments]
+
+    def initialize
+      yield self if block_given?
+      self.provider_job_id ||= SecureRandom.hex(12)
+    end
+
     def self.queue_name_prefix
       @queue_name_prefix
     end
@@ -80,12 +87,16 @@ module ActiveJob
       self
     end
 
+    def try(method, *args, &block)
+      send method, *args, &block if respond_to? method
+    end
+
     def self.perform_later(*args)
-      {
-        "job_class"  => self.class.name,
-        "queue_name" => @queue,
-        "args"  => [*args],
-      }
+      new do |instance|
+        instance.job_class = self.class.name
+        instance.queue_name = @queue
+        instance.arguments = [*args]
+      end
     end
   end
 end

@@ -381,7 +381,7 @@ describe "Cron Job" do
 
       it 'pushes to queue active jobs message' do
         @job.expects(:enqueue_active_job)
-            .returns(true)
+            .returns(ActiveJobCronTestClass.new)
         @job.enque!
       end
     end
@@ -399,7 +399,7 @@ describe "Cron Job" do
 
       it 'pushes to queue active jobs message with queue_name_prefix' do
         @job.expects(:enqueue_active_job)
-            .returns(true)
+            .returns(ActiveJobCronTestClass.new)
         @job.enque!
       end
     end

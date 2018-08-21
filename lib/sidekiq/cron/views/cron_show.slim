@@ -1,0 +1,58 @@
+header.row
+  .span.col-sm-5.pull-left
+    h3
+      = "#{t('Cron')} #{t('Job')}"
+      small= @job.name
+  .span.col-sm-7.pull-right style=("margin-top: 20px; margin-bottom: 10px;")
+    - cron_job_path = "#{root_path}cron/#{CGI.escape(@job.name).gsub('+', '%20')}"
+    form.pull-right action="#{cron_job_path}/enque?redirect=#{cron_job_path}" method="post"
+      = csrf_tag if respond_to?(:csrf_tag)
+      input.btn.btn-small.pull-left name="enque" type="submit" value="#{t('EnqueueNow')}"
+    - if @job.status == 'enabled'
+      form.pull-right action="#{cron_job_path}/disable?redirect=#{cron_job_path}" method="post"
+        = csrf_tag if respond_to?(:csrf_tag)
+        input.btn.btn-small.pull-left name="disable" type="submit" value="#{t('Disable')}"
+    - else
+      form.pull-right action="#{cron_job_path}/enable?redirect=#{cron_job_path}" method="post"
+        = csrf_tag if respond_to?(:csrf_tag)
+        input.btn.btn-small.pull-left name="enable" type="submit" value="#{t('Enable')}"
+      form.pull-right action="#{cron_job_path}/delete" method="post"
+        = csrf_tag if respond_to?(:csrf_tag)
+        input.btn.btn-danger.btn-small data-confirm="#{t('AreYouSureDeleteCronJob' job =@job.name)}" name="delete" type="submit" value="#{t('Delete')}" /
+
+table.table.table-bordered.table-striped
+  tbody
+    tr
+      th= t 'Status'
+      td= @job.status
+    tr
+      th= t 'Name'
+      td= @job.name
+    tr
+      th= t 'Message'
+      td
+        pre= @job.pretty_message
+    tr
+      th= t 'Cron'
+      td= @job.cron.gsub(" ", "&nbsp;")
+    tr
+      th= t 'Last enque'
+      td= @job.last_enqueue_time ? relative_time(@job.last_enqueue_time) : "-"
+
+header.row
+  .col-sm-12
+    h4= t 'History'
+
+- if @job.jid_history_from_redis.size > 0
+  table.table.table-hover.table-bordered.table-striped
+    thead
+      tr
+        th= t 'Enqueued'
+        th= t 'JID'
+    tbody
+      - @job.jid_history_from_redis.each do |jid_history|
+        tr
+          td= jid_history['enqueued']
+          td= jid_history['jid']
+- else
+  .alert.alert-success= t 'NoHistoryWereFound'

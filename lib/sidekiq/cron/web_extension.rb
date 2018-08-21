@@ -20,6 +20,23 @@ module Sidekiq
           end
         end
 
+        # display job detail + jid history
+        app.get '/cron/:name' do
+          view_path = File.join(File.expand_path("..", __FILE__), "views")
+
+          @job = Sidekiq::Cron::Job.find(route_params[:name])
+          if @job.present?
+            #if Slim renderer exists and sidekiq has layout.slim in views
+            if defined?(Slim) && File.exists?(File.join(settings.views,"layout.slim"))
+              render(:slim, File.read(File.join(view_path, "cron_show.slim")))
+            else
+              render(:erb, File.read(File.join(view_path, "cron_show.erb")))
+            end
+          else
+            redirect "#{root_path}cron"
+          end
+        end
+
         #enque cron job
         app.post '/cron/:name/enque' do
           if route_params[:name] === '__all__'
@@ -27,7 +44,7 @@ module Sidekiq
           elsif job = Sidekiq::Cron::Job.find(route_params[:name])
             job.enque!
           end
-          redirect "#{root_path}cron"
+          redirect params['redirect'] || "#{root_path}cron"
         end
 
         #delete schedule
@@ -47,7 +64,7 @@ module Sidekiq
           elsif job = Sidekiq::Cron::Job.find(route_params[:name])
             job.enable!
           end
-          redirect "#{root_path}cron"
+          redirect params['redirect'] || "#{root_path}cron"
         end
 
         #disable job
@@ -57,7 +74,7 @@ module Sidekiq
           elsif job = Sidekiq::Cron::Job.find(route_params[:name])
             job.disable!
           end
-          redirect "#{root_path}cron"
+          redirect params['redirect'] || "#{root_path}cron"
         end
 
       end

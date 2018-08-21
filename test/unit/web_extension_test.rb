@@ -66,6 +66,25 @@ describe 'Cron web' do
       @cron_job_name = "TesQueueNameOfCronJob"
     end
 
+    it 'shows history of a cron job' do
+      @job.enque!
+      get "/cron/#{@name}"
+
+      jid =
+        Sidekiq.redis do |conn|
+          history = conn.lrange Sidekiq::Cron::Job.jid_history_key(@name), 0, -1
+          Sidekiq.load_json(history.last)['jid']
+        end
+
+      assert last_response.body.include?(jid)
+    end
+
+    it 'redirects to cron path when name not found' do
+      get '/cron/some-fake-name'
+
+      assert_match %r{\/cron\z}, last_response['Location']
+    end
+
     it "disable and enable all cron jobs" do
       post "/cron/__all__/disable"
       assert_equal Sidekiq::Cron::Job.find(@name).status, "disabled"
