@@ -223,6 +223,34 @@ describe "Cron Job" do
                                  "class"=>"CronTestClassWithQueue",
                                  "args"=>[]}
     end
+
+    it "be initialized with 'class' and date_as_argument" do
+      job = Sidekiq::Cron::Job.new('class' => 'CronTestClassWithQueue', "date_as_argument" => true)
+
+      job_message = job.message
+      job_args    = job_message.delete("args")
+      assert_equal job_message, {"retry"=>false,
+                                 "queue"=>:super,
+                                 "backtrace"=>true,
+                                 "class"=>"CronTestClassWithQueue"}
+      assert job_args[-1].is_a?(Float)
+      assert job_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+    end
+
+    it "be initialized with 'class', 2 arguments and date_as_argument" do
+      job = Sidekiq::Cron::Job.new('class' => 'CronTestClassWithQueue', "date_as_argument" => true, "args"=> ["arg1", :arg2])
+
+      job_message = job.message
+      job_args    = job_message.delete("args")
+      assert_equal job_message, {"retry"=>false,
+                                 "queue"=>:super,
+                                 "backtrace"=>true,
+                                 "class"=>"CronTestClassWithQueue"}
+      assert job_args[-1].is_a?(Float)
+      assert job_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+      assert_equal job_args[0..-2], ["arg1", :arg2]
+    end
+
   end
 
   describe "cron test" do
