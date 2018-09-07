@@ -13,7 +13,7 @@ zh-CN:
   NoCronJobsWereFound: 没有定时任务
   Enable: 启用
   Disable: 禁用
-  'Last enque': 放入队列时间
+  'Last enqueued': 放入队列时间
   disabled: 已禁用
   enabled: 已启用
 

@@ -13,6 +13,6 @@ ja:
   NoCronJobsWereFound: Cronジョブが見つかりませんでした
   Enable: 有効にする
   Disable: 無効にする
-  'Last enque': 最後のキュー
+  'Last enqueued': 最後のキュー
   disabled: 無効
   enabled: 有効
