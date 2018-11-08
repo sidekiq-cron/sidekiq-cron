@@ -13,7 +13,6 @@ module Sidekiq
       #how long we would like to store informations about previous enqueues
       REMEMBER_THRESHOLD = 24 * 60 * 60
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
-      LAST_ENQUEUE_TIME_FORMAT_OLD = '%Y-%m-%d %H:%M:%S'
 
       #crucial part of whole enquing job
       def should_enque? time
@@ -587,7 +586,7 @@ module Sidekiq
       def parse_enqueue_time(timestamp)
         DateTime.strptime(timestamp, LAST_ENQUEUE_TIME_FORMAT).to_time.utc
       rescue ArgumentError
-        DateTime.strptime(timestamp, LAST_ENQUEUE_TIME_FORMAT_OLD).to_time.utc
+        DateTime.parse(timestamp).to_time.utc
       end
 
       def not_past_scheduled_time?(current_time)
