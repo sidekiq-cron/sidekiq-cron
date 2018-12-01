@@ -24,7 +24,7 @@ Upgrade from <0.6x to 1.0.x
 
 Be aware that there was change from rufus-scheduler to fugit. Also there was change in handling Timezones, so after upgrade check that your jobs are enqueued in correct times. Best thing to do is correctly set timezone in cron notations.
 
-The issue is versions `3.5` of rufus-scheduler are not compactible with versions under `1.0` of this gem, be aware that `Sidekiq::Cron::Job.create` will return false and not schedule your job/worker.
+The issue is with versions `3.5` of rufus-scheduler, these are not compactible with `sidekiq-cron` versions under `1.0`, be aware that `Sidekiq::Cron::Job.create` will return false and not schedule any job/worker.
 
 Requirements
 -----------------
