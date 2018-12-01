@@ -22,9 +22,7 @@ You don't need Sidekiq PRO, you can use this gem with plain __Sidekiq__.
 Upgrade from <0.6x to 1.0.x
 ---------------------------
 
-Be aware that there was change from rufus-scheduler to fugit. Also there was change in handling Timezones, so after upgrade check that your jobs are enqueued in correct times. Best thing to do is correctly set timezone in cron notations.
-
-The issue is with versions `3.5` of rufus-scheduler, these are not compactible with `sidekiq-cron` versions under `1.0`, be aware that `Sidekiq::Cron::Job.create` will return false and not schedule any job/worker.
+Please be aware that sidekiq-cron < 1.0 was relying on rufus-scheduler < 3.5. Using those older sidekiq-cron with rufus-scheduler >= 3.5 ends up with jobs failing on creation. Sidekiq-cron 1.0 includes a patch that switches from rufus-scheduler to rufus-scheduler's core dependency, fugit.
 
 Requirements
 -----------------
