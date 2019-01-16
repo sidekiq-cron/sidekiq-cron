@@ -281,6 +281,7 @@ module Sidekiq
 
         #get right arguments for job
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
+        @args += [Time.now.to_f] if args["date_as_argument"]
 
         @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @active_job_queue_name_prefix = args["queue_name_prefix"]
