@@ -13,7 +13,7 @@ en:
   NoCronJobsWereFound: No cron jobs were found
   Enable: Enable
   Disable: Disable
-  'Last enque': Last enqueued
+  'Last enqueued': Last enqueued
   disabled: disabled
   enabled: enabled
   NoHistoryWereFound: No history were found

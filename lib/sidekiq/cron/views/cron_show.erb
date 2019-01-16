@@ -48,7 +48,7 @@
     <td><%= @job.cron.gsub(" ", "&nbsp;") %></td>
   </tr>
   <tr>
-    <th><%= t 'Last enque' %></th>
+    <th><%= t 'Last enqueued' %></th>
     <td><%= @job.last_enqueue_time ? relative_time(@job.last_enqueue_time) : "-" %></td>
   </tr>
   </tbody>

@@ -9,6 +9,6 @@ ru:
   NoCronJobsWereFound: Не найдено периодических задач
   Enable: Включить
   Disable: Отключить
-  'Last enque': Последний запуск
+  'Last enqueued': Последний запуск
   disabled: отключено
   enabled: включено

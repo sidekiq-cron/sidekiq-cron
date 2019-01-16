@@ -8,6 +8,6 @@ de:
   NoCronJobsWereFound: Keine Cronjobs gefunden
   Enable: Aktivieren
   Disable: Deaktivieren
-  'Last enque': Eingereiht
+  'Last enqueued': Eingereiht
   disabled: deaktiviert
   enabled: aktiviert

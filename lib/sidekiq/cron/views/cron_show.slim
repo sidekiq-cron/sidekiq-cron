@@ -36,7 +36,7 @@ table.table.table-bordered.table-striped
       th= t 'Cron'
       td= @job.cron.gsub(" ", "&nbsp;")
     tr
-      th= t 'Last enque'
+      th= t 'Last enqueued'
       td= @job.last_enqueue_time ? relative_time(@job.last_enqueue_time) : "-"
 
 header.row
