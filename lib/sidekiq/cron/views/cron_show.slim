@@ -29,6 +29,9 @@ table.table.table-bordered.table-striped
       th= t 'Name'
       td= @job.name
     tr
+      th= t 'Description'
+      td= @job.description
+    tr
       th= t 'Message'
       td
         pre= @job.pretty_message
