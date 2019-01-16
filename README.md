@@ -42,7 +42,7 @@ Installation
 
 or add to your `Gemfile`
 
-    gem "sidekiq-cron", "~> 0.6.3"
+    gem "sidekiq-cron", "~> 1.0.4"
 
 
 Getting Started
