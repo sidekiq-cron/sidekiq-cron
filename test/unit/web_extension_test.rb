@@ -76,12 +76,14 @@ describe 'Cron web' do
           Sidekiq.load_json(history.last)['jid']
         end
 
+      assert_equal 200, last_response.status
       assert last_response.body.include?(jid)
     end
 
     it 'redirects to cron path when name not found' do
       get '/cron/some-fake-name'
 
+      assert_equal 302, last_response.status
       assert_match %r{\/cron\z}, last_response['Location']
     end
 
