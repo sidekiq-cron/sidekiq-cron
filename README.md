@@ -115,11 +115,14 @@ class HardWorker
   end
 end
 
+# then in another file...
 Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker') # execute at every 5 minutes, ex: 12:05, 12:10, 12:15...etc
 # => true
 ```
 
 `create` method will return only true/false if job was saved or not.
+
+You must call `create` in a file different from the cron job, otherwise the file will never be executed due to Rails lazy loading.
 
 ```ruby
 job = Sidekiq::Cron::Job.new(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker')
