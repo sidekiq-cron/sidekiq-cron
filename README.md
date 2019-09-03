@@ -65,7 +65,8 @@ _Job properties_:
  'active_job' => true,  # enqueue job through rails 4.2+ active job interface
  'queue_name_prefix' => 'prefix', # rails 4.2+ active job queue with prefix
  'queue_name_delimiter' => '.',  # rails 4.2+ active job queue with custom delimiter
- 'description' => 'A sentence describing what work this job performs.'  # Optional
+ 'description' => 'A sentence describing what work this job performs.',  # Optional
+ 'status' => 'disabled' # Optional - default: enabled
 }
 ```
 
