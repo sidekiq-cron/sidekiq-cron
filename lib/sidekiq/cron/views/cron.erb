@@ -1,22 +1,25 @@
 <header class='row'>
   <div class='col-sm-5 pull-left'>
-    <h3><%= t('CronJobs') %></h3>
+    <h3>
+      <%= t('CronJobs') %>
+      <small><%= @current_namespace %></small>
+    </h3>
   </div>
   <div class='col-sm-7 pull-right' style="margin-top: 20px; margin-bottom: 10px;">
     <% if @cron_jobs.size > 0 %>
-      <form action="<%= root_path %>cron/__all__/delete" method="post" class="pull-right">
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/delete" method="post" class="pull-right">
         <%= csrf_tag if respond_to?(:csrf_tag) %>
         <input class="btn btn-danger" type="submit" name="delete" value="<%= t('DeleteAll') %>" data-confirm="<%= t('AreYouSureDeleteCronJobs') %>" />
       </form>
-      <form action="<%= root_path %>cron/__all__/disable" method="post" class="pull-right">
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/disable" method="post" class="pull-right">
         <%= csrf_tag if respond_to?(:csrf_tag) %>
         <input class="btn btn-warn" type="submit" name="enque" value="<%= t('DisableAll') %>" />
       </form>
-      <form action="<%= root_path %>cron/__all__/enable" method="post" class="pull-right">
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enable" method="post" class="pull-right">
         <%= csrf_tag if respond_to?(:csrf_tag) %>
         <input class="btn btn-warn" type="submit" name="enque" value="<%= t('EnableAll') %>" />
       </form>
-      <form action="<%= root_path %>cron/__all__/enque" method="post" class="pull-right">
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enque" method="post" class="pull-right">
         <%= csrf_tag if respond_to?(:csrf_tag) %>
         <input class="btn btn-warn" type="submit" name="enque" value="<%= t('EnqueueAll') %>" data-confirm="<%= t('AreYouSureEnqueueCronJobs') %>" />
       </form>
@@ -24,8 +27,24 @@
   </div>
 </header>
 
-<% if @cron_jobs.size > 0 %>
+<!-- Namespaces -->
+<div class='row'>
+  <div class="col-sm-12 summary_bar">
+    <ul class="list-unstyled summary row">
+      <% @namespaces.sort_by { |namespace| namespace[:name] } .each do |namespace| %>
+        <li class="col-sm-1">
+          <a href="<%= root_path %>cron/namespaces/<%= namespace[:name] %>">
+            <span class="count"><%= namespace[:count] %></span>
+            <span class="desc"><%= namespace[:name] %></span>
+          </a>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+<!-- Namespaces -->
 
+<% if @cron_jobs.size > 0 %>
   <table class="table table-hover table-bordered table-striped table-white">
     <thead>
       <th><%= t('Status') %></th>
@@ -41,7 +60,7 @@
         <tr>
           <td style="<%= style %>"><%= t job.status %></td>
           <td style="<%= style %>">
-            <a href="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>" title="<%= job.description %>">
+            <a href="<%= root_path %>cron/namespaces/<%= @current_namespace %>/jobs/<%= CGI.escape(job.name).gsub('+', '%20') %>" title="<%= job.description %>">
               <b style="<%= style %>"><%= job.name %></b>
             </a>
             <hr style="margin:3px;border:0;">
@@ -65,24 +84,24 @@
           <td style="<%= style %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>
           <td style="<%= style %>">
             <% if job.status == 'enabled' %>
-              <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/enque" method="post">
+              <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/jobs/<%= CGI.escape(job.name).gsub('+', '%20') %>/enque" method="post">
                 <%= csrf_tag if respond_to?(:csrf_tag) %>
                 <input class='btn btn-warn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => job.name) %>"/>
               </form>
-              <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/disable" method="post">
+              <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/jobs/<%= CGI.escape(job.name).gsub('+', '%20') %>/disable" method="post">
                 <%= csrf_tag if respond_to?(:csrf_tag) %>
                 <input class='btn btn-warn btn-xs pull-left' type="submit" name="disable" value="<%= t('Disable') %>"/>
               </form>
             <% else %>
-              <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/enque" method="post">
+              <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/jobs/<%= CGI.escape(job.name).gsub('+', '%20') %>/enque" method="post">
                 <%= csrf_tag if respond_to?(:csrf_tag) %>
                 <input class='btn btn-warn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>"/>
               </form>
-              <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/enable" method="post">
+              <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/jobs/<%= CGI.escape(job.name).gsub('+', '%20') %>/enable" method="post">
                 <%= csrf_tag if respond_to?(:csrf_tag) %>
                 <input class='btn btn-warn btn-xs pull-left' type="submit" name="enable" value="<%= t('Enable') %>"/>
               </form>
-              <form action="<%= root_path %>cron/<%= CGI.escape(job.name).gsub('+', '%20') %>/delete" method="post">
+              <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/jobs/<%= CGI.escape(job.name).gsub('+', '%20') %>/delete" method="post">
                 <%= csrf_tag if respond_to?(:csrf_tag) %>
                 <input class='btn btn-xs btn-danger pull-left' type="submit" name="delete" value="<%= t('Delete') %>" data-confirm="<%= t('AreYouSureDeleteCronJob', :job => job.name) %>"/>
               </form>

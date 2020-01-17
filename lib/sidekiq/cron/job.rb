@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fugit'
 require 'cronex'
 require 'globalid'
@@ -153,6 +155,7 @@ module Sidekiq
       # Input structure should look like:
       # {
       #   'name_of_job' => {
+      #     'namespace'   => 'MyNamespace',
       #     'class'       => 'MyClass',
       #     'cron'        => '1 * * * *',
       #     'args'        => '(OPTIONAL) [Array or Hash]',
@@ -183,6 +186,7 @@ module Sidekiq
       # Input structure should look like:
       # [
       #   {
+      #     'namespace'   => 'MyNamespace',
       #     'name'        => 'name_of_job',
       #     'class'       => 'MyClass',
       #     'cron'        => '1 * * * *',
@@ -214,13 +218,14 @@ module Sidekiq
       end
 
       # Get all cron jobs.
-      def self.all
+      def self.all(namespace = Sidekiq::Cron.configuration.default_namespace)
         job_hashes = nil
         Sidekiq.redis do |conn|
-          set_members = conn.smembers(jobs_key)
+          job_keys = job_keys_from_namespace(namespace)
+
           job_hashes = conn.pipelined do |pipeline|
-            set_members.each do |key|
-              pipeline.hgetall(key)
+            job_keys.each do |job_key|
+              pipeline.hgetall(job_key)
             end
           end
         end
@@ -230,22 +235,26 @@ module Sidekiq
         end
       end
 
-      def self.count
-        out = 0
-        Sidekiq.redis do |conn|
-          out = conn.scard(jobs_key)
+      def self.count(namespace = Sidekiq::Cron.configuration.default_namespace)
+        if namespace == '*'
+          Namespace.all_with_count.reduce(0) do |memo, namespace_count|
+            memo + namespace_count[:count]
+          end
+        else
+          Sidekiq.redis { |conn| conn.scard(jobs_key(namespace)) }
         end
-        out
       end
 
-      def self.find name
+      def self.find(name, namespace = Sidekiq::Cron.configuration.default_namespace)
         # If name is hash try to get name from it.
         name = name[:name] || name['name'] if name.is_a?(Hash)
-        return unless exists? name
+        return unless exists? name, namespace
 
         output = nil
         Sidekiq.redis do |conn|
-          output = Job.new conn.hgetall( redis_key(name) )
+          if exists? name, namespace
+            output = Job.new conn.hgetall(redis_key(name, namespace))
+          end
         end
         output if output && output.valid?
       end
@@ -256,18 +265,18 @@ module Sidekiq
       end
 
       # Destroy job by name.
-      def self.destroy name
+      def self.destroy(name, namespace = Sidekiq::Cron.configuration.default_namespace)
         # If name is hash try to get name from it.
         name = name[:name] || name['name'] if name.is_a?(Hash)
 
-        if job = find(name)
+        if (job = find(name, namespace))
           job.destroy
         else
           false
         end
       end
 
-      attr_accessor :name, :cron, :description, :klass, :args, :message
+      attr_accessor :name, :namespace, :cron, :description, :klass, :args, :message
       attr_reader   :last_enqueue_time, :fetch_missing_args, :source
 
       def initialize input_args = {}
@@ -276,6 +285,7 @@ module Sidekiq
         @fetch_missing_args = true if @fetch_missing_args.nil?
 
         @name = args["name"]
+        @namespace = args["namespace"] || Sidekiq::Cron.configuration.default_namespace
         @cron = args["cron"]
         @description = args["description"] if args["description"]
         @source = args["source"] == "schedule" ? "schedule" : "dynamic"
@@ -413,6 +423,7 @@ module Sidekiq
       def to_hash
         hash = {
           name: @name,
+          namespace: @namespace,
           klass: @klass.to_s,
           cron: @cron,
           description: @description,
@@ -443,6 +454,8 @@ module Sidekiq
         @errors = []
 
         errors << "'name' must be set" if @name.nil? || @name.size == 0
+        errors << "'namespace' must be set" if @namespace.nil? || @namespace.size == 0
+
         if @cron.nil? || @cron.size == 0
           errors << "'cron' must be set"
         else
@@ -473,19 +486,18 @@ module Sidekiq
         return false unless valid?
 
         Sidekiq.redis do |conn|
-
           # Add to set of all jobs
-          conn.sadd self.class.jobs_key, [redis_key]
+          conn.sadd self.class.jobs_key(@namespace), [redis_key]
 
           # Add informations for this job!
-          conn.hset redis_key, to_hash.transform_values! { |v| v || "" }
+          conn.hset redis_key, to_hash.transform_values! { |v| v || '' }
 
           # Add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
           exists = conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
           conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s) unless exists == true || exists == 1
         end
-        Sidekiq.logger.info { "Cron Jobs - added job with name: #{@name}" }
+        Sidekiq.logger.info { "Cron Jobs - added job with name #{@name} in the namespace #{@namespace}" }
       end
 
       def save_last_enqueue_time
@@ -513,7 +525,7 @@ module Sidekiq
       def destroy
         Sidekiq.redis do |conn|
           # Delete from set.
-          conn.srem self.class.jobs_key, [redis_key]
+          conn.srem self.class.jobs_key(@namespace), [redis_key]
 
           # Delete runned timestamps.
           conn.del job_enqueued_key
@@ -525,7 +537,7 @@ module Sidekiq
           conn.del redis_key
         end
 
-        Sidekiq.logger.info { "Cron Jobs - deleted job with name: #{@name}" }
+        Sidekiq.logger.info { "Cron Jobs - deleted job with name #{@name} from namespace #{@namespace}" }
       end
 
       # Remove all job from cron.
@@ -538,9 +550,17 @@ module Sidekiq
 
       # Remove "removed jobs" between current jobs and new jobs
       def self.destroy_removed_jobs new_job_names
-        current_job_names = Sidekiq::Cron::Job.all.filter_map { |j| j.name if j.source == "schedule" }
+        current_jobs = Sidekiq::Cron::Job.all("*").filter_map { |j| j if j.source == "schedule" }
+        current_job_names = current_jobs.map(&:name)
         removed_job_names = current_job_names - new_job_names
-        removed_job_names.each { |j| Sidekiq::Cron::Job.destroy(j) }
+        removed_job_names.each do |j|
+          job_to_destroy = current_jobs.detect { |job| job.name == j }
+
+          Sidekiq::Cron::Job.destroy(
+            job_to_destroy.name,
+            job_to_destroy.namespace
+          )
+        end
         removed_job_names
       end
 
@@ -558,15 +578,16 @@ module Sidekiq
         last_time(now).getutc.iso8601
       end
 
-      def self.exists? name
+      def self.exists?(name, namespace = Sidekiq::Cron.configuration.default_namespace)
         out = Sidekiq.redis do |conn|
-          conn.public_send(REDIS_EXISTS_METHOD, redis_key(name))
+          conn.public_send(REDIS_EXISTS_METHOD, redis_key(name, namespace))
         end
-        out == true || out == 1
+
+        [true, 1].include?(out)
       end
 
       def exists?
-        self.class.exists? @name
+        self.class.exists? @name, @namespace
       end
 
       def sort_name
@@ -644,36 +665,70 @@ module Sidekiq
         true
       end
 
-      # Redis key for set of all cron jobs.
-      def self.jobs_key
-        "cron_jobs"
+      def self.default_if_blank(namespace)
+        if namespace.nil? || namespace == ''
+          Sidekiq::Cron.configuration.default_namespace
+        else
+          namespace
+        end
       end
 
-      # Redis key for storing one cron job.
-      def self.redis_key name
-        "cron_job:#{name}"
+      def self.job_keys_from_namespace(namespace = Sidekiq::Cron.configuration.default_namespace)
+        Sidekiq.redis do |conn|
+          if namespace == '*'
+            namespaces = conn.keys(jobs_key(namespace))
+            namespaces.flat_map { |name| conn.smembers(name) }
+          else
+            conn.smembers(jobs_key(namespace))
+          end
+        end
       end
 
-      # Redis key for storing one cron job.
+      def self.migrate_old_jobs_if_needed!
+        Sidekiq.redis do |conn|
+          old_job_keys = conn.smembers('cron_jobs')
+          old_job_keys.each do |old_job|
+            old_job_hash = conn.hgetall(old_job)
+            old_job_hash[:namespace] = Sidekiq::Cron.configuration.default_namespace
+            create(old_job_hash)
+            conn.srem('cron_jobs', old_job)
+          end
+        end
+      end
+
+      # Redis key for set of all cron jobs
+      def self.jobs_key(namespace = Sidekiq::Cron.configuration.default_namespace)
+        "cron_jobs:#{default_if_blank(namespace)}"
+      end
+
+      # Redis key for storing one cron job
+      def self.redis_key(name, namespace = Sidekiq::Cron.configuration.default_namespace)
+        "cron_job:#{default_if_blank(namespace)}:#{name}"
+      end
+
+      # Redis key for storing one cron job
       def redis_key
-        self.class.redis_key @name
+        self.class.redis_key @name, @namespace
       end
 
-      # Redis key for storing one cron job run times (when poller added job to queue)
-      def self.job_enqueued_key name
-        "cron_job:#{name}:enqueued"
+      # Redis key for storing one cron job run times
+      # (when poller added job to queue)
+      def self.job_enqueued_key(name, namespace = Sidekiq::Cron.configuration.default_namespace)
+        "cron_job:#{default_if_blank(namespace)}:#{name}:enqueued"
       end
 
-      def self.jid_history_key name
-        "cron_job:#{name}:jid_history"
+      def self.jid_history_key(name, namespace = Sidekiq::Cron.configuration.default_namespace)
+        "cron_job:#{default_if_blank(namespace)}:#{name}:jid_history"
       end
 
+      # Redis key for storing one cron job run times
+      # (when poller added job to queue)
       def job_enqueued_key
-        self.class.job_enqueued_key @name
+        self.class.job_enqueued_key @name, @namespace
       end
 
       def jid_history_key
-        self.class.jid_history_key @name
+        self.class.jid_history_key @name, @namespace
       end
 
       def serialized_last_enqueue_time

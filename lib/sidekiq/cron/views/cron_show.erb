@@ -6,8 +6,8 @@
     </h3>
   </div>
   <div class="span col-sm-7 pull-right" style="margin-top: 20px; margin-bottom: 10px;">
-    <% cron_job_path = "#{root_path}cron/#{CGI.escape(@job.name).gsub('+', '%20')}" %>
-    <form action="<%= cron_job_path %>/enque?redirect=<%= cron_job_path %>" method="post">
+    <% cron_job_path = "#{root_path}cron/namespaces/#{@current_namespace}/jobs/#{CGI.escape(@job.name).gsub('+', '%20')}" %>
+    <form action="<%= cron_job_path %>/enque?redirect=<%= cron_job_path %>" class="pull-right" method="post">
       <%= csrf_tag if respond_to?(:csrf_tag) %>
       <input class="btn btn-warn pull-left" name="enque" type="submit" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => @job.name) %>" />
     </form>
@@ -38,6 +38,10 @@
   <tr>
     <th><%= t 'Name' %></th>
     <td><%= @job.name %></td>
+  </tr>
+  <tr>
+    <th><%= t 'Namespace' %></th>
+    <td><%= @job.namespace %></td>
   </tr>
   <tr>
     <th><%= t 'Description' %></th>
