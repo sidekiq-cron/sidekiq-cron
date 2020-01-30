@@ -25,7 +25,7 @@ module Sidekiq
           view_path = File.join(File.expand_path("..", __FILE__), "views")
 
           @job = Sidekiq::Cron::Job.find(route_params[:name])
-          if @job.present?
+          if @job
             #if Slim renderer exists and sidekiq has layout.slim in views
             if defined?(Slim) && File.exists?(File.join(settings.views,"layout.slim"))
               render(:slim, File.read(File.join(view_path, "cron_show.slim")))
