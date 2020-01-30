@@ -15,7 +15,7 @@ header.row
         input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnableAll')}"
       form.pull-right action="#{root_path}cron/__all__/enque" method="post"
         = csrf_tag if respond_to?(:csrf_tag)
-        input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueAll')}"
+        input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueAll')}" data-confirm="#{t('AreYouSureEnqueueCronJobs')}"
 
 - if @cron_jobs.size > 0
 
@@ -59,7 +59,7 @@ header.row
           -else
             form action="#{root_path}cron/#{CGI.escape(job.name).gsub('+', '%20')}/enque" method="post"
               = csrf_tag if respond_to?(:csrf_tag)
-              input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueNow')}"
+              input.btn.btn-small.pull-left type="submit" name="enque" value="#{t('EnqueueNow')}" data-confirm="#{t('AreYouSureEnqueueCronJob', :job => job.name)}"
             form action="#{root_path}cron/#{CGI.escape(job.name).gsub('+', '%20')}/enable" method="post"
               = csrf_tag if respond_to?(:csrf_tag)
               input.btn.btn-small.pull-left type="submit" name="enable" value="#{t('Enable')}"
