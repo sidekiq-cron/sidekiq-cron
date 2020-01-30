@@ -18,7 +18,7 @@ header.row
         input.btn.btn-small.pull-left name="enable" type="submit" value="#{t('Enable')}"
       form.pull-right action="#{cron_job_path}/delete" method="post"
         = csrf_tag if respond_to?(:csrf_tag)
-        input.btn.btn-danger.btn-small data-confirm="#{t('AreYouSureDeleteCronJob' job =@job.name)}" name="delete" type="submit" value="#{t('Delete')}" /
+        input.btn.btn-danger.btn-small data-confirm="#{t('AreYouSureDeleteCronJob', :job => @job.name)}" name="delete" type="submit" value="#{t('Delete')}" /
 
 table.table.table-bordered.table-striped
   tbody
