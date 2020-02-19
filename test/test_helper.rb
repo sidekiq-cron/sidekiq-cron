@@ -20,7 +20,7 @@ Coveralls.wear!
 require "minitest/autorun"
 require 'shoulda-context'
 require "rack/test"
-require "mocha/setup"
+require 'mocha/minitest'
 
 ENV['RACK_ENV'] = 'test'
 

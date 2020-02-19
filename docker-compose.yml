@@ -18,4 +18,6 @@ services:
     - redis:redis.test
     depends_on:
     - common
-    command: dockerize -wait tcp://redis.test:6379 -timeout 60s rake test
+    command: dockerize -wait tcp://redis.test:6379 -timeout 60s bundle exec rake test
+    volumes:
+    - .:/sidekiq-cron

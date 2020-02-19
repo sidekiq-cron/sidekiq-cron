@@ -9,7 +9,7 @@ describe 'Cron web' do
 
   before do
     Sidekiq.redis = REDIS
-    Sidekiq.redis {|c| c.flushdb }
+    Redis.current.flushdb
 
     #clear all previous saved data from redis
     Sidekiq.redis do |conn|

@@ -6,9 +6,7 @@ describe 'Performance Poller' do
   X = 10000
   before do
     Sidekiq.redis = REDIS
-    Sidekiq.redis do |conn|
-      conn.flushdb
-    end
+    Redis.current.flushdb
 
     #clear all previous saved data from redis
     Sidekiq.redis do |conn|
@@ -33,7 +31,7 @@ describe 'Performance Poller' do
     Time.stubs(:now).returns(enqueued_time)
   end
 
-  it 'should enqueue 10000 jobs in less than 30s' do
+  it 'should enqueue 10000 jobs in less than 40s' do
     Sidekiq.redis do |conn|
       assert_equal 0, conn.llen("queue:default"), 'Queue should be empty'
     end
@@ -47,6 +45,6 @@ describe 'Performance Poller' do
     end
 
     puts "Performance test finished in #{bench.real}"
-    assert_operator bench.real, :<, 30
+    assert_operator bench.real, :<, 40
   end
 end

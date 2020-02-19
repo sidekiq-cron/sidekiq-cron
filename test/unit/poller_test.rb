@@ -5,9 +5,7 @@ require './test/test_helper'
 describe 'Cron Poller' do
   before do
     Sidekiq.redis = REDIS
-    Sidekiq.redis do |conn|
-      conn.flushdb
-    end
+    Redis.current.flushdb
 
     #clear all previous saved data from redis
     Sidekiq.redis do |conn|
