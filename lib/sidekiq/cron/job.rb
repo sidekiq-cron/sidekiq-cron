@@ -424,6 +424,10 @@ module Sidekiq
         end
 
         errors << "'klass' (or class) must be set" unless klass_valid
+        
+        errors.each do |err|
+          logger.error err
+        end
 
         errors.empty?
       end
