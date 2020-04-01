@@ -1,6 +1,3 @@
-# require  Sidekiq original launcher
-require 'sidekiq/launcher'
-
 # require cron poller
 require 'sidekiq/cron/poller'
 
@@ -42,4 +39,9 @@ module Sidekiq
   end
 end
 
-::Sidekiq::Launcher.prepend(Sidekiq::Cron::Launcher)
+Sidekiq.configure_server do
+  # require  Sidekiq original launcher
+  require 'sidekiq/launcher'
+
+  ::Sidekiq::Launcher.prepend(Sidekiq::Cron::Launcher)
+end
