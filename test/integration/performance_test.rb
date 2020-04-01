@@ -6,9 +6,7 @@ describe 'Performance Poller' do
   X = 10000
   before do
     Sidekiq.redis = REDIS
-    Sidekiq.redis do |conn|
-      conn.flushdb
-    end
+    Redis.current.flushdb
 
     #clear all previous saved data from redis
     Sidekiq.redis do |conn|
