@@ -292,7 +292,7 @@ Note that this API is only available in Sidekiq 3.x.x.
 
 When you start the Sidekiq process, it starts one thread with `Sidekiq::Poller` instance, which perform the adding of scheduled jobs to queues, retries etc.
 
-Sidekiq-Cron adds itself into this start procedure and starts another thread with `Sidekiq::Cron::Poller` which checks all enabled Sidekiq cron jobs every 10 seconds, if they should be added to queue (their cronline matches time of check).
+Sidekiq-Cron adds itself into this start procedure and starts another thread with `Sidekiq::Cron::Poller` which checks all enabled Sidekiq cron jobs every 30 seconds, if they should be added to queue (their cronline matches time of check).
 
 Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
 ```
