@@ -955,6 +955,20 @@ describe "Cron Job" do
         assert_equal out.size, 0, "should have no errors"
         assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
       end
+
+      describe 'errors' do
+        describe 'not a hash' do
+          before do
+            @jobs_hash = YAML.load_file('/dev/null') # => false
+          end
+
+          it 'do not create jobs and do not fail' do
+            assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+            out = Sidekiq::Cron::Job.load_from_hash! @jobs_hash
+            assert_equal out.size, 0, "should have no errors"
+          end
+        end
+      end
     end
 
     describe "from array" do
