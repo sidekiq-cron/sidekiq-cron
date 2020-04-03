@@ -18,7 +18,16 @@ notifications:
       - ondrej@bartas.cz
 env:
   travis: 'yes'
+
 matrix:
   allow_failures:
     - rvm: jruby-19mode
     - rvm: rbx-19mode
+
+build:
+  - gem install bundler
+  - bundle install
+
+script:
+  - bundle exec rake rubocop
+  - bundle exec rake test
