@@ -1,3 +1,11 @@
+v 1.2.0
+-------
+
+- updated readme
+- fix problem with Sidekiq::Launcher and requiring it when not needed
+- better patching of Sidekiq::Launcher
+- fixed Dockerfile
+
 v 1.1.0
 -------
 
@@ -6,7 +14,7 @@ v 1.1.0
 - when fallbacking old job enqueued time use `Time.parse` šwithout format (so ruby can decide best method to parse it)
 - add option `date_as_argument` which will add to your job arguments on last place `Time.now.to_f` when it was eneuqued
 - add option `description` which will allow you to add notes to your jobs so in web view you can see it
-- fixed translations 
+- fixed translations
 
 v 1.0.4
 -------
