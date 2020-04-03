@@ -150,7 +150,6 @@ module Sidekiq
       # }
       #
       def self.load_from_hash hash
-        return [] unless hash.is_a?(Hash)
         array = hash.inject([]) do |out,(key, job)|
           job['name'] = key
           out << job
@@ -161,7 +160,6 @@ module Sidekiq
       # like to {#load_from_hash}
       # If exists old jobs in redis but removed from args, destroy old jobs
       def self.load_from_hash! hash
-        return [] unless hash.is_a?(Hash)
         destroy_removed_jobs(hash.keys)
         load_from_hash(hash)
       end
