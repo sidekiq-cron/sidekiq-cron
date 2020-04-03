@@ -57,7 +57,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/ondrejbartas/sidekiq-cron".freeze
   s.licenses = ["MIT".freeze]
-  s.rubygems_version = "3.0.3".freeze
+  s.rubygems_version = "2.5.2.3".freeze
   s.summary = "Sidekiq Cron helps to add repeated scheduled jobs".freeze
 
   if s.respond_to? :specification_version then
