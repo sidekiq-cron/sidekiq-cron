@@ -245,7 +245,7 @@ module Sidekiq
         # if name is hash try to get name from it
         name = name[:name] || name['name'] if name.is_a?(Hash)
 
-        if job = find(name)
+        if (job = find(name))
           job.destroy
         else
           false

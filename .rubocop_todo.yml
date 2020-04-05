@@ -6,13 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 5
-# Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
-    - 'lib/sidekiq/cron/web_extension.rb'
-
 # Offense count: 4
 Lint/IneffectiveAccessModifier:
   Exclude:

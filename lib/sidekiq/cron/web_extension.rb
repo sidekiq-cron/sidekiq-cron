@@ -39,7 +39,7 @@ module Sidekiq
         app.post '/cron/:name/enque' do
           if route_params[:name] === '__all__'
             Sidekiq::Cron::Job.all.each(&:enque!)
-          elsif job = Sidekiq::Cron::Job.find(route_params[:name])
+          elsif (job = Sidekiq::Cron::Job.find(route_params[:name]))
             job.enque!
           end
           redirect params['redirect'] || "#{root_path}cron"
@@ -49,7 +49,7 @@ module Sidekiq
         app.post '/cron/:name/delete' do
           if route_params[:name] === '__all__'
             Sidekiq::Cron::Job.all.each(&:destroy)
-          elsif job = Sidekiq::Cron::Job.find(route_params[:name])
+          elsif (job = Sidekiq::Cron::Job.find(route_params[:name]))
             job.destroy
           end
           redirect "#{root_path}cron"
@@ -59,7 +59,7 @@ module Sidekiq
         app.post '/cron/:name/enable' do
           if route_params[:name] === '__all__'
             Sidekiq::Cron::Job.all.each(&:enable!)
-          elsif job = Sidekiq::Cron::Job.find(route_params[:name])
+          elsif (job = Sidekiq::Cron::Job.find(route_params[:name]))
             job.enable!
           end
           redirect params['redirect'] || "#{root_path}cron"
@@ -69,7 +69,7 @@ module Sidekiq
         app.post '/cron/:name/disable' do
           if route_params[:name] === '__all__'
             Sidekiq::Cron::Job.all.each(&:disable!)
-          elsif job = Sidekiq::Cron::Job.find(route_params[:name])
+          elsif (job = Sidekiq::Cron::Job.find(route_params[:name]))
             job.disable!
           end
           redirect params['redirect'] || "#{root_path}cron"
