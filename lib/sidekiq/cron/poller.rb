@@ -34,7 +34,7 @@ module Sidekiq
       end
 
       def poll_interval_average
-         Sidekiq.options[:poll_interval] || POLL_INTERVAL
+        Sidekiq.options[:poll_interval] || POLL_INTERVAL
       end
     end
   end

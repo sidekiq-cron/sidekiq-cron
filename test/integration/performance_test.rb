@@ -1,4 +1,5 @@
 # -*- encoding : utf-8 -*-
+
 require './test/test_helper'
 require 'benchmark'
 
@@ -8,7 +9,7 @@ describe 'Performance Poller' do
     Sidekiq.redis = REDIS
     Redis.current.flushdb
 
-    #clear all previous saved data from redis
+    # clear all previous saved data from redis
     Sidekiq.redis do |conn|
       conn.keys("cron_job*").each do |key|
         conn.del(key)

@@ -5,16 +5,15 @@ require 'sidekiq/cron/support'
 
 module Sidekiq
   module Cron
-
     class Job
       include Util
       extend Util
 
-      #how long we would like to store informations about previous enqueues
+      # how long we would like to store informations about previous enqueues
       REMEMBER_THRESHOLD = 24 * 60 * 60
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
-      #crucial part of whole enquing job
+      # crucial part of whole enquing job
       def should_enque? time
         enqueue = false
         enqueue = Sidekiq.redis do |conn|
@@ -35,9 +34,9 @@ module Sidekiq
         end
       end
 
-      #test if job should be enqued If yes add it to queue
+      # test if job should be enqued If yes add it to queue
       def test_and_enque_for_time! time
-        #should this job be enqued?
+        # should this job be enqued?
         if should_enque?(time)
           enque!
 
@@ -45,16 +44,16 @@ module Sidekiq
         end
       end
 
-      #enque cron job to queue
+      # enque cron job to queue
       def enque! time = Time.now.utc
         @last_enqueue_time = time.strftime(LAST_ENQUEUE_TIME_FORMAT)
 
         klass_const =
-            begin
-              Sidekiq::Cron::Support.constantize(@klass.to_s)
-            rescue NameError
-              nil
-            end
+          begin
+            Sidekiq::Cron::Support.constantize(@klass.to_s)
+          rescue NameError
+            nil
+          end
 
         jid =
           if klass_const
@@ -121,15 +120,15 @@ module Sidekiq
       # queue, it createaswrapper arround job
       def active_job_message
         {
-          'class'        => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
-          'wrapped'      => @klass,
-          'queue'        => @queue_name_with_prefix,
-          'description'  => @description,
-          'args'         => [{
-            'job_class'  => @klass,
-            'job_id'     => SecureRandom.uuid,
+          'class' => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+          'wrapped' => @klass,
+          'queue' => @queue_name_with_prefix,
+          'description' => @description,
+          'args' => [{
+            'job_class' => @klass,
+            'job_id' => SecureRandom.uuid,
             'queue_name' => @queue_name_with_prefix,
-            'arguments'  => @args
+            'arguments' => @args
           }]
         }
       end
@@ -150,7 +149,7 @@ module Sidekiq
       # }
       #
       def self.load_from_hash hash
-        array = hash.inject([]) do |out,(key, job)|
+        array = hash.inject([]) do |out, (key, job)|
           job['name'] = key
           out << job
         end
@@ -224,13 +223,13 @@ module Sidekiq
       end
 
       def self.find name
-        #if name is hash try to get name from it
+        # if name is hash try to get name from it
         name = name[:name] || name['name'] if name.is_a?(Hash)
 
         output = nil
         Sidekiq.redis do |conn|
           if exists? name
-            output = Job.new conn.hgetall( redis_key(name) )
+            output = Job.new conn.hgetall(redis_key(name))
           end
         end
         output
@@ -241,9 +240,9 @@ module Sidekiq
         new(hash).save
       end
 
-      #destroy job by name
+      # destroy job by name
       def self.destroy name
-        #if name is hash try to get name from it
+        # if name is hash try to get name from it
         name = name[:name] || name['name'] if name.is_a?(Hash)
 
         if job = find(name)
@@ -257,7 +256,7 @@ module Sidekiq
       attr_reader   :last_enqueue_time, :fetch_missing_args
 
       def initialize input_args = {}
-        args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
+        args = Hash[input_args.map { |k, v| [k.to_s, v] }]
         @fetch_missing_args = args.delete('fetch_missing_args')
         @fetch_missing_args = true if @fetch_missing_args.nil?
 
@@ -265,21 +264,21 @@ module Sidekiq
         @cron = args["cron"]
         @description = args["description"] if args["description"]
 
-        #get class from klass or class
+        # get class from klass or class
         @klass = args["klass"] || args["class"]
 
-        #set status of job
+        # set status of job
         @status = args['status'] || status_from_redis
 
-        #set last enqueue time - from args or from existing job
+        # set last enqueue time - from args or from existing job
         if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
           @last_enqueue_time = parse_enqueue_time(args['last_enqueue_time'])
         else
           @last_enqueue_time = last_enqueue_time_from_redis
         end
 
-        #get right arguments for job
-        @args = args["args"].nil? ? [] : parse_args( args["args"] )
+        # get right arguments for job
+        @args = args["args"].nil? ? [] : parse_args(args["args"])
         @args += [Time.now.to_f] if args["date_as_argument"]
 
         @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
@@ -292,34 +291,34 @@ module Sidekiq
           @queue = message_data['queue'] || "default"
         elsif @klass
           message_data = {
-            "class" => @klass.to_s,
-            "args"  => @args,
+            'class' => @klass.to_s,
+            'args' => @args
           }
 
-          #get right data for message
-          #only if message wasn't specified before
+          # get right data for message
+          # only if message wasn't specified before
           klass_data = case @klass
-            when Class
-              @klass.get_sidekiq_options
-            when String
-              begin
-                Sidekiq::Cron::Support.constantize(@klass).get_sidekiq_options
-              rescue Exception => e
-                #Unknown class
-                {"queue"=>"default"}
-              end
-          end
+                       when Class
+                         @klass.get_sidekiq_options
+                       when String
+                         begin
+                           Sidekiq::Cron::Support.constantize(@klass).get_sidekiq_options
+                         rescue Exception => e
+                           # Unknown class
+                           { "queue" => "default" }
+                         end
+                       end
 
           message_data = klass_data.merge(message_data)
-          #override queue if setted in config
-          #only if message is hash - can be string (dumped JSON)
+          # override queue if setted in config
+          # only if message is hash - can be string (dumped JSON)
           if args['queue']
             @queue = message_data['queue'] = args['queue']
           else
             @queue = message_data['queue'] || "default"
           end
 
-          #dump message as json
+          # dump message as json
           @message = message_data
         end
 
@@ -387,7 +386,7 @@ module Sidekiq
         end
       end
 
-      #export job data to hash
+      # export job data to hash
       def to_hash
         {
           name: @name,
@@ -400,7 +399,7 @@ module Sidekiq
           active_job: @active_job,
           queue_name_prefix: @active_job_queue_name_prefix,
           queue_name_delimiter: @active_job_queue_name_delimiter,
-          last_enqueue_time: @last_enqueue_time,
+          last_enqueue_time: @last_enqueue_time
         }
       end
 
@@ -409,7 +408,7 @@ module Sidekiq
       end
 
       def valid?
-        #clear previous errors
+        # clear previous errors
         @errors = []
 
         errors << "'name' must be set" if @name.nil? || @name.size == 0
@@ -430,11 +429,11 @@ module Sidekiq
 
       def klass_valid
         case @klass
-          when Class
-            true
-          when String
-            @klass.size > 0
-          else
+        when Class
+          true
+        when String
+          @klass.size > 0
+        else
         end
       end
 
@@ -448,18 +447,17 @@ module Sidekiq
       #   args: (array|hash|nil) - arguments for permorm method
 
       def save
-        #if job is invalid return false
+        # if job is invalid return false
         return false unless valid?
 
         Sidekiq.redis do |conn|
-
-          #add to set of all jobs
+          # add to set of all jobs
           conn.sadd self.class.jobs_key, redis_key
 
-          #add informations for this job!
+          # add informations for this job!
           conn.hmset redis_key, *hash_to_redis(to_hash)
 
-          #add information about last time! - don't enque right after scheduler poller starts!
+          # add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
           conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.exists(job_enqueued_key)
         end
@@ -492,16 +490,16 @@ module Sidekiq
       #   first arg: name (string) - name of job (must be same - case sensitive)
       def destroy
         Sidekiq.redis do |conn|
-          #delete from set
+          # delete from set
           conn.srem self.class.jobs_key, redis_key
 
-          #delete runned timestamps
+          # delete runned timestamps
           conn.del job_enqueued_key
 
           # delete jid_history
           conn.del jid_history_key
 
-          #delete main job
+          # delete main job
           conn.del redis_key
         end
         logger.info { "Cron Jobs - deleted job with name: #{@name}" }
@@ -592,9 +590,10 @@ module Sidekiq
 
       def not_past_scheduled_time?(current_time)
         last_cron_time = parsed_cron.previous_time(current_time).utc
-          # or could it be?
-        #last_cron_time = last_time(current_time)
+        # or could it be?
+        # last_cron_time = last_time(current_time)
         return false if (current_time.to_i - last_cron_time.to_i) > 60
+
         true
       end
 
@@ -636,9 +635,8 @@ module Sidekiq
       # Give Hash
       # returns array for using it for redis.hmset
       def hash_to_redis hash
-        hash.inject([]){ |arr,kv| arr + [kv[0], kv[1]] }
+        hash.inject([]) { |arr, kv| arr + [kv[0], kv[1]] }
       end
-
     end
   end
 end

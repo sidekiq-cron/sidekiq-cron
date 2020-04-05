@@ -27,7 +27,7 @@ Jeweler::Tasks.new do |gem|
 end
 Jeweler::RubygemsDotOrgTasks.new
 
-#TESTING
+# TESTING
 
 task :doc do
   system 'sdoc -N .'
@@ -37,7 +37,7 @@ require 'rake/testtask'
 task :default => :test
 
 Rake::TestTask.new(:test) do |t|
-  t.test_files = FileList['test/functional/**/*_test.rb', 'test/unit/**/*_test.rb','test/integration/**/*_test.rb']
+  t.test_files = FileList['test/functional/**/*_test.rb', 'test/unit/**/*_test.rb', 'test/integration/**/*_test.rb']
   t.warning = false
   t.verbose = false
 end

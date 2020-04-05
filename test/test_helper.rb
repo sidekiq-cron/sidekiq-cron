@@ -24,7 +24,7 @@ require 'mocha/minitest'
 
 ENV['RACK_ENV'] = 'test'
 
-#SIDEKIQ Require - need to have sidekiq running!
+# SIDEKIQ Require - need to have sidekiq running!
 require 'sidekiq'
 require 'sidekiq/util'
 require 'sidekiq/web'
@@ -38,7 +38,6 @@ REDIS = Sidekiq::RedisConnection.create(:url => redis_url, :namespace => 'testy'
 Sidekiq.configure_client do |config|
   config.redis = { :url => redis_url, :namespace => 'testy' }
 end
-
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))

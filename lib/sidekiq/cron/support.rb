@@ -25,6 +25,7 @@ module Sidekiq
             constant = constant.ancestors.inject(constant) do |const, ancestor|
               break const    if ancestor == Object
               break ancestor if ancestor.const_defined?(name, false)
+
               const
             end
 

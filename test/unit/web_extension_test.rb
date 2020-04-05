@@ -11,7 +11,7 @@ describe 'Cron web' do
     Sidekiq.redis = REDIS
     Redis.current.flushdb
 
-    #clear all previous saved data from redis
+    # clear all previous saved data from redis
     Sidekiq.redis do |conn|
       conn.keys("cron_job*").each do |key|
         conn.del(key)
@@ -24,14 +24,12 @@ describe 'Cron web' do
       klass: "CronTestClass"
     }
 
-
     @cron_args = {
       name: "TesQueueNameOfCronJob",
       cron: "*/2 * * * *",
       klass: "CronQueueTestClass",
       queue: "cron"
     }
-
   end
 
   it 'display cron web' do
@@ -55,7 +53,6 @@ describe 'Cron web' do
   end
 
   describe "work with cron job" do
-
     before do
       @job = Sidekiq::Cron::Job.new(@args.merge(status: "enabled"))
       @job.save
@@ -125,14 +122,14 @@ describe 'Cron web' do
         assert_equal 1, conn.llen("queue:default"), "Queue should have 1 job"
       end
 
-      #should enqueue more times
+      # should enqueue more times
       post "/cron/#{@name}/enque"
 
       Sidekiq.redis do |conn|
         assert_equal 2, conn.llen("queue:default"), "Queue should have 2 job"
       end
 
-      #should enqueue to cron job queue
+      # should enqueue to cron job queue
       post "/cron/#{@cron_job_name}/enque"
 
       Sidekiq.redis do |conn|
