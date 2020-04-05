@@ -14,7 +14,7 @@ module Sidekiq
         Sidekiq::Cron::Job.all.each do |job|
           enqueue_job(job, time)
         end
-      rescue => ex
+      rescue StandardError => ex
         # Most likely a problem with redis networking.
         # Punt and try again at the next interval
         Sidekiq.logger.error ex.message
@@ -26,7 +26,7 @@ module Sidekiq
 
       def enqueue_job(job, time = Time.now.utc)
         job.test_and_enque_for_time! time if job && job.valid?
-      rescue => ex
+      rescue StandardError => ex
         # problem somewhere in one job
         Sidekiq.logger.error "CRON JOB: #{ex.message}"
         Sidekiq.logger.error "CRON JOB: #{ex.backtrace.first}"

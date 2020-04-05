@@ -35,7 +35,7 @@ Metrics/BlockLength:
 # Offense count: 1
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 432
+  Max: 435
 
 # Offense count: 5
 # Configuration parameters: IgnoredMethods.
@@ -160,21 +160,6 @@ Style/NumericPredicate:
 Style/PreferredHashMethods:
   Exclude:
     - 'test/unit/job_test.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/RescueModifier:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: implicit, explicit
-Style/RescueStandardError:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
-    - 'lib/sidekiq/cron/poller.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.

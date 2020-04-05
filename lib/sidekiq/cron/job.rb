@@ -365,7 +365,11 @@ module Sidekiq
         out = nil
         if fetch_missing_args
           Sidekiq.redis do |conn|
-            out = parse_enqueue_time(conn.hget(redis_key, 'last_enqueue_time')) rescue nil
+            out = begin
+                    parse_enqueue_time(conn.hget(redis_key, 'last_enqueue_time'))
+                  rescue StandardError
+                    nil
+                  end
           end
         end
         out
@@ -374,7 +378,11 @@ module Sidekiq
       def jid_history_from_redis
         out =
           Sidekiq.redis do |conn|
-            conn.lrange(jid_history_key, 0, -1) rescue nil
+            begin
+              conn.lrange(jid_history_key, 0, -1)
+            rescue StandardError
+              nil
+            end
           end
 
         # returns nil if out nil
@@ -414,7 +422,7 @@ module Sidekiq
         else
           begin
             @parsed_cron = Fugit.do_parse_cron(@cron)
-          rescue => e
+          rescue StandardError => e
             errors << "'cron' -> #{@cron.inspect} -> #{e.class}: #{e.message}"
           end
         end

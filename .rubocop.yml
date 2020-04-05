@@ -21,6 +21,9 @@ Style/FrozenStringLiteralComment:
 Style/MutableConstant:
   Enabled: false
 
+Style/RescueStandardError:
+  EnforedStyle: explicit
+
 Style/StringLiterals:
   EnforedStyle: single_quotes
 
