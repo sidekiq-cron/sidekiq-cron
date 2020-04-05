@@ -1,1 +1,19 @@
 inherit_from: .rubocop_todo.yml
+
+Naming/FileName:
+  Enabled: false
+
+Naming/PredicateName:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/Encoding:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/MutableConstant:
+  Enabled: false

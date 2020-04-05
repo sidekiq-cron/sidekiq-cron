@@ -281,24 +281,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 24
 
-# Offense count: 1
-# Configuration parameters: ExpectMatchingDefinition, Regex, IgnoreExecutableScripts, AllowedAcronyms.
-# AllowedAcronyms: CLI, DSL, ACL, API, ASCII, CPU, CSS, DNS, EOF, GUID, HTML, HTTP, HTTPS, ID, IP, JSON, LHS, QPS, RAM, RHS, RPC, SLA, SMTP, SQL, SSH, TCP, TLS, TTL, UDP, UI, UID, UUID, URI, URL, UTF8, VM, XML, XMPP, XSRF, XSS
-Naming/FileName:
-  Exclude:
-    - 'lib/sidekiq-cron.rb'
-
-# Offense count: 1
-# Configuration parameters: NamePrefix, ForbiddenPrefixes, AllowedMethods, MethodDefinitionMacros.
-# NamePrefix: is_, has_, have_
-# ForbiddenPrefixes: is_, has_, have_
-# AllowedMethods: is_a?
-# MethodDefinitionMacros: define_method, define_singleton_method
-Naming/PredicateName:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/sidekiq/cron/job.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: PreferredName.
@@ -338,17 +320,6 @@ Style/ConditionalAssignment:
   Exclude:
     - 'lib/sidekiq/cron/job.rb'
 
-# Offense count: 5
-Style/Documentation:
-  Exclude:
-    - 'spec/**/*'
-    - 'test/**/*'
-    - 'lib/sidekiq/cron.rb'
-    - 'lib/sidekiq/cron/job.rb'
-    - 'lib/sidekiq/cron/launcher.rb'
-    - 'lib/sidekiq/cron/support.rb'
-    - 'lib/sidekiq/cron/web_extension.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/EachWithObject:
@@ -363,27 +334,11 @@ Style/EmptyElse:
   Exclude:
     - 'lib/sidekiq/cron/job.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/Encoding:
-  Exclude:
-    - 'Rakefile'
-    - 'test/integration/performance_test.rb'
-    - 'test/unit/job_test.rb'
-    - 'test/unit/poller_test.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 Style/ExpandPathArguments:
   Exclude:
     - 'lib/sidekiq/cron/web_extension.rb'
-
-# Offense count: 17
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, always_true, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
 
 # Offense count: 1
 # Configuration parameters: MinBodyLength.
@@ -435,14 +390,6 @@ Style/MethodDefParentheses:
 Style/MultilineIfThen:
   Exclude:
     - 'sidekiq-cron.gemspec'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: literals, strict
-Style/MutableConstant:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
