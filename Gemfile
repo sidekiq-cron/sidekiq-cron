@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'sidekiq', '>= 4.2.1'
 gem 'fugit', '~> 1.1'
+gem 'sidekiq', '>= 4.2.1'
 
 group :development do
   gem 'bundler'
@@ -16,14 +16,14 @@ group :development do
   gem 'jeweler'
 
   gem 'minitest'
-  gem 'test-unit'
   gem 'sdoc' # sdoc -N .
+  gem 'test-unit'
 
-  gem 'slim'
   gem 'sinatra'
+  gem 'slim'
 
-  gem 'mocha'
   gem 'coveralls'
+  gem 'mocha'
 
   gem 'shotgun'
 
