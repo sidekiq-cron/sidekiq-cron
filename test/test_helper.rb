@@ -65,7 +65,7 @@ end
 
 module ActiveJob
   class Base
-    attr_accessor *%i[job_class provider_job_id queue_name arguments]
+    attr_accessor :job_class, :provider_job_id, :queue_name, :arguments
 
     def initialize
       yield self if block_given?

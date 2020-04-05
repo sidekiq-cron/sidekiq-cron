@@ -30,7 +30,7 @@ module Sidekiq
       # not overflow with memory
       def remove_previous_enques time
         Sidekiq.redis do |conn|
-          conn.zremrangebyscore(job_enqueued_key, 0, "(#{(time.to_f - REMEMBER_THRESHOLD).to_s}")
+          conn.zremrangebyscore(job_enqueued_key, 0, "(#{(time.to_f - REMEMBER_THRESHOLD)}")
         end
       end
 
@@ -97,7 +97,7 @@ module Sidekiq
       def queue_name_with_prefix
         return @queue unless is_active_job?
 
-        if !"#{@active_job_queue_name_delimiter}".empty?
+        if !@active_job_queue_name_delimiter.to_s.empty?
           queue_name_delimiter = @active_job_queue_name_delimiter
         elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_delimiter) && !ActiveJob::Base.queue_name_delimiter.empty?
           queue_name_delimiter = ActiveJob::Base.queue_name_delimiter
@@ -105,9 +105,9 @@ module Sidekiq
           queue_name_delimiter = '_'
         end
 
-        if !"#{@active_job_queue_name_prefix}".empty?
+        if !@active_job_queue_name_prefix.to_s.empty?
           queue_name = "#{@active_job_queue_name_prefix}#{queue_name_delimiter}#{@queue}"
-        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !"#{ActiveJob::Base.queue_name_prefix}".empty?
+        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !ActiveJob::Base.queue_name_prefix.to_s.empty?
           queue_name = "#{ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
         else
           queue_name = @queue
@@ -281,7 +281,7 @@ module Sidekiq
         @args = args["args"].nil? ? [] : parse_args(args["args"])
         @args += [Time.now.to_f] if args["date_as_argument"]
 
-        @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
+        @active_job = args["active_job"] == true || ((args["active_job"]).to_s =~ /^(true|t|yes|y|1)$/i) == 0 || false
         @active_job_queue_name_prefix = args["queue_name_prefix"]
         @active_job_queue_name_delimiter = args["queue_name_delimiter"]
 

@@ -18,26 +18,8 @@ Lint/AssignmentInCondition:
     - 'lib/sidekiq/cron/job.rb'
     - 'lib/sidekiq/cron/web_extension.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Lint/DeprecatedClassMethods:
-  Exclude:
-    - 'lib/sidekiq/cron/web_extension.rb'
-
 # Offense count: 4
 Lint/IneffectiveAccessModifier:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/RedundantSplatExpansion:
-  Exclude:
-    - 'test/test_helper.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/RedundantStringCoercion:
   Exclude:
     - 'lib/sidekiq/cron/job.rb'
 
@@ -230,25 +212,6 @@ Style/PercentQLiterals:
 Style/PreferredHashMethods:
   Exclude:
     - 'test/unit/job_test.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/RedundantInterpolation:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantParentheses:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
-
-# Offense count: 59
-# Cop supports --auto-correct.
-Style/RedundantPercentQ:
-  Exclude:
-    - 'Rakefile'
-    - 'sidekiq-cron.gemspec'
 
 # Offense count: 2
 # Cop supports --auto-correct.

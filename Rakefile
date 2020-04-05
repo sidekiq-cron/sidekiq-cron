@@ -19,8 +19,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "sidekiq-cron"
   gem.homepage = "http://github.com/ondrejbartas/sidekiq-cron"
   gem.license = "MIT"
-  gem.summary = %Q{Sidekiq Cron helps to add repeated scheduled jobs}
-  gem.description = %Q{Enables to set jobs to be run in specified time (using CRON notation)}
+  gem.summary = "Sidekiq Cron helps to add repeated scheduled jobs"
+  gem.description = "Enables to set jobs to be run in specified time (using CRON notation)"
   gem.email = "ondrej@bartas.cz"
   gem.authors = ["Ondrej Bartas"]
   # dependencies defined in Gemfile
