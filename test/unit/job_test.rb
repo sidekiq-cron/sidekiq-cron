@@ -16,7 +16,7 @@ describe 'Cron Job' do
   end
 
   it 'be initialized' do
-    job = Sidekiq::Cron::Job.new()
+    job = Sidekiq::Cron::Job.new
     assert_nil job.last_enqueue_time
     assert job.is_a?(Sidekiq::Cron::Job)
   end
@@ -45,7 +45,7 @@ describe 'Cron Job' do
 
   describe 'instance methods' do
     before do
-      @job = Sidekiq::Cron::Job.new()
+      @job = Sidekiq::Cron::Job.new
     end
 
     it 'have save method' do
@@ -76,7 +76,7 @@ describe 'Cron Job' do
 
   describe 'invalid job' do
     before do
-      @job = Sidekiq::Cron::Job.new()
+      @job = Sidekiq::Cron::Job.new
     end
 
     it 'allow a class instance for the klass' do
@@ -252,7 +252,7 @@ describe 'Cron Job' do
 
   describe 'cron test' do
     before do
-      @job = Sidekiq::Cron::Job.new()
+      @job = Sidekiq::Cron::Job.new
     end
 
     it 'return previous minute' do

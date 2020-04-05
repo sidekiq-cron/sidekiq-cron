@@ -49,7 +49,7 @@ class CronTestClass
   include Sidekiq::Worker
   sidekiq_options retry: true
 
-  def perform args = {}
+  def perform(args = {})
     puts "super croned job #{args}"
   end
 end
@@ -58,7 +58,7 @@ class CronTestClassWithQueue
   include Sidekiq::Worker
   sidekiq_options queue: :super, retry: false, backtrace: true
 
-  def perform args = {}
+  def perform(args = {})
     puts "super croned job #{args}"
   end
 end
