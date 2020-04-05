@@ -6,11 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 1
-Lint/AmbiguousOperator:
-  Exclude:
-    - 'test/test_helper.rb'
-
 # Offense count: 5
 # Configuration parameters: AllowSafeAssignment.
 Lint/AssignmentInCondition:
@@ -188,22 +183,6 @@ Style/NumericPredicate:
   Exclude:
     - 'spec/**/*'
     - 'lib/sidekiq/cron/job.rb'
-
-# Offense count: 58
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'Rakefile'
-    - 'sidekiq-cron.gemspec'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: lower_case_q, upper_case_q
-Style/PercentQLiterals:
-  Exclude:
-    - 'Rakefile'
 
 # Offense count: 1
 # Cop supports --auto-correct.
