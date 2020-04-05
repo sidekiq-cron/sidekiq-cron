@@ -17,7 +17,7 @@ module Sidekiq
       def should_enque? time
         enqueue = false
         enqueue = Sidekiq.redis do |conn|
-          status == "enabled" &&
+          status == 'enabled' &&
             not_past_scheduled_time?(time) &&
             not_enqueued_after?(time) &&
             conn.zadd(job_enqueued_key, formated_enqueue_time(time), formated_last_time(time))
@@ -192,7 +192,7 @@ module Sidekiq
       # like to {#load_from_array}
       # If exists old jobs in redis but removed from args, destroy old jobs
       def self.load_from_array! array
-        job_names = array.map { |job| job["name"] }
+        job_names = array.map { |job| job['name'] }
         destroy_removed_jobs(job_names)
         load_from_array(array)
       end
@@ -260,12 +260,12 @@ module Sidekiq
         @fetch_missing_args = args.delete('fetch_missing_args')
         @fetch_missing_args = true if @fetch_missing_args.nil?
 
-        @name = args["name"]
-        @cron = args["cron"]
-        @description = args["description"] if args["description"]
+        @name = args['name']
+        @cron = args['cron']
+        @description = args['description'] if args['description']
 
         # get class from klass or class
-        @klass = args["klass"] || args["class"]
+        @klass = args['klass'] || args['class']
 
         # set status of job
         @status = args['status'] || status_from_redis
@@ -278,17 +278,17 @@ module Sidekiq
         end
 
         # get right arguments for job
-        @args = args["args"].nil? ? [] : parse_args(args["args"])
-        @args += [Time.now.to_f] if args["date_as_argument"]
+        @args = args['args'].nil? ? [] : parse_args(args['args'])
+        @args += [Time.now.to_f] if args['date_as_argument']
 
-        @active_job = args["active_job"] == true || ((args["active_job"]).to_s =~ /^(true|t|yes|y|1)$/i) == 0 || false
-        @active_job_queue_name_prefix = args["queue_name_prefix"]
-        @active_job_queue_name_delimiter = args["queue_name_delimiter"]
+        @active_job = args['active_job'] == true || ((args['active_job']).to_s =~ /^(true|t|yes|y|1)$/i) == 0 || false
+        @active_job_queue_name_prefix = args['queue_name_prefix']
+        @active_job_queue_name_delimiter = args['queue_name_delimiter']
 
-        if args["message"]
-          @message = args["message"]
+        if args['message']
+          @message = args['message']
           message_data = Sidekiq.load_json(@message) || {}
-          @queue = message_data['queue'] || "default"
+          @queue = message_data['queue'] || 'default'
         elsif @klass
           message_data = {
             'class' => @klass.to_s,
@@ -305,7 +305,7 @@ module Sidekiq
                            Sidekiq::Cron::Support.constantize(@klass).get_sidekiq_options
                          rescue Exception => e
                            # Unknown class
-                           { "queue" => "default" }
+                           { 'queue' => 'default' }
                          end
                        end
 
@@ -315,7 +315,7 @@ module Sidekiq
           if args['queue']
             @queue = message_data['queue'] = args['queue']
           else
-            @queue = message_data['queue'] || "default"
+            @queue = message_data['queue'] || 'default'
           end
 
           # dump message as json
@@ -330,17 +330,17 @@ module Sidekiq
       end
 
       def disable!
-        @status = "disabled"
+        @status = 'disabled'
         save
       end
 
       def enable!
-        @status = "enabled"
+        @status = 'enabled'
         save
       end
 
       def enabled?
-        @status == "enabled"
+        @status == 'enabled'
       end
 
       def disabled?
@@ -354,10 +354,10 @@ module Sidekiq
       end
 
       def status_from_redis
-        out = "enabled"
+        out = 'enabled'
         if fetch_missing_args
           Sidekiq.redis do |conn|
-            status = conn.hget redis_key, "status"
+            status = conn.hget redis_key, 'status'
             out = status if status
           end
         end
@@ -368,7 +368,7 @@ module Sidekiq
         out = nil
         if fetch_missing_args
           Sidekiq.redis do |conn|
-            out = parse_enqueue_time(conn.hget(redis_key, "last_enqueue_time")) rescue nil
+            out = parse_enqueue_time(conn.hget(redis_key, 'last_enqueue_time')) rescue nil
           end
         end
         out
@@ -597,7 +597,7 @@ module Sidekiq
 
       # Redis key for set of all cron jobs
       def self.jobs_key
-        "cron_jobs"
+        'cron_jobs'
       end
 
       # Redis key for storing one cron job

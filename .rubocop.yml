@@ -17,3 +17,9 @@ Style/FrozenStringLiteralComment:
 
 Style/MutableConstant:
   Enabled: false
+
+Style/StringLiterals:
+  EnforedStyle: single_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes

@@ -4,7 +4,7 @@ module Sidekiq
   module Cron
     module Support
       def self.constantize(camel_cased_word)
-        names = camel_cased_word.split("::".freeze)
+        names = camel_cased_word.split('::'.freeze)
 
         # Trigger a built-in NameError exception including the ill-formed constant in the message.
         Object.const_get(camel_cased_word) if names.empty?

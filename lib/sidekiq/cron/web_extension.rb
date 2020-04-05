@@ -2,33 +2,33 @@ module Sidekiq
   module Cron
     module WebExtension
       def self.registered(app)
-        app.settings.locales << File.join(File.expand_path("..", __FILE__), "locales")
+        app.settings.locales << File.join(File.expand_path('..', __FILE__), 'locales')
 
         # index page of cron jobs
         app.get '/cron' do
-          view_path = File.join(File.expand_path("..", __FILE__), "views")
+          view_path = File.join(File.expand_path('..', __FILE__), 'views')
 
           @cron_jobs = Sidekiq::Cron::Job.all
 
           # if Slim renderer exists and sidekiq has layout.slim in views
-          if defined?(Slim) && File.exist?(File.join(settings.views, "layout.slim"))
-            render(:slim, File.read(File.join(view_path, "cron.slim")))
+          if defined?(Slim) && File.exist?(File.join(settings.views, 'layout.slim'))
+            render(:slim, File.read(File.join(view_path, 'cron.slim')))
           else
-            render(:erb, File.read(File.join(view_path, "cron.erb")))
+            render(:erb, File.read(File.join(view_path, 'cron.erb')))
           end
         end
 
         # display job detail + jid history
         app.get '/cron/:name' do
-          view_path = File.join(File.expand_path("..", __FILE__), "views")
+          view_path = File.join(File.expand_path('..', __FILE__), 'views')
 
           @job = Sidekiq::Cron::Job.find(route_params[:name])
           if @job
             # if Slim renderer exists and sidekiq has layout.slim in views
-            if defined?(Slim) && File.exist?(File.join(settings.views, "layout.slim"))
-              render(:slim, File.read(File.join(view_path, "cron_show.slim")))
+            if defined?(Slim) && File.exist?(File.join(settings.views, 'layout.slim'))
+              render(:slim, File.read(File.join(view_path, 'cron_show.slim')))
             else
-              render(:erb, File.read(File.join(view_path, "cron_show.erb")))
+              render(:erb, File.read(File.join(view_path, 'cron_show.erb')))
             end
           else
             redirect "#{root_path}cron"

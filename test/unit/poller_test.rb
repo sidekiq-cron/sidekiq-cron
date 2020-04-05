@@ -9,17 +9,17 @@ describe 'Cron Poller' do
 
     # clear all previous saved data from redis
     Sidekiq.redis do |conn|
-      conn.keys("cron_job*").each do |key|
+      conn.keys('cron_job*').each do |key|
         conn.del(key)
       end
     end
 
     @args = {
-      name: "Test",
-      cron: "*/2 * * * *",
-      klass: "CronTestClass"
+      name: 'Test',
+      cron: '*/2 * * * *',
+      klass: 'CronTestClass'
     }
-    @args2 = @args.merge(name: 'with_queue', klass: 'CronTestClassWithQueue', cron: "*/10 * * * *")
+    @args2 = @args.merge(name: 'with_queue', klass: 'CronTestClassWithQueue', cron: '*/10 * * * *')
 
     @poller = Sidekiq::Cron::Poller.new
   end
@@ -35,8 +35,8 @@ describe 'Cron Poller' do
     @poller.enqueue
 
     Sidekiq.redis do |conn|
-      assert_equal 0, conn.llen("queue:default")
-      assert_equal 0, conn.llen("queue:super")
+      assert_equal 0, conn.llen('queue:default')
+      assert_equal 0, conn.llen('queue:super')
     end
 
     # 30 seconds after!
@@ -46,8 +46,8 @@ describe 'Cron Poller' do
     @poller.enqueue
 
     Sidekiq.redis do |conn|
-      assert_equal 0, conn.llen("queue:default")
-      assert_equal 0, conn.llen("queue:super")
+      assert_equal 0, conn.llen('queue:default')
+      assert_equal 0, conn.llen('queue:super')
     end
   end
 
@@ -62,8 +62,8 @@ describe 'Cron Poller' do
     @poller.enqueue
 
     Sidekiq.redis do |conn|
-      assert_equal 0, conn.llen("queue:default")
-      assert_equal 0, conn.llen("queue:super")
+      assert_equal 0, conn.llen('queue:default')
+      assert_equal 0, conn.llen('queue:super')
     end
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 6, 1)
@@ -71,8 +71,8 @@ describe 'Cron Poller' do
     @poller.enqueue
 
     Sidekiq.redis do |conn|
-      assert_equal 1, conn.llen("queue:default")
-      assert_equal 0, conn.llen("queue:super")
+      assert_equal 1, conn.llen('queue:default')
+      assert_equal 0, conn.llen('queue:super')
     end
   end
 
@@ -87,8 +87,8 @@ describe 'Cron Poller' do
     @poller.enqueue
 
     Sidekiq.redis do |conn|
-      assert_equal 0, conn.llen("queue:default")
-      assert_equal 0, conn.llen("queue:super")
+      assert_equal 0, conn.llen('queue:default')
+      assert_equal 0, conn.llen('queue:super')
     end
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 10, 5)
@@ -96,8 +96,8 @@ describe 'Cron Poller' do
     @poller.enqueue
 
     Sidekiq.redis do |conn|
-      assert_equal 1, conn.llen("queue:default")
-      assert_equal 1, conn.llen("queue:super")
+      assert_equal 1, conn.llen('queue:default')
+      assert_equal 1, conn.llen('queue:super')
     end
   end
 
@@ -112,40 +112,40 @@ describe 'Cron Poller' do
     @poller.enqueue
 
     Sidekiq.redis do |conn|
-      assert_equal 0, conn.llen("queue:default")
-      assert_equal 0, conn.llen("queue:super")
+      assert_equal 0, conn.llen('queue:default')
+      assert_equal 0, conn.llen('queue:super')
     end
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 1)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
-      assert_equal 1, conn.llen("queue:default")
-      assert_equal 1, conn.llen("queue:super")
+      assert_equal 1, conn.llen('queue:default')
+      assert_equal 1, conn.llen('queue:super')
     end
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 2)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
-      assert_equal 1, conn.llen("queue:default")
-      assert_equal 1, conn.llen("queue:super")
+      assert_equal 1, conn.llen('queue:default')
+      assert_equal 1, conn.llen('queue:super')
     end
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 20)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
-      assert_equal 1, conn.llen("queue:default")
-      assert_equal 1, conn.llen("queue:super")
+      assert_equal 1, conn.llen('queue:default')
+      assert_equal 1, conn.llen('queue:super')
     end
 
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 20, 50)
     Time.stubs(:now).returns(enqueued_time)
     @poller.enqueue
     Sidekiq.redis do |conn|
-      assert_equal 1, conn.llen("queue:default")
-      assert_equal 1, conn.llen("queue:super")
+      assert_equal 1, conn.llen('queue:default')
+      assert_equal 1, conn.llen('queue:super')
     end
   end
 end

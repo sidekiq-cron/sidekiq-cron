@@ -244,34 +244,6 @@ Style/StderrPuts:
     - 'Rakefile'
     - 'test/test_helper.rb'
 
-# Offense count: 556
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Exclude:
-    - 'Rakefile'
-    - 'lib/sidekiq-cron.rb'
-    - 'lib/sidekiq/cron.rb'
-    - 'lib/sidekiq/cron/job.rb'
-    - 'lib/sidekiq/cron/support.rb'
-    - 'lib/sidekiq/cron/web.rb'
-    - 'lib/sidekiq/cron/web_extension.rb'
-    - 'sidekiq-cron.gemspec'
-    - 'test/integration/performance_test.rb'
-    - 'test/test_helper.rb'
-    - 'test/unit/job_test.rb'
-    - 'test/unit/poller_test.rb'
-    - 'test/unit/web_extension_test.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiteralsInInterpolation:
-  Exclude:
-    - 'lib/sidekiq/cron/job.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: .

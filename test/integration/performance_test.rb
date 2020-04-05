@@ -11,15 +11,15 @@ describe 'Performance Poller' do
 
     # clear all previous saved data from redis
     Sidekiq.redis do |conn|
-      conn.keys("cron_job*").each do |key|
+      conn.keys('cron_job*').each do |key|
         conn.del(key)
       end
     end
 
     args = {
-      queue: "default",
-      cron: "*/2 * * * *",
-      klass: "CronTestClass"
+      queue: 'default',
+      cron: '*/2 * * * *',
+      klass: 'CronTestClass'
     }
 
     X.times do |i|
@@ -34,7 +34,7 @@ describe 'Performance Poller' do
 
   it 'should enqueue 10000 jobs in less than 40s' do
     Sidekiq.redis do |conn|
-      assert_equal 0, conn.llen("queue:default"), 'Queue should be empty'
+      assert_equal 0, conn.llen('queue:default'), 'Queue should be empty'
     end
 
     bench = Benchmark.measure {
@@ -42,7 +42,7 @@ describe 'Performance Poller' do
     }
 
     Sidekiq.redis do |conn|
-      assert_equal X, conn.llen("queue:default"), 'Queue should be full'
+      assert_equal X, conn.llen('queue:default'), 'Queue should be full'
     end
 
     puts "Performance test finished in #{bench.real}"

@@ -13,22 +13,22 @@ describe 'Cron web' do
 
     # clear all previous saved data from redis
     Sidekiq.redis do |conn|
-      conn.keys("cron_job*").each do |key|
+      conn.keys('cron_job*').each do |key|
         conn.del(key)
       end
     end
 
     @args = {
-      name: "TestNameOfCronJob",
-      cron: "*/2 * * * *",
-      klass: "CronTestClass"
+      name: 'TestNameOfCronJob',
+      cron: '*/2 * * * *',
+      klass: 'CronTestClass'
     }
 
     @cron_args = {
-      name: "TesQueueNameOfCronJob",
-      cron: "*/2 * * * *",
-      klass: "CronQueueTestClass",
-      queue: "cron"
+      name: 'TesQueueNameOfCronJob',
+      cron: '*/2 * * * *',
+      klass: 'CronQueueTestClass',
+      queue: 'cron'
     }
   end
 
@@ -49,18 +49,18 @@ describe 'Cron web' do
     assert_equal 200, last_response.status
     refute last_response.body.include?('No cron jobs were found')
     assert last_response.body.include?('table')
-    assert last_response.body.include?("TestNameOfCronJob")
+    assert last_response.body.include?('TestNameOfCronJob')
   end
 
-  describe "work with cron job" do
+  describe 'work with cron job' do
     before do
-      @job = Sidekiq::Cron::Job.new(@args.merge(status: "enabled"))
+      @job = Sidekiq::Cron::Job.new(@args.merge(status: 'enabled'))
       @job.save
-      @name = "TestNameOfCronJob"
+      @name = 'TestNameOfCronJob'
 
-      @cron_job = Sidekiq::Cron::Job.new(@cron_args.merge(status: "enabled"))
+      @cron_job = Sidekiq::Cron::Job.new(@cron_args.merge(status: 'enabled'))
       @cron_job.save
-      @cron_job_name = "TesQueueNameOfCronJob"
+      @cron_job_name = 'TesQueueNameOfCronJob'
     end
 
     it 'shows history of a cron job' do
@@ -82,72 +82,72 @@ describe 'Cron web' do
       assert_match %r{\/cron\z}, last_response['Location']
     end
 
-    it "disable and enable all cron jobs" do
-      post "/cron/__all__/disable"
-      assert_equal Sidekiq::Cron::Job.find(@name).status, "disabled"
+    it 'disable and enable all cron jobs' do
+      post '/cron/__all__/disable'
+      assert_equal Sidekiq::Cron::Job.find(@name).status, 'disabled'
 
-      post "/cron/__all__/enable"
-      assert_equal Sidekiq::Cron::Job.find(@name).status, "enabled"
+      post '/cron/__all__/enable'
+      assert_equal Sidekiq::Cron::Job.find(@name).status, 'enabled'
     end
 
-    it "disable and enable cron job" do
+    it 'disable and enable cron job' do
       post "/cron/#{@name}/disable"
-      assert_equal Sidekiq::Cron::Job.find(@name).status, "disabled"
+      assert_equal Sidekiq::Cron::Job.find(@name).status, 'disabled'
 
       post "/cron/#{@name}/enable"
-      assert_equal Sidekiq::Cron::Job.find(@name).status, "enabled"
+      assert_equal Sidekiq::Cron::Job.find(@name).status, 'enabled'
     end
 
-    it "enqueue all jobs" do
+    it 'enqueue all jobs' do
       Sidekiq.redis do |conn|
-        assert_equal 0, conn.llen("queue:default"), "Queue should have no jobs"
+        assert_equal 0, conn.llen('queue:default'), 'Queue should have no jobs'
       end
 
-      post "/cron/__all__/enque"
+      post '/cron/__all__/enque'
 
       Sidekiq.redis do |conn|
-        assert_equal 1, conn.llen("queue:default"), "Queue should have 1 job in default"
-        assert_equal 1, conn.llen("queue:cron"), "Queue should have 1 job in cron"
+        assert_equal 1, conn.llen('queue:default'), 'Queue should have 1 job in default'
+        assert_equal 1, conn.llen('queue:cron'), 'Queue should have 1 job in cron'
       end
     end
 
-    it "enqueue job" do
+    it 'enqueue job' do
       Sidekiq.redis do |conn|
-        assert_equal 0, conn.llen("queue:default"), "Queue should have no jobs"
+        assert_equal 0, conn.llen('queue:default'), 'Queue should have no jobs'
       end
 
       post "/cron/#{@name}/enque"
 
       Sidekiq.redis do |conn|
-        assert_equal 1, conn.llen("queue:default"), "Queue should have 1 job"
+        assert_equal 1, conn.llen('queue:default'), 'Queue should have 1 job'
       end
 
       # should enqueue more times
       post "/cron/#{@name}/enque"
 
       Sidekiq.redis do |conn|
-        assert_equal 2, conn.llen("queue:default"), "Queue should have 2 job"
+        assert_equal 2, conn.llen('queue:default'), 'Queue should have 2 job'
       end
 
       # should enqueue to cron job queue
       post "/cron/#{@cron_job_name}/enque"
 
       Sidekiq.redis do |conn|
-        assert_equal 1, conn.llen("queue:cron"), "Queue should have 1 cron job"
+        assert_equal 1, conn.llen('queue:cron'), 'Queue should have 1 cron job'
       end
     end
 
-    it "destroy job" do
-      assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 job"
+    it 'destroy job' do
+      assert_equal Sidekiq::Cron::Job.all.size, 2, 'Should have 2 job'
       post "/cron/#{@name}/delete"
       post "/cron/#{@cron_job_name}/delete"
-      assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have zero jobs"
+      assert_equal Sidekiq::Cron::Job.all.size, 0, 'Should have zero jobs'
     end
 
-    it "destroy all jobs" do
-      assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 job"
-      post "/cron/__all__/delete"
-      assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have zero jobs"
+    it 'destroy all jobs' do
+      assert_equal Sidekiq::Cron::Job.all.size, 2, 'Should have 2 job'
+      post '/cron/__all__/delete'
+      assert_equal Sidekiq::Cron::Job.all.size, 0, 'Should have zero jobs'
     end
   end
 end

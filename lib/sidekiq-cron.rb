@@ -1,2 +1,2 @@
-require "sidekiq"
-require "sidekiq/cron"
+require 'sidekiq'
+require 'sidekiq/cron'
