@@ -411,8 +411,8 @@ module Sidekiq
         # clear previous errors
         @errors = []
 
-        errors << "'name' must be set" if @name.nil? || @name.size == 0
-        if @cron.nil? || @cron.size == 0
+        errors << "'name' must be set" if @name.nil? || @name.empty?
+        if @cron.nil? || @cron.empty?
           errors << "'cron' must be set"
         else
           begin
@@ -432,7 +432,7 @@ module Sidekiq
         when Class
           true
         when String
-          @klass.size > 0
+          !@klass.empty?
         else
         end
       end
@@ -507,10 +507,8 @@ module Sidekiq
 
       # remove all job from cron
       def self.destroy_all!
-        all.each do |job|
-          job.destroy
-        end
-        logger.info { "Cron Jobs - deleted all jobs" }
+        all.each(&:destroy)
+        logger.info { 'Cron Jobs - deleted all jobs' }
       end
 
       # remove "removed jobs" between current jobs and new jobs

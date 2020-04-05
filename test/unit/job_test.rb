@@ -12,9 +12,7 @@ describe "Cron Job" do
     end
 
     # clear all queues
-    Sidekiq::Queue.all.each do |queue|
-      queue.clear
-    end
+    Sidekiq::Queue.all.each(&:clear)
   end
 
   it "be initialized" do
