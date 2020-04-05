@@ -324,9 +324,7 @@ module Sidekiq
         @queue_name_with_prefix = queue_name_with_prefix
       end
 
-      def status
-        @status
-      end
+      attr_reader :status
 
       def disable!
         @status = 'disabled'

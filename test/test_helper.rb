@@ -72,12 +72,8 @@ module ActiveJob
       self.provider_job_id ||= SecureRandom.hex(12)
     end
 
-    def self.queue_name_prefix
-      @queue_name_prefix
-    end
-
-    def self.queue_name_prefix=(queue_name_prefix)
-      @queue_name_prefix = queue_name_prefix
+    class << self
+      attr_accessor :queue_name_prefix
     end
 
     def self.set(options)
