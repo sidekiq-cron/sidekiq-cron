@@ -55,20 +55,19 @@ module Sidekiq
             nil
           end
 
-        jid =
-          if klass_const
-            if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
-              enqueue_active_job(klass_const).try :provider_job_id
-            else
-              enqueue_sidekiq_worker(klass_const)
-            end
-          else
-            if @active_job
-              Sidekiq::Client.push(active_job_message)
-            else
-              Sidekiq::Client.push(sidekiq_worker_message)
-            end
-          end
+        jid = if klass_const
+                if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
+                  enqueue_active_job(klass_const).try :provider_job_id
+                else
+                  enqueue_sidekiq_worker(klass_const)
+                end
+              else
+                if @active_job
+                  Sidekiq::Client.push(active_job_message)
+                else
+                  Sidekiq::Client.push(sidekiq_worker_message)
+                end
+              end
 
         save_last_enqueue_time
         add_jid_history jid
@@ -105,13 +104,13 @@ module Sidekiq
           queue_name_delimiter = '_'
         end
 
-        if !@active_job_queue_name_prefix.to_s.empty?
-          queue_name = "#{@active_job_queue_name_prefix}#{queue_name_delimiter}#{@queue}"
-        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !ActiveJob::Base.queue_name_prefix.to_s.empty?
-          queue_name = "#{ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
-        else
-          queue_name = @queue
-        end
+        queue_name = if !@active_job_queue_name_prefix.to_s.empty?
+                       "#{@active_job_queue_name_prefix}#{queue_name_delimiter}#{@queue}"
+                     elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !ActiveJob::Base.queue_name_prefix.to_s.empty?
+                       "#{ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
+                     else
+                       @queue
+                     end
 
         queue_name
       end
@@ -271,11 +270,11 @@ module Sidekiq
         @status = args['status'] || status_from_redis
 
         # set last enqueue time - from args or from existing job
-        if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
-          @last_enqueue_time = parse_enqueue_time(args['last_enqueue_time'])
-        else
-          @last_enqueue_time = last_enqueue_time_from_redis
-        end
+        @last_enqueue_time = if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
+                               parse_enqueue_time(args['last_enqueue_time'])
+                             else
+                               last_enqueue_time_from_redis
+                             end
 
         # get right arguments for job
         @args = args['args'].nil? ? [] : parse_args(args['args'])
@@ -312,11 +311,11 @@ module Sidekiq
           message_data = klass_data.merge(message_data)
           # override queue if setted in config
           # only if message is hash - can be string (dumped JSON)
-          if args['queue']
-            @queue = message_data['queue'] = args['queue']
-          else
-            @queue = message_data['queue'] || 'default'
-          end
+          @queue = if args['queue']
+                     message_data['queue'] = args['queue']
+                   else
+                     message_data['queue'] || 'default'
+                   end
 
           # dump message as json
           @message = message_data

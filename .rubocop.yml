@@ -6,6 +6,9 @@ Naming/FileName:
 Naming/PredicateName:
   Enabled: false
 
+Style/ConditionalAssignment:
+  EnforcedStyle: assign_to_condition
+
 Style/Documentation:
   Enabled: false
 
