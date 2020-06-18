@@ -233,7 +233,7 @@ module Sidekiq
             output = Job.new conn.hgetall( redis_key(name) )
           end
         end
-        output if output.valid?
+        output if output&.valid?
       end
 
       # create new instance of cron job
