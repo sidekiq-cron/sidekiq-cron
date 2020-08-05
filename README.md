@@ -197,6 +197,12 @@ second_job:
   queue: hard_worker_long
   args:
     hard: "stuff"
+
+third_job:
+  cron: "every 30 minutes" # Natural language is accepted and parsed by Fugit
+  class: "HardWorker"
+  queue: hard_worker
+
 ```
 
 ```ruby
