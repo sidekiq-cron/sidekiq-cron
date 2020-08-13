@@ -417,7 +417,7 @@ module Sidekiq
           errors << "'cron' must be set"
         else
           begin
-            @parsed_cron = Fugit.do_parse_cron(@cron)
+            @parsed_cron = Fugit.do_parse(@cron)
           rescue => e
             errors << "'cron' -> #{@cron.inspect} -> #{e.class}: #{e.message}"
           end
