@@ -33,6 +33,10 @@ Sidekiq.logger.level = Logger::ERROR
 
 require 'sidekiq/redis_connection'
 redis_url = ENV['REDIS_URL'] || 'redis://0.0.0.0:6379'
+
+# Needed until sidekiq stops using Redis.exists or gems are upgraded
+require 'redis'
+Redis.exists_returns_integer = false if Redis.respond_to?(:exists_returns_integer)
 REDIS = Sidekiq::RedisConnection.create(:url => redis_url, :namespace => 'testy')
 
 Sidekiq.configure_client do |config|
