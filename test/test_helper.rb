@@ -8,13 +8,13 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 
+require 'coveralls'
 require 'simplecov'
 SimpleCov.start do
   add_filter "/test/"
 
   add_group 'SidekiqCron', 'lib/'
 end
-require 'coveralls'
 Coveralls.wear!
 
 require "minitest/autorun"
