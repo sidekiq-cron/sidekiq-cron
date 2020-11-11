@@ -66,6 +66,7 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sidekiq>.freeze, [">= 4.2.1"])
       s.add_runtime_dependency(%q<fugit>.freeze, ["~> 1.1"])
+      s.add_runtime_dependency(%q<redis>.freeze, [">= 4.2.0"])
       s.add_development_dependency(%q<bundler>.freeze, [">= 0"])
       s.add_development_dependency(%q<simplecov>.freeze, [">= 0"])
       s.add_development_dependency(%q<redis-namespace>.freeze, [">= 1.8.0"])
@@ -92,6 +93,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<shoulda-context>.freeze, [">= 0"])
       s.add_dependency(%q<rack>.freeze, [">= 0"])
       s.add_dependency(%q<rack-test>.freeze, [">= 0"])
+      s.add_dependency(%q<redis>.freeze, [">= 4.2.0"])
       s.add_dependency(%q<jeweler>.freeze, [">= 0"])
       s.add_dependency(%q<minitest>.freeze, [">= 0"])
       s.add_dependency(%q<test-unit>.freeze, [">= 0"])
@@ -113,6 +115,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<shoulda-context>.freeze, [">= 0"])
     s.add_dependency(%q<rack>.freeze, [">= 0"])
     s.add_dependency(%q<rack-test>.freeze, [">= 0"])
+    s.add_dependency(%q<redis>.freeze, [">= 4.2.0"])
     s.add_dependency(%q<jeweler>.freeze, [">= 0"])
     s.add_dependency(%q<minitest>.freeze, [">= 0"])
     s.add_dependency(%q<test-unit>.freeze, [">= 0"])
