@@ -89,6 +89,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<fugit>.freeze, ["~> 1.1"])
       s.add_dependency(%q<bundler>.freeze, [">= 0"])
       s.add_dependency(%q<simplecov>.freeze, [">= 0"])
+      s.add_dependency(%q<redis>.freeze, [">= 4.2.0"])
       s.add_dependency(%q<redis-namespace>.freeze, [">= 1.8.0"])
       s.add_dependency(%q<shoulda-context>.freeze, [">= 0"])
       s.add_dependency(%q<rack>.freeze, [">= 0"])
