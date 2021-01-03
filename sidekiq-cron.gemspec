@@ -94,7 +94,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<shoulda-context>.freeze, [">= 0"])
       s.add_dependency(%q<rack>.freeze, [">= 0"])
       s.add_dependency(%q<rack-test>.freeze, [">= 0"])
-      s.add_dependency(%q<redis>.freeze, [">= 4.2.0"])
       s.add_dependency(%q<jeweler>.freeze, [">= 0"])
       s.add_dependency(%q<minitest>.freeze, [">= 0"])
       s.add_dependency(%q<test-unit>.freeze, [">= 0"])
@@ -130,4 +129,3 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<guard-minitest>.freeze, [">= 0"])
   end
 end
-
