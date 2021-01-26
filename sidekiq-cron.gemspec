@@ -126,3 +126,4 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<guard-minitest>.freeze, [">= 0"])
   end
 end
+
