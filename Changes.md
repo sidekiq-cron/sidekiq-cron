@@ -3,6 +3,11 @@ v 1.3.0 (in progress)
 
 - add confirmation dialog when enquing jobs from UI
 
+v 1.2.1
+-------
+
+remove poller kill on quiet
+
 v 1.2.0
 -------
 
