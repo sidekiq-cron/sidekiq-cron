@@ -296,6 +296,10 @@ Sidekiq-Cron adds itself into this start procedure and starts another thread wit
 
 Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
 ```
+# For Sidekiq >= 3.4
+Sidekiq.options[:average_scheduled_poll_interval] = 10
+
+# For older versions of Sidekiq
 Sidekiq.options[:poll_interval] = 10
 ```
 

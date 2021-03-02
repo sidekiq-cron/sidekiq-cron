@@ -2,6 +2,7 @@ v 1.3.0 (in progress)
 -------
 
 - add confirmation dialog when enquing jobs from UI
+- Start to support Sidekiq `average_scheduled_poll_interval` option (replaced `poll_interval`)
 
 v 1.2.0
 -------
