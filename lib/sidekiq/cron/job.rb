@@ -14,6 +14,9 @@ module Sidekiq
       REMEMBER_THRESHOLD = 24 * 60 * 60
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
+      # Use the exists? method if we're on a newer version of redis.
+      REDIS_EXISTS_METHOD = Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
+
       #crucial part of whole enquing job
       def should_enque? time
         enqueue = false
@@ -461,7 +464,7 @@ module Sidekiq
 
           #add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
-          conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.exists(job_enqueued_key)
+          conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
         end
         logger.info { "Cron Jobs - add job with name: #{@name}" }
       end
@@ -540,7 +543,7 @@ module Sidekiq
       def self.exists? name
         out = false
         Sidekiq.redis do |conn|
-          out = conn.exists redis_key name
+          out = conn.public_send(REDIS_EXISTS_METHOD, redis_key(name))
         end
         out
       end
