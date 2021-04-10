@@ -39,9 +39,11 @@ module Sidekiq
   end
 end
 
-Sidekiq.configure_server do
-  # require  Sidekiq original launcher
-  require 'sidekiq/launcher'
+if ENV["SIDEKIQ_CRON_ENABLE"] != "0"
+  Sidekiq.configure_server do
+    # require  Sidekiq original launcher
+    require 'sidekiq/launcher'
 
-  ::Sidekiq::Launcher.prepend(Sidekiq::Cron::Launcher)
+    ::Sidekiq::Launcher.prepend(Sidekiq::Cron::Launcher)
+  end
 end
