@@ -206,9 +206,9 @@ module Sidekiq
         job_hashes = nil
         Sidekiq.redis do |conn|
           set_members = conn.smembers(jobs_key)
-          job_hashes = conn.pipelined do
+          job_hashes = conn.pipelined do |pipeline|
             set_members.each do |key|
-              conn.hgetall(key)
+              pipeline.hgetall(key)
             end
           end
         end
