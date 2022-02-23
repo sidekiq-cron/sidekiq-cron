@@ -12,3 +12,4 @@ vendor/
 Guardfile
 pkg
 .DS_Store
+.idea
