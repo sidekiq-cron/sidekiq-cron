@@ -27,7 +27,7 @@ v 1.1.0
 
 - updated readme
 - fix unit tests - changed argument error when getting invalid cron format
-- when fallbacking old job enqueued time use `Time.parse` šwithout format (so ruby can decide best method to parse it)
+- when fallbacking old job enqueued time use `Time.parse` without format (so ruby can decide best method to parse it)
 - add option `date_as_argument` which will add to your job arguments on last place `Time.now.to_f` when it was eneuqued
 - add option `description` which will allow you to add notes to your jobs so in web view you can see it
 - fixed translations
