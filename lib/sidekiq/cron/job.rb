@@ -282,6 +282,7 @@ module Sidekiq
         end
 
         #get right arguments for job
+        @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
         @args += [Time.now.to_f] if args["date_as_argument"]
 
@@ -404,6 +405,7 @@ module Sidekiq
           queue_name_prefix: @active_job_queue_name_prefix,
           queue_name_delimiter: @active_job_queue_name_delimiter,
           last_enqueue_time: @last_enqueue_time,
+          symbolize_args: @symbolize_args,
         }
       end
 
@@ -574,16 +576,31 @@ module Sidekiq
         case args
         when String
           begin
-            Sidekiq.load_json(args)
+            parsed_args = Sidekiq.load_json(args)
+            symbolize_args? ? symbolize_args(parsed_args) : parsed_args
           rescue JSON::ParserError
             [*args]   # cast to string array
           end
         when Hash
-          [args]      # just put hash into array
+          symbolize_args? ? [args.symbolize_keys] : [args]
         when Array
-          args        # do nothing, already array
+          symbolize_args? ? symbolize_args : parsed_args
         else
           [*args]     # cast to string array
+        end
+      end
+
+      def symbolize_args?
+        @symbolize_args
+      end
+
+      def symbolize_args(args = @args)
+        args.map do |arg|
+          if arg.respond_to?(:symbolize_keys)
+            arg.symbolize_keys
+          else
+            arg
+          end
         end
       end
 
