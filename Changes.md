@@ -24,7 +24,7 @@ All notable changes to this project will be documented in this file.
 - better patching of Sidekiq::Launcher
 - fixed Dockerfile
 
-# 1.1.0
+## 1.1.0
 
 - updated readme
 - fix unit tests - changed argument error when getting invalid cron format
@@ -33,11 +33,11 @@ All notable changes to this project will be documented in this file.
 - add option `description` which will allow you to add notes to your jobs so in web view you can see it
 - fixed translations
 
-# 1.0.4
+## 1.0.4
 
 - fix problem with upgrading to 1.0.x - parsing last enqued time didn't count with old time format stored in redis
 
-# 1.0.0
+## 1.0.0
 
 - use [fugit](https://github.com/floraison/fugit) instead of [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) - API of cron didn't change (rufus scheduler is using fugit)
 - better working with Timezones
@@ -45,7 +45,7 @@ All notable changes to this project will be documented in this file.
 - cron without timezone are considered as UTC, to add Timezone to cron use format `* * * * * Europe/Berlin`
 - be aware that this release can change when your jobs are enqueued (for me it didn't change but it is in one project, in other it can shift by different timezone setup)
 
-# 0.6.0
+## 0.6.0
 
 - set poller to check jobs every 30s by default (possible to override by `Sidekiq.options[:poll_interval] = 10`)
 - add group actions (enqueue, enable, disable, delete) all in web view
