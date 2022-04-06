@@ -218,6 +218,21 @@ if File.exist?(schedule_file) && Sidekiq.server?
 end
 ```
 
+from version 3.x it is better not to use separate initializer of schedule instead add `config.on(:startup)` to your sidekiq configuration:
+
+```ruby
+Sidekiq.configure_server do |config|
+  config.on(:startup) do
+    schedule_file = "config/schedule.yml"
+
+    if File.exist?(schedule_file)
+      Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+    end
+  end
+end
+```
+
+
 Or you can use for loading jobs from yml file [sidekiq-cron-tasks](https://github.com/coverhound/sidekiq-cron-tasks) which will add rake task `bundle exec rake sidekiq_cron:load` to your rails application.
 
 ### Finding jobs
@@ -281,7 +296,7 @@ add `require 'sidekiq/cron/web'` after `require 'sidekiq/web'`.
 With this, you will get:
 ![Web UI](https://github.com/ondrejbartas/sidekiq-cron/raw/master/examples/web-cron-ui.png)
 
-### Forking Processes
+### Forking Processes or problem with NotImplementedError
 
 If you're using a forking web server like Unicorn you may run into an issue where the Redis connection is used
 before the process forks, causing the following exception:
@@ -292,10 +307,12 @@ to occur. To avoid this, wrap your job creation in the call to `Sidekiq.configur
 
 ```ruby
 Sidekiq.configure_server do |config|
-  schedule_file = "config/schedule.yml"
+  config.on(:startup) do
+    schedule_file = "config/schedule.yml"
 
-  if File.exist?(schedule_file)
-    Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+    if File.exist?(schedule_file)
+      Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+    end
   end
 end
 ```
