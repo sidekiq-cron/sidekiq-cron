@@ -1,8 +1,18 @@
-v 1.3.0 (in progress)
+v 1.3.0
 -------
 
 - add confirmation dialog when enquing jobs from UI
-- Start to support Sidekiq `average_scheduled_poll_interval` option (replaced `poll_interval`)
+- start to support Sidekiq `average_scheduled_poll_interval` option (replaced `poll_interval`)
+- enable to use latest fugit to parse cron notation alowing use of natural language (ie `"every 30 minutes"`)
+- fix deprecation warning for redis 4.6.x
+- fix different response from Redis#exists in different redis versions
+- All PRs:
+  - https://github.com/ondrejbartas/sidekiq-cron/pull/275
+  - https://github.com/ondrejbartas/sidekiq-cron/pull/287
+  - https://github.com/ondrejbartas/sidekiq-cron/pull/309
+  - https://github.com/ondrejbartas/sidekiq-cron/pull/299
+  - https://github.com/ondrejbartas/sidekiq-cron/pull/314
+  - https://github.com/ondrejbartas/sidekiq-cron/pull/288
 
 v 1.2.0
 -------
