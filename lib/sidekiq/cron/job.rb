@@ -582,9 +582,9 @@ module Sidekiq
             [*args]   # cast to string array
           end
         when Hash
-          symbolize_args? ? [args.symbolize_keys] : [args]
+          symbolize_args? ? [symbolize_args(args)] : [args]
         when Array
-          symbolize_args? ? symbolize_args : parsed_args
+          symbolize_args? ? symbolize_args(args) : args
         else
           [*args]     # cast to string array
         end
@@ -594,13 +594,19 @@ module Sidekiq
         @symbolize_args
       end
 
-      def symbolize_args(args = @args)
-        args.map do |arg|
-          if arg.respond_to?(:symbolize_keys)
-            arg.symbolize_keys
-          else
-            arg
+      def symbolize_args(input)
+        if input.is_a?(Array)
+          input.map do |arg|
+            if arg.respond_to?(:symbolize_keys)
+              arg.symbolize_keys
+            else
+              arg
+            end
           end
+        elsif input.is_a?(Hash) && input.respond_to?(:symbolize_keys)
+          input.symbolize_keys
+        else
+          input
         end
       end
 

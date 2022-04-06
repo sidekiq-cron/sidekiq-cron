@@ -39,6 +39,13 @@ require 'sidekiq-cron'
 require 'sidekiq/cron/web'
 require 'pp'
 
+# For testing os symbilize args!
+class Hash
+  def symbolize_keys
+    transform_keys { |key| key.to_sym rescue key }
+  end
+end
+
 class CronTestClass
   include Sidekiq::Worker
   sidekiq_options retry: true

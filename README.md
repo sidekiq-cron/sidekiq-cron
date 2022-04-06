@@ -105,6 +105,9 @@ class ExampleJob < ActiveJob::Base
 end
 ```
 
+For Active jobs you can use `symbolize_args: true` in `Sidekiq::Cron::Job.create` or in Hash configuration,
+which will ensure that arguments you are passing to it will be symbolized when passed back to `perform` method in worker.
+
 #### Adding Cron job:
 ```ruby
 
@@ -287,6 +290,11 @@ end
 ```
 
 Note that this API is only available in Sidekiq 3.x.x.
+
+## Tests in sidekiq-cron
+
+If you need to check code of sidekiq-cron run: `rake test` in this repository.
+
 
 ## Under the hood
 

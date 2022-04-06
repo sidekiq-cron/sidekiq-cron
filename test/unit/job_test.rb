@@ -363,6 +363,108 @@ describe "Cron Job" do
     end
   end
 
+  describe '#active_job_message - unknown Active Job Worker class' do
+    before do
+      SecureRandom.stubs(:uuid).returns('XYZ')
+      ActiveJob::Base.queue_name_prefix = ''
+
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        klass: 'UnknownActiveJobCronTestClass',
+        active_job: true,
+        queue: 'super_queue',
+        description: nil,
+        args:  { foo: 'bar' }
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client' do
+      payload = {
+        'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'wrapped'     => 'UnknownActiveJobCronTestClass',
+        'queue'       => 'super_queue',
+        'description' => nil,
+        'args'        => [{
+          'job_class'  => 'UnknownActiveJobCronTestClass',
+          'job_id'     => 'XYZ',
+          'queue_name' => 'super_queue',
+          'arguments'  => [{foo: 'bar'}]
+        }]
+      }
+      assert_equal @job.active_job_message, payload
+    end
+  end
+
+  describe '#active_job_message with symbolize_args (hash)' do
+    before do
+      SecureRandom.stubs(:uuid).returns('XYZ')
+      ActiveJob::Base.queue_name_prefix = ''
+
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        klass: 'ActiveJobCronTestClass',
+        queue: 'super_queue',
+        description: nil,
+        symbolize_args: true,
+        args: { 'foo' => 'bar' }
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client' do
+      payload = {
+        'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'wrapped'     => 'ActiveJobCronTestClass',
+        'queue'       => 'super_queue',
+        'description' => nil,
+        'args'        => [{
+          'job_class'  => 'ActiveJobCronTestClass',
+          'job_id'     => 'XYZ',
+          'queue_name' => 'super_queue',
+          'arguments'  => [{foo: 'bar'}]
+        }]
+      }
+      assert_equal @job.active_job_message, payload
+    end
+  end
+
+  describe '#active_job_message with symbolize_args (array)' do
+    before do
+      SecureRandom.stubs(:uuid).returns('XYZ')
+      ActiveJob::Base.queue_name_prefix = ''
+
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        klass: 'ActiveJobCronTestClass',
+        queue: 'super_queue',
+        description: nil,
+        symbolize_args: true,
+        args: [{ 'foo' => 'bar' }]
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client' do
+      payload = {
+        'class'       => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
+        'wrapped'     => 'ActiveJobCronTestClass',
+        'queue'       => 'super_queue',
+        'description' => nil,
+        'args'        => [{
+          'job_class'  => 'ActiveJobCronTestClass',
+          'job_id'     => 'XYZ',
+          'queue_name' => 'super_queue',
+          'arguments'  => [{foo: 'bar'}]
+        }]
+      }
+      assert_equal @job.active_job_message, payload
+    end
+  end
+
   describe '#active_job_message with queue_name_prefix' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
