@@ -21,13 +21,13 @@ Works with ActiveJob (Rails 4.2+).
 
 You don't need Sidekiq PRO, you can use this gem with plain Sidekiq.
 
-## Upgrade from <0.6x to 1.0.x
+## Upgrade from < 0.6 to 1.0
 
-Please be aware that Sidekiq-Cron < 1.0 was relying on rufus-scheduler < 3.5. Using those older sidekiq-cron with rufus-scheduler >= 3.5 ends up with jobs failing on creation. Sidekiq-cron 1.0 includes a patch that switches from rufus-scheduler to rufus-scheduler's core dependency, fugit.
+Please be aware that Sidekiq-Cron < 1.0 was relying on rufus-scheduler < 3.5. Using those older versions with rufus-scheduler >= 3.5 ends up with jobs failing on creation. Sidekiq-Cron 1.0 includes a patch that switches from rufus-scheduler to rufus-scheduler's core dependency, fugit.
 
 ## Changelog
 
-Before upgrading to new version, please read our [ChangeLog](Changes.md).
+Before upgrading to a new version, please read our [Changelog](Changes.md).
 
 ## Installation
 
@@ -38,15 +38,19 @@ Before upgrading to new version, please read our [ChangeLog](Changes.md).
 
 Install the gem:
 
-    $ gem install sidekiq-cron
+```
+$ gem install sidekiq-cron
+```
 
 Or add to your `Gemfile` and run `bundle install`:
 
-    gem "sidekiq-cron", "~> 1.1"
+```ruby
+gem "sidekiq-cron", "~> 1.3"
+```
+
+**NOTE** If you are not using Rails, you need to add `require 'sidekiq-cron'` somewhere after `require 'sidekiq'`.
 
 ## Getting Started
-
-If you are not using Rails, you need to add `require 'sidekiq-cron'` somewhere after `require 'sidekiq'`.
 
 **Job properties:**
 
@@ -66,7 +70,7 @@ If you are not using Rails, you need to add `require 'sidekiq-cron'` somewhere a
 }
 ```
 
-### Time, cron and sidekiq-cron
+### Time, cron and Sidekiq-Cron
 
 For testing your cron notation you can use [crontab.guru](https://crontab.guru).
 
@@ -114,7 +118,7 @@ end
 For Active jobs you can use `symbolize_args: true` in `Sidekiq::Cron::Job.create` or in Hash configuration,
 which will ensure that arguments you are passing to it will be symbolized when passed back to `perform` method in worker.
 
-#### Adding Cron job:
+#### Adding Cron job
 
 ```ruby
 class HardWorker
@@ -218,7 +222,7 @@ if File.exist?(schedule_file) && Sidekiq.server?
 end
 ```
 
-from version 3.x it is better not to use separate initializer of schedule instead add `config.on(:startup)` to your sidekiq configuration:
+From version 3.x it is better not to use separate initializer of schedule instead add `config.on(:startup)` to your Sidekiq configuration:
 
 ```ruby
 Sidekiq.configure_server do |config|
@@ -231,7 +235,6 @@ Sidekiq.configure_server do |config|
   end
 end
 ```
-
 
 Or you can use for loading jobs from yml file [sidekiq-cron-tasks](https://github.com/coverhound/sidekiq-cron-tasks) which will add rake task `bundle exec rake sidekiq_cron:load` to your rails application.
 
@@ -250,7 +253,7 @@ Sidekiq::Cron::Job.find name: "Job Name"
 # if job can't be found nil is returned
 ```
 
-### Destroy jobs:
+### Destroy jobs
 
 ```ruby
 # destroy all jobs
@@ -263,7 +266,7 @@ Sidekiq::Cron::Job.destroy "Job Name"
 Sidekiq::Cron::Job.find('Job name').destroy
 ```
 
-### Work with job:
+### Work with job
 
 ```ruby
 job = Sidekiq::Cron::Job.find('Job name')
@@ -286,7 +289,9 @@ job.enque!
 
 Just start Sidekiq workers by running:
 
-    $ sidekiq
+```
+$ sidekiq
+```
 
 ### Web UI for Cron Jobs
 
@@ -294,16 +299,19 @@ If you are using Sidekiq's web UI and you would like to add cron jobs too to thi
 add `require 'sidekiq/cron/web'` after `require 'sidekiq/web'`.
 
 With this, you will get:
-![Web UI](https://github.com/ondrejbartas/sidekiq-cron/raw/master/examples/web-cron-ui.png)
 
-### Forking Processes or problem with NotImplementedError
+![Web UI](examples/web-cron-ui.png)
+
+### Forking Processes or problem with `NotImplementedError`
 
 If you're using a forking web server like Unicorn you may run into an issue where the Redis connection is used
-before the process forks, causing the following exception:
+before the process forks, causing the following exception to occur:
 
-    Redis::InheritedError: Tried to use a connection from a child process without reconnecting. You need to reconnect to Redis after forking.
+```
+Redis::InheritedError: Tried to use a connection from a child process without reconnecting. You need to reconnect to Redis after forking.
+```
 
-to occur. To avoid this, wrap your job creation in the call to `Sidekiq.configure_server`:
+To avoid this, wrap your job creation in the call to `Sidekiq.configure_server`:
 
 ```ruby
 Sidekiq.configure_server do |config|
@@ -318,10 +326,6 @@ end
 ```
 
 **NOTE** This API is only available in Sidekiq 3.x.
-
-## Tests in Sidekiq-Cron
-
-If you need to check code of sidekiq-cron run `rake test` in this repository.
 
 ## Under the hood
 
@@ -339,88 +343,27 @@ Sidekiq.options[:average_scheduled_poll_interval] = 10
 Sidekiq.options[:poll_interval] = 10
 ```
 
-Sidekiq-Cron is safe to use with multiple sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
+Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
 
-## Thanks to
-* [@284km](https://github.com/284km)
-* [@7korobi](https://github.com/7korobi)
-* [@adrianobarroso](https://github.com/adrianobarroso])
-* [@alexeyramazanov](https://github.com/alexeyramazanov)
-* [@antulik](https://github.com/antulik)
-* [@arthurbryant](https://github.com/arthurbryant)
-* [@cabello](https://github.com/cabello)
-* [@camkidman](https://github.com/camkidman)
-* [@cgunther](https://github.com/cgunther)
-* [@chuchuva](https://github.com/chuchuva)
-* [@corroded](https://github.com/corroded)
-* [@D1ceWard](https://github.com/D1ceWard])
-* [@davidtrogers](https://github.com/davidtrogers)
-* [@denispeplin](https://github.com/denispeplin)
-* [@dwarburt](https://github.com/dwarburt)
-* [@Envek](https://github.com/Envek)
-* [@Eunix](https://github.com/Eunix)
-* [@felixbuenemann](https://github.com/felixbuenemann)
-* [@film42](https://github.com/film42])
-* [@giriss](https://github.com/giriss)
-* [@gitter](https://github.com/gitter)
-* [@gstark](https://github.com/gstark)
-* [@h0jeZvgoxFepBQ2C](https://github.com/h0jeZvgoxFepBQ2C)
-* [@incubus](https://github.com/incubus)
-* [@jack0pan](https://github.com/jack0pan)
-* [@jmettraux](https://github.com/jmettraux)
-* [@johnathanludwig](https://github.com/johnathanludwig)
-* [@joshuacronemeyer](https://github.com/joshuacronemeyer)
-* [@jpserra](https://github.com/jpserra)
-* [@Junyulive](https://github.com/Junyulive)
-* [@le0pard](https://github.com/le0pard)
-* [@lepfhty](https://github.com/lepfhty)
-* [@macool](https://github.com/macool)
-* [@masayukioguni](https://github.com/masayukioguni)
-* [@matsimitsu](https://github.com/matsimitsu)
-* [@merrington](https://github.com/merrington)
-* [@MikeRogers0](https://github.com/MikeRogers0)
-* [@MMartyn](https://github.com/MMartyn)
-* [@mrchucho](https://github.com/mrchucho)
-* [@n00dle](https://github.com/n00dle)
-* [@ngouy](https://github.com/ngouy)
-* [@nhoffmann](https://github.com/nhoffmann)
-* [@nicolasleger](https://github.com/nicolasleger)
-* [@nikolai-b](https://github.com/nikolai-b)
-* [@oivoodoo](https://github.com/oivoodoo)
-* [@paniko0](https://github.com/paniko0)
-* [@petergoldstein](https://github.com/petergoldstein)
-* [@RajRoR](https://github.com/RajRoR)
-* [@rmm5t](https://github.com/rmm5t)
-* [@romeuhcf](https://github.com/romeuhcf)
-* [@rylwin](https://github.com/rylwin)
-* [@ryohashimoto](https://github.com/ryohashimoto)
-* [@safeforge](https://github.com/safeforge)
-* [@siruguri](https://github.com/siruguri)
-* [@Soliah](https://github.com/Soliah)
-* [@spk](https://github.com/spk)
-* [@stephankaag](https://github.com/stephankaag)
-* [@stormsilver](https://github.com/stormsilver)
-* [@sue445](https://github.com/sue445)
-* [@sylg](https://github.com/sylg)
-* [@tai2](https://github.com/tai2)
-* [@tfluehmann](https://github.com/tfluehmann)
-* [@timminkov](https://github.com/timminkov)
-* [@tisba](https://github.com/tisba)
-* [@tmeinlschmidt](https://github.com/tmeinlschmidt)
-* [@tomprats](https://github.com/tomprats)
-* [@zedtux](https://github.com/zedtux)
-* [@zerobearing2](https://github.com/zerobearing2)
+## Contributing
 
-## Contributing to sidekiq-cron
+**Thanks to all [contributors](https://github.com/ondrejbartas/sidekiq-cron/graphs/contributors), you’re awesome and this wouldn’t be possible without you!**
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.
 * Start a feature/bugfix branch.
 * Commit and push until you are happy with your contribution.
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+* Make sure to add tests for it. This is important so we don't break it in a future version unintentionally.
 
-## Copyright
+### Testing
+
+You can execute the test suite by running:
+
+```
+$ bundle exec rake test
+```
+
+## License
 
 Copyright (c) 2013 Ondrej Bartas. See [LICENSE](LICENSE.txt) for further details.
