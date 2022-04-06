@@ -1,8 +1,5 @@
-Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](http://badge.fury.io/rb/sidekiq-cron) ![Build test](https://github.com/ondrejbartas/sidekiq-cron/actions/workflows/ci.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/github/ondrejbartas/sidekiq-cron?branch=master)
+Sidekiq-Cron [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](http://badge.fury.io/rb/sidekiq-cron) ![Build test](https://github.com/ondrejbartas/sidekiq-cron/actions/workflows/ci.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/github/ondrejbartas/sidekiq-cron?branch=master) [![Join the chat at https://gitter.im/ondrejbartas/sidekiq-cron](https://badges.gitter.im/ondrejbartas/sidekiq-cron.svg)](https://gitter.im/ondrejbartas/sidekiq-cron?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ================================================================================================================================================================================================================================================================================================================================================================================================================================================
-
-[![Join the chat at https://gitter.im/ondrejbartas/sidekiq-cron](https://badges.gitter.im/ondrejbartas/sidekiq-cron.svg)](https://gitter.im/ondrejbartas/sidekiq-cron?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [Introduction video about Sidekiq-Cron by Drifting Ruby](https://www.driftingruby.com/episodes/periodic-tasks-with-sidekiq-cron)
 
 A scheduling add-on for [Sidekiq](http://sidekiq.org).
