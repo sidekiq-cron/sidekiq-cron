@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
     "Rakefile",
     "README.md",
     "sidekiq-cron.gemspec",
-    "VERSION",
   ]
  
   s.homepage = "https://github.com/ondrejbartas/sidekiq-cron"
