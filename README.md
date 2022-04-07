@@ -56,17 +56,18 @@ gem "sidekiq-cron", "~> 1.3"
 
 ```ruby
 {
- 'name' => 'name_of_job', # must be uniq!
- 'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, 15:01, ... (HH:MM)
- 'class' => 'MyClass',
- # OPTIONAL
- 'queue' => 'name of queue',
- 'args' => '[Array or Hash] of arguments which will be passed to perform method',
- 'date_as_argument' => true, # add the time of execution as last argument of the perform method
- 'active_job' => true,  # enqueue job through rails 4.2+ active job interface
- 'queue_name_prefix' => 'prefix', # rails 4.2+ active job queue with prefix
- 'queue_name_delimiter' => '.',  # rails 4.2+ active job queue with custom delimiter
- 'description' => 'A sentence describing what work this job performs.'
+  'name' => 'name_of_job', # must be uniq!
+  'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, 15:01, ... (HH:MM)
+  'class' => 'MyClass',
+  # OPTIONAL
+  'queue' => 'name of queue',
+  'args' => '[Array or Hash] of arguments which will be passed to perform method',
+  'date_as_argument' => true, # add the time of execution as last argument of the perform method
+  'active_job' => true,  # enqueue job through rails 4.2+ active job interface
+  'queue_name_prefix' => 'prefix', # rails 4.2+ active job queue with prefix
+  'queue_name_delimiter' => '.',  # rails 4.2+ active job queue with custom delimiter
+  'description' => 'A sentence describing what work this job performs.'
+  'status' => 'disabled' # default: enabled
 }
 ```
 
