@@ -8,7 +8,6 @@ SimpleCov.start do
 end
 
 require "minitest/autorun"
-require 'shoulda-context'
 require "rack/test"
 require 'mocha/minitest'
 
