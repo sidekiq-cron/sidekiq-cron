@@ -14,6 +14,9 @@ module Sidekiq
       REMEMBER_THRESHOLD = 24 * 60 * 60
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
+      # Use the exists? method if we're on a newer version of redis.
+      REDIS_EXISTS_METHOD = Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
+
       #crucial part of whole enquing job
       def should_enque? time
         enqueue = false
@@ -203,9 +206,9 @@ module Sidekiq
         job_hashes = nil
         Sidekiq.redis do |conn|
           set_members = conn.smembers(jobs_key)
-          job_hashes = conn.pipelined do
+          job_hashes = conn.pipelined do |pipeline|
             set_members.each do |key|
-              conn.hgetall(key)
+              pipeline.hgetall(key)
             end
           end
         end
@@ -233,7 +236,7 @@ module Sidekiq
             output = Job.new conn.hgetall( redis_key(name) )
           end
         end
-        output
+        output if output && output.valid?
       end
 
       # create new instance of cron job
@@ -279,6 +282,7 @@ module Sidekiq
         end
 
         #get right arguments for job
+        @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
         @args += [Time.now.to_f] if args["date_as_argument"]
 
@@ -401,6 +405,7 @@ module Sidekiq
           queue_name_prefix: @active_job_queue_name_prefix,
           queue_name_delimiter: @active_job_queue_name_delimiter,
           last_enqueue_time: @last_enqueue_time,
+          symbolize_args: @symbolize_args,
         }
       end
 
@@ -461,7 +466,7 @@ module Sidekiq
 
           #add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
-          conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.exists(job_enqueued_key)
+          conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
         end
         logger.info { "Cron Jobs - add job with name: #{@name}" }
       end
@@ -540,7 +545,7 @@ module Sidekiq
       def self.exists? name
         out = false
         Sidekiq.redis do |conn|
-          out = conn.exists redis_key name
+          out = conn.public_send(REDIS_EXISTS_METHOD, redis_key(name))
         end
         out
       end
@@ -571,16 +576,37 @@ module Sidekiq
         case args
         when String
           begin
-            Sidekiq.load_json(args)
+            parsed_args = Sidekiq.load_json(args)
+            symbolize_args? ? symbolize_args(parsed_args) : parsed_args
           rescue JSON::ParserError
             [*args]   # cast to string array
           end
         when Hash
-          [args]      # just put hash into array
+          symbolize_args? ? [symbolize_args(args)] : [args]
         when Array
-          args        # do nothing, already array
+          symbolize_args? ? symbolize_args(args) : args
         else
           [*args]     # cast to string array
+        end
+      end
+
+      def symbolize_args?
+        @symbolize_args
+      end
+
+      def symbolize_args(input)
+        if input.is_a?(Array)
+          input.map do |arg|
+            if arg.respond_to?(:symbolize_keys)
+              arg.symbolize_keys
+            else
+              arg
+            end
+          end
+        elsif input.is_a?(Hash) && input.respond_to?(:symbolize_keys)
+          input.symbolize_keys
+        else
+          input
         end
       end
 

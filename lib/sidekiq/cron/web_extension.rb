@@ -12,12 +12,7 @@ module Sidekiq
 
           @cron_jobs = Sidekiq::Cron::Job.all
 
-          #if Slim renderer exists and sidekiq has layout.slim in views
-          if defined?(Slim) && File.exists?(File.join(settings.views,"layout.slim"))
-            render(:slim, File.read(File.join(view_path, "cron.slim")))
-          else
-            render(:erb, File.read(File.join(view_path, "cron.erb")))
-          end
+          render(:erb, File.read(File.join(view_path, "cron.erb")))
         end
 
         # display job detail + jid history
@@ -25,13 +20,8 @@ module Sidekiq
           view_path = File.join(File.expand_path("..", __FILE__), "views")
 
           @job = Sidekiq::Cron::Job.find(route_params[:name])
-          if @job.present?
-            #if Slim renderer exists and sidekiq has layout.slim in views
-            if defined?(Slim) && File.exists?(File.join(settings.views,"layout.slim"))
-              render(:slim, File.read(File.join(view_path, "cron_show.slim")))
-            else
-              render(:erb, File.read(File.join(view_path, "cron_show.erb")))
-            end
+          if @job
+            render(:erb, File.read(File.join(view_path, "cron_show.erb")))
           else
             redirect "#{root_path}cron"
           end

@@ -17,8 +17,8 @@ module Sidekiq
       rescue => ex
         # Most likely a problem with redis networking.
         # Punt and try again at the next interval
-        logger.error ex.message
-        logger.error ex.backtrace.first
+        Sidekiq.logger.error ex.message
+        Sidekiq.logger.error ex.backtrace.first
         handle_exception(ex) if respond_to?(:handle_exception)
       end
 
@@ -28,13 +28,13 @@ module Sidekiq
         job.test_and_enque_for_time! time if job && job.valid?
       rescue => ex
         # problem somewhere in one job
-        logger.error "CRON JOB: #{ex.message}"
-        logger.error "CRON JOB: #{ex.backtrace.first}"
+        Sidekiq.logger.error "CRON JOB: #{ex.message}"
+        Sidekiq.logger.error "CRON JOB: #{ex.backtrace.first}"
         handle_exception(ex) if respond_to?(:handle_exception)
       end
 
       def poll_interval_average
-         Sidekiq.options[:poll_interval] || POLL_INTERVAL
+         Sidekiq.options[:average_scheduled_poll_interval] || POLL_INTERVAL
       end
     end
   end

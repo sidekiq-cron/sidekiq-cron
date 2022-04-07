@@ -1,13 +1,9 @@
-# -*- encoding : utf-8 -*-
 require './test/test_helper'
-
 
 describe 'Cron Poller' do
   before do
+    REDIS.with { |c| c.respond_to?(:redis) ? c.redis.flushdb : c.flushdb }
     Sidekiq.redis = REDIS
-    Sidekiq.redis do |conn|
-      conn.flushdb
-    end
 
     #clear all previous saved data from redis
     Sidekiq.redis do |conn|
