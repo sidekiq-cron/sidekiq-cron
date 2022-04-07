@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
     "README.md"
   ]
   s.files = Dir.glob('lib/**/*') + Dir.glob('test/**/*') + [
-    ".document",
     "Changes.md",
     "Dockerfile",
     "config.ru",
