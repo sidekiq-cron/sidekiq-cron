@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.summary = "Sidekiq-Cron helps to add repeated scheduled jobs"
 
-  s.add_dependency("fugit", ">= 1.1")
+  s.add_dependency("fugit", "~> 1")
   s.add_dependency("sidekiq", ">= 4.2.1")
 
   s.add_development_dependency("minitest")
