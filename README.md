@@ -74,16 +74,12 @@ gem "sidekiq-cron", "~> 1.3"
 
 For testing your cron notation you can use [crontab.guru](https://crontab.guru).
 
-Sidekiq-Cron uses [Fugit](https://github.com/floraison/fugit) to parse the cronline.
+Sidekiq-Cron uses [Fugit](https://github.com/floraison/fugit) to parse the cronline. So please, check Fugit documentation for further information about allowed formats.
 
 If using Rails, this is evaluated against the timezone configured in Rails, otherwise the default is UTC.
 
 If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline,
 like this `'0 22 * * 1-5 America/Chicago'`.
-
-See [rufus-scheduler documentation](https://github.com/jmettraux/rufus-scheduler#a-note-about-timezones) for more information.
-
-**NOTE** Rufus scheduler is using Fugit under the hood, so documentation for Rufus Scheduler can help you also.
 
 ### What objects/classes can be scheduled
 
@@ -191,8 +187,8 @@ Sidekiq::Cron::Job.load_from_array array
 Bang-suffixed methods will remove jobs that are not present in the given hash/array, update jobs that have the same names, and create new ones when the names are previously unknown.
 
 ```ruby
-Sidekiq::Cron::Job#load_from_hash! hash
-Sidekiq::Cron::Job#load_from_array! array
+Sidekiq::Cron::Job.load_from_hash! hash
+Sidekiq::Cron::Job.load_from_array! array
 ```
 
 Or from YAML (same notation as Resque-scheduler):
