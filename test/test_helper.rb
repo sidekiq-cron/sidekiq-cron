@@ -14,13 +14,12 @@ require 'mocha/minitest'
 
 ENV['RACK_ENV'] = 'test'
 
-#SIDEKIQ Require - need to have sidekiq running!
+# SIDEKIQ requires - need to have sidekiq running!
 require 'sidekiq'
 require "sidekiq-pro" if ENV['SIDEKIQ_PRO_VERSION']
 require "sidekiq/processor"
 require "sidekiq/fetch"
 require "sidekiq/cli"
-
 require 'sidekiq/web'
 
 Sidekiq.logger.level = Logger::ERROR
@@ -32,9 +31,9 @@ Sidekiq.configure_client do |config|
   config.redis = { :url => redis_url, :namespace => 'testy' }
 end
 
-
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
+
 require 'sidekiq-cron'
 require 'sidekiq/cron/web'
 require 'pp'
