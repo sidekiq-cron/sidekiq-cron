@@ -1,4 +1,3 @@
-# -*- encoding : utf-8 -*-
 require './test/test_helper'
 
 describe "Cron Job" do
@@ -929,11 +928,11 @@ describe "Cron Job" do
         cron: "* * * * *",
         klass: "CronTestClass"
       }
-      #first time is allways
+      #first time is always
       #after next cron time!
       @time = Time.now.utc + 120
     end
-    it "be allways false when status is disabled" do
+    it "be always false when status is disabled" do
       refute Sidekiq::Cron::Job.new(@args.merge(status: 'disabled')).should_enque? @time
       refute Sidekiq::Cron::Job.new(@args.merge(status: 'disabled')).should_enque? @time - 60
       refute Sidekiq::Cron::Job.new(@args.merge(status: 'disabled')).should_enque? @time - 120
@@ -1120,7 +1119,6 @@ describe "Cron Job" do
 
         assert_equal Sidekiq::Cron::Job.all.first.sidekiq_worker_message, payload
       end
-
     end
   end
 end

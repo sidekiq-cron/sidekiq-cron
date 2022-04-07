@@ -1,15 +1,15 @@
 # Sidekiq-Cron
 
-[![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](http://badge.fury.io/rb/sidekiq-cron)
+[![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](https://badge.fury.io/rb/sidekiq-cron)
 [![Build Status](https://github.com/ondrejbartas/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/ondrejbartas/sidekiq-cron/actions)
 [![Coverage Status](https://coveralls.io/repos/github/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/github/ondrejbartas/sidekiq-cron?branch=master)
 [![Join the chat at https://gitter.im/ondrejbartas/sidekiq-cron](https://badges.gitter.im/ondrejbartas/sidekiq-cron.svg)](https://gitter.im/ondrejbartas/sidekiq-cron?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-> A scheduling add-on for [Sidekiq](http://sidekiq.org)
+> A scheduling add-on for [Sidekiq](https://sidekiq.org/)
 
 🎬 [Introduction video about Sidekiq-Cron by Drifting Ruby](https://www.driftingruby.com/episodes/periodic-tasks-with-sidekiq-cron)
 
-Sidekiq-Cron runs a thread alongside Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` parsed by [Fugit](https://github.com/floraison/fugit), more about [cron notation](http://www.nncron.ru/help/EN/working/cron-format.htm).
+Sidekiq-Cron runs a thread alongside Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` parsed by [Fugit](https://github.com/floraison/fugit).
 
 Checks for new jobs to schedule every 30 seconds and doesn't schedule the same job multiple times when more than one Sidekiq worker is running.
 
@@ -33,8 +33,8 @@ Before upgrading to a new version, please read our [Changelog](Changes.md).
 
 ### Requirements
 
-- Redis 2.8 or greater is required. (Redis 3.0.3 or greater is recommended for large scale use)
-- Sidekiq 5, or 4, or 3 and greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
+- Redis 2.8 or greater is required (Redis 3.0.3 or greater is recommended for large scale use)
+- Sidekiq 4.2 or greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
 
 Install the gem:
 
@@ -74,16 +74,12 @@ gem "sidekiq-cron", "~> 1.3"
 
 For testing your cron notation you can use [crontab.guru](https://crontab.guru).
 
-Sidekiq-Cron uses [Fugit](https://github.com/floraison/fugit) to parse the cronline.
+Sidekiq-Cron uses [Fugit](https://github.com/floraison/fugit) to parse the cronline. So please, check Fugit documentation for further information about allowed formats.
 
 If using Rails, this is evaluated against the timezone configured in Rails, otherwise the default is UTC.
 
 If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline,
 like this `'0 22 * * 1-5 America/Chicago'`.
-
-See [rufus-scheduler documentation](https://github.com/jmettraux/rufus-scheduler#a-note-about-timezones) for more information.
-
-**NOTE** Rufus scheduler is using Fugit under the hood, so documentation for Rufus Scheduler can help you also.
 
 ### What objects/classes can be scheduled
 
@@ -191,8 +187,8 @@ Sidekiq::Cron::Job.load_from_array array
 Bang-suffixed methods will remove jobs that are not present in the given hash/array, update jobs that have the same names, and create new ones when the names are previously unknown.
 
 ```ruby
-Sidekiq::Cron::Job#load_from_hash! hash
-Sidekiq::Cron::Job#load_from_array! array
+Sidekiq::Cron::Job.load_from_hash! hash
+Sidekiq::Cron::Job.load_from_array! array
 ```
 
 Or from YAML (same notation as Resque-scheduler):
@@ -336,11 +332,7 @@ Sidekiq-Cron adds itself into this start procedure and starts another thread wit
 Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
 
 ```ruby
-# For Sidekiq >= 3.4
 Sidekiq.options[:average_scheduled_poll_interval] = 10
-
-# For older versions of Sidekiq
-Sidekiq.options[:poll_interval] = 10
 ```
 
 Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.

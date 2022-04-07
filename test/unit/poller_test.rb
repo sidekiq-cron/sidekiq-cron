@@ -1,6 +1,4 @@
-# -*- encoding : utf-8 -*-
 require './test/test_helper'
-
 
 describe 'Cron Poller' do
   before do
