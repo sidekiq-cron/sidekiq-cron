@@ -17,9 +17,6 @@ Gem::Specification.new do |s|
   ]
   s.files = Dir.glob('lib/**/*') + Dir.glob('test/**/*') + [
     "Changes.md",
-    "Dockerfile",
-    "docker-compose.yml",
-    "examples/web-cron-ui.png",
     "Gemfile",
     "LICENSE.txt",
     "Rakefile",
