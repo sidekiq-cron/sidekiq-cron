@@ -468,7 +468,7 @@ module Sidekiq
           time = Time.now.utc
           conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
         end
-        logger.info { "Cron Jobs - add job with name: #{@name}" }
+        logger.info { "Cron Jobs - added job with name: #{@name}" }
       end
 
       def save_last_enqueue_time
