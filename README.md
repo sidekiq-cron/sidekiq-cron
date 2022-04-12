@@ -82,6 +82,22 @@ If using Rails, this is evaluated against the timezone configured in Rails, othe
 If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline,
 like this `'0 22 * * 1-5 America/Chicago'`.
 
+#### Second-precision (sub-minute) cronlines
+
+In addition to the standard 5-parameter cronline format, sidekiq-cron supports scheduling jobs with second-precision using a modified 6-parameter cronline format:
+
+`Seconds Minutes Hours Days Months DayOfWeek`
+
+For example: `"*/30 * * * * *"` would schedule a job to run every 30 seconds.
+
+Note that if you plan to schedule jobs with second precision you may need to override the default schedule poll interval so it is lower than the interval of your jobs:
+
+```ruby
+Sidekiq.options[:average_scheduled_poll_interval] = 10
+```
+
+The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
+
 ### What objects/classes can be scheduled
 
 #### Sidekiq Worker
