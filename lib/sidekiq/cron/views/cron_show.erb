@@ -9,21 +9,21 @@
     <% cron_job_path = "#{root_path}cron/#{CGI.escape(@job.name).gsub('+', '%20')}" %>
     <form action="<%= cron_job_path %>/enque?redirect=<%= cron_job_path %>" method="post">
       <%= csrf_tag if respond_to?(:csrf_tag) %>
-      <input class="btn btn-small pull-left" name="enque" type="submit" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => @job.name) %>" />
+      <input class="btn btn-warn pull-left" name="enque" type="submit" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => @job.name) %>" />
     </form>
     <% if @job.status == 'enabled' %>
       <form action="<%= cron_job_path %>/disable?redirect=<%= cron_job_path %>" method="post">
         <%= csrf_tag if respond_to?(:csrf_tag) %>
-        <input class="btn btn-small pull-left" name="disable" type="submit" value="<%= t('Disable') %>" />
+        <input class="btn btn-warn pull-left" name="disable" type="submit" value="<%= t('Disable') %>" />
       </form>
     <% else %>
       <form action="<%= cron_job_path %>/enable?redirect=<%= cron_job_path %>" method="post">
         <%= csrf_tag if respond_to?(:csrf_tag) %>
-        <input class="btn btn-small pull-left" name="enable" type="submit" value="<%= t('Enable') %>" />
+        <input class="btn btn-warn pull-left" name="enable" type="submit" value="<%= t('Enable') %>" />
       </form>
       <form action="<%= cron_job_path %>/delete" method="post">
         <%= csrf_tag if respond_to?(:csrf_tag) %>
-        <input class="btn btn-danger btn-small" data-confirm="<%= t('AreYouSureDeleteCronJob', :job => @job.name) %>" name="delete" type="submit" value="<%= t('Delete') %>" />
+        <input class="btn btn-danger" data-confirm="<%= t('AreYouSureDeleteCronJob', :job => @job.name) %>" name="delete" type="submit" value="<%= t('Delete') %>" />
       </form>
     <% end %>
   </div>
