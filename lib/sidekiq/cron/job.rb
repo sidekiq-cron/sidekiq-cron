@@ -85,17 +85,27 @@ module Sidekiq
         false
       end
 
+      def date_as_argument?
+        !!@date_as_argument
+      end
+
+      def enqueue_args
+        date_as_argument? ? @args + [Time.now.to_f] : @args
+      end
+
       def enqueue_active_job(klass_const)
-        klass_const.set(queue: @queue).perform_later(*@args)
+        klass_const.set(queue: @queue).perform_later(*enqueue_args)
       end
 
       def enqueue_sidekiq_worker(klass_const)
-        klass_const.set(queue: queue_name_with_prefix).perform_async(*@args)
+        klass_const.set(queue: queue_name_with_prefix).perform_async(*enqueue_args)
       end
 
       # siodekiq worker message
       def sidekiq_worker_message
-        @message.is_a?(String) ? Sidekiq.load_json(@message) : @message
+        message = @message.is_a?(String) ? Sidekiq.load_json(@message) : @message
+        message["args"] = enqueue_args
+        message
       end
 
       def queue_name_with_prefix
@@ -132,7 +142,7 @@ module Sidekiq
             'job_class'  => @klass,
             'job_id'     => SecureRandom.uuid,
             'queue_name' => @queue_name_with_prefix,
-            'arguments'  => @args
+            'arguments'  => enqueue_args
           }]
         }
       end
@@ -284,7 +294,8 @@ module Sidekiq
         #get right arguments for job
         @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
-        @args += [Time.now.to_f] if args["date_as_argument"]
+
+        @date_as_argument = args["date_as_argument"] == true || ("#{args["date_as_argument"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
 
         @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @active_job_queue_name_prefix = args["queue_name_prefix"]
@@ -399,6 +410,7 @@ module Sidekiq
           cron: @cron,
           description: @description,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
+          date_as_argument: @date_as_argument,
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
           active_job: @active_job,
