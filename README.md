@@ -35,6 +35,7 @@ Before upgrading to a new version, please read our [Changelog](Changes.md).
 
 - Redis 2.8 or greater is required (Redis 3.0.3 or greater is recommended for large scale use)
 - Sidekiq 4.2 or greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
+- Sidekiq 6.5 requires Sidekiq-Cron 1.5+
 
 Install the gem:
 
@@ -45,7 +46,7 @@ $ gem install sidekiq-cron
 Or add to your `Gemfile` and run `bundle install`:
 
 ```ruby
-gem "sidekiq-cron", "~> 1.3"
+gem "sidekiq-cron"
 ```
 
 **NOTE** If you are not using Rails, you need to add `require 'sidekiq-cron'` somewhere after `require 'sidekiq'`.
@@ -364,6 +365,7 @@ Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a 
 * Start a feature/bugfix branch.
 * Commit and push until you are happy with your contribution.
 * Make sure to add tests for it. This is important so we don't break it in a future version unintentionally.
+* Open a pull request!
 
 ### Testing
 
