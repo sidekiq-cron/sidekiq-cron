@@ -1,4 +1,4 @@
-FROM ruby:2.4
+FROM ruby:2.6
 MAINTAINER Joao Serra <joaopfserra@gmail.com>
 
 RUN apt-get update && \
