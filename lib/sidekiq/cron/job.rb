@@ -417,7 +417,16 @@ module Sidekiq
           errors << "'cron' must be set"
         else
           begin
-            @parsed_cron = Fugit.do_parse(@cron)
+            c = Fugit.do_parse(@cron)
+              #
+              # since `Fugit.do_parse` might yield a Fugit::Duration or an EtOrbi::EoTime
+              # https://github.com/floraison/fugit#fugitparses
+              #
+            if c.is_a?(Fugit::Cron)
+              @parsed_cron = c
+            else
+              errors << "'cron' -> #{@cron.inspect} -> not a cron but a #{c.class}"
+            end
           rescue => e
             errors << "'cron' -> #{@cron.inspect} -> #{e.class}: #{e.message}"
           end
@@ -557,7 +566,20 @@ module Sidekiq
       private
 
       def parsed_cron
-        @parsed_cron ||= Fugit.parse(@cron)
+        @parsed_cron ||= begin
+                           c = Fugit.parse(@cron)
+                           #
+                           # since `Fugit.parse` might yield a Fugit::Duration or an EtOrbi::EoTime
+                           # https://github.com/floraison/fugit#fugitparses
+                           #
+                           if c.is_a?(Fugit::Cron)
+                             c
+                           else
+                             errors << "'cron' -> #{@cron.inspect} -> not a cron but a #{c.class}"
+                           end
+                         rescue => e
+                           errors << "'cron' -> #{@cron.inspect} -> #{e.class}: #{e.message}"
+                         end
       end
 
       def not_enqueued_after?(time)
