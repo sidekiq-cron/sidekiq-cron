@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.5.1
+
+-  Fixes an issue that prevented the gem to work in previous Sidekiq versions (https://github.com/ondrejbartas/sidekiq-cron/pull/335)
+
 ## 1.5.0
 
 - Integrate Sidekiq v6.5 breaking changes (https://github.com/ondrejbartas/sidekiq-cron/pull/331)
