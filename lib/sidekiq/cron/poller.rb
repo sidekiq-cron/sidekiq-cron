@@ -10,7 +10,11 @@ module Sidekiq
     class Poller < Sidekiq::Scheduled::Poller
       def initialize
         Sidekiq.configure_server do |config|
-          config[:poll_interval_average] = config[:average_scheduled_poll_interval] || POLL_INTERVAL
+          if config.respond_to?(:[])
+            config[:poll_interval_average] = config[:average_scheduled_poll_interval] || POLL_INTERVAL
+          else
+            config.options[:poll_interval_average] = config.options[:average_scheduled_poll_interval] || POLL_INTERVAL
+          end
         end
 
         if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("6.5.0")
