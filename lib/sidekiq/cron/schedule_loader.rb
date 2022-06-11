@@ -7,9 +7,7 @@ if Sidekiq.server?
 
     if File.exist?(schedule_file)
       config.on(:startup) do
-        if File.exist?(schedule_file)
-          Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
-        end
+        Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
       end
     end
   end
