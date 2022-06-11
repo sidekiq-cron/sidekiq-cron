@@ -227,9 +227,15 @@ second_job:
     hard: "stuff"
 ```
 
+There are multiple ways to load the jobs from a YAML file
+
+1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file.
+2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration,
+i.e. `cron_schedule_file: "config/users_schedule.yml"`
+3. Load the file manually as follows
 ```ruby
 # config/initializers/sidekiq.rb
-schedule_file = "config/schedule.yml"
+schedule_file = "config/users_schedule.yml"
 
 if File.exist?(schedule_file) && Sidekiq.server?
   Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
