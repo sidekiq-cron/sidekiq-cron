@@ -322,30 +322,6 @@ With this, you will get:
 
 ![Web UI](examples/web-cron-ui.png)
 
-### Forking Processes or problem with `NotImplementedError`
-
-If you're using a forking web server like Unicorn you may run into an issue where the Redis connection is used
-before the process forks, causing the following exception to occur:
-
-```
-Redis::InheritedError: Tried to use a connection from a child process without reconnecting. You need to reconnect to Redis after forking.
-```
-
-To avoid this, wrap your job creation in the call to `Sidekiq.configure_server`:
-
-```ruby
-Sidekiq.configure_server do |config|
-  config.on(:startup) do
-    schedule_file = "config/schedule.yml"
-
-    if File.exist?(schedule_file)
-      Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
-    end
-  end
-end
-```
-
-**NOTE** This API is only available in Sidekiq 3.x.
 
 ## Under the hood
 
