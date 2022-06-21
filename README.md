@@ -233,21 +233,13 @@ There are multiple ways to load the jobs from a YAML file
 2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration,
 i.e. `cron_schedule_file: "config/users_schedule.yml"`
 3. Load the file manually as follows
+
 ```ruby
 # config/initializers/sidekiq.rb
-schedule_file = "config/users_schedule.yml"
 
-if File.exist?(schedule_file) && Sidekiq.server?
-  Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
-end
-```
-
-From version 3.x it is better not to use separate initializer of schedule instead add `config.on(:startup)` to your Sidekiq configuration:
-
-```ruby
 Sidekiq.configure_server do |config|
   config.on(:startup) do
-    schedule_file = "config/schedule.yml"
+    schedule_file = "config/users_schedule.yml"
 
     if File.exist?(schedule_file)
       Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
