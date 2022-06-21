@@ -227,21 +227,19 @@ second_job:
     hard: "stuff"
 ```
 
+There are multiple ways to load the jobs from a YAML file
+
+1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file.
+2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration,
+i.e. `cron_schedule_file: "config/users_schedule.yml"`
+3. Load the file manually as follows
+
 ```ruby
 # config/initializers/sidekiq.rb
-schedule_file = "config/schedule.yml"
 
-if File.exist?(schedule_file) && Sidekiq.server?
-  Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
-end
-```
-
-From version 3.x it is better not to use separate initializer of schedule instead add `config.on(:startup)` to your Sidekiq configuration:
-
-```ruby
 Sidekiq.configure_server do |config|
   config.on(:startup) do
-    schedule_file = "config/schedule.yml"
+    schedule_file = "config/users_schedule.yml"
 
     if File.exist?(schedule_file)
       Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
@@ -316,30 +314,6 @@ With this, you will get:
 
 ![Web UI](examples/web-cron-ui.png)
 
-### Forking Processes or problem with `NotImplementedError`
-
-If you're using a forking web server like Unicorn you may run into an issue where the Redis connection is used
-before the process forks, causing the following exception to occur:
-
-```
-Redis::InheritedError: Tried to use a connection from a child process without reconnecting. You need to reconnect to Redis after forking.
-```
-
-To avoid this, wrap your job creation in the call to `Sidekiq.configure_server`:
-
-```ruby
-Sidekiq.configure_server do |config|
-  config.on(:startup) do
-    schedule_file = "config/schedule.yml"
-
-    if File.exist?(schedule_file)
-      Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
-    end
-  end
-end
-```
-
-**NOTE** This API is only available in Sidekiq 3.x.
 
 ## Under the hood
 
