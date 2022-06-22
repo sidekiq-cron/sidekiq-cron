@@ -35,6 +35,7 @@ Before upgrading to a new version, please read our [Changelog](Changes.md).
 
 - Redis 2.8 or greater is required (Redis 3.0.3 or greater is recommended for large scale use)
 - Sidekiq 4.2 or greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
+- Sidekiq 6.5 requires Sidekiq-Cron 1.5+
 
 Install the gem:
 
@@ -45,7 +46,7 @@ $ gem install sidekiq-cron
 Or add to your `Gemfile` and run `bundle install`:
 
 ```ruby
-gem "sidekiq-cron", "~> 1.3"
+gem "sidekiq-cron"
 ```
 
 **NOTE** If you are not using Rails, you need to add `require 'sidekiq-cron'` somewhere after `require 'sidekiq'`.
@@ -93,7 +94,7 @@ For example: `"*/30 * * * * *"` would schedule a job to run every 30 seconds.
 Note that if you plan to schedule jobs with second precision you may need to override the default schedule poll interval so it is lower than the interval of your jobs:
 
 ```ruby
-Sidekiq.options[:average_scheduled_poll_interval] = 10
+Sidekiq[:average_scheduled_poll_interval] = 10
 ```
 
 The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
@@ -226,21 +227,19 @@ second_job:
     hard: "stuff"
 ```
 
+There are multiple ways to load the jobs from a YAML file
+
+1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file.
+2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration,
+i.e. `cron_schedule_file: "config/users_schedule.yml"`
+3. Load the file manually as follows
+
 ```ruby
 # config/initializers/sidekiq.rb
-schedule_file = "config/schedule.yml"
 
-if File.exist?(schedule_file) && Sidekiq.server?
-  Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
-end
-```
-
-From version 3.x it is better not to use separate initializer of schedule instead add `config.on(:startup)` to your Sidekiq configuration:
-
-```ruby
 Sidekiq.configure_server do |config|
   config.on(:startup) do
-    schedule_file = "config/schedule.yml"
+    schedule_file = "config/users_schedule.yml"
 
     if File.exist?(schedule_file)
       Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
@@ -315,30 +314,6 @@ With this, you will get:
 
 ![Web UI](examples/web-cron-ui.png)
 
-### Forking Processes or problem with `NotImplementedError`
-
-If you're using a forking web server like Unicorn you may run into an issue where the Redis connection is used
-before the process forks, causing the following exception to occur:
-
-```
-Redis::InheritedError: Tried to use a connection from a child process without reconnecting. You need to reconnect to Redis after forking.
-```
-
-To avoid this, wrap your job creation in the call to `Sidekiq.configure_server`:
-
-```ruby
-Sidekiq.configure_server do |config|
-  config.on(:startup) do
-    schedule_file = "config/schedule.yml"
-
-    if File.exist?(schedule_file)
-      Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
-    end
-  end
-end
-```
-
-**NOTE** This API is only available in Sidekiq 3.x.
 
 ## Under the hood
 
@@ -349,7 +324,7 @@ Sidekiq-Cron adds itself into this start procedure and starts another thread wit
 Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
 
 ```ruby
-Sidekiq.options[:average_scheduled_poll_interval] = 10
+Sidekiq[:average_scheduled_poll_interval] = 10
 ```
 
 Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
@@ -364,6 +339,7 @@ Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a 
 * Start a feature/bugfix branch.
 * Commit and push until you are happy with your contribution.
 * Make sure to add tests for it. This is important so we don't break it in a future version unintentionally.
+* Open a pull request!
 
 ### Testing
 

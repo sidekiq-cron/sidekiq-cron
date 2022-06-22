@@ -1102,6 +1102,16 @@ describe "Cron Job" do
         assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
       end
 
+      it "duplicate jobs are not loaded" do
+        out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
+        assert_equal out.size, 0, "should have no errors"
+        assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+
+        out_2 = Sidekiq::Cron::Job.load_from_hash @jobs_hash
+        assert_equal out_2.size, 0, "should have no errors"
+        assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after loading again"
+      end
+
       it "return errors on loaded jobs" do
         assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
         #set something bag to hash
