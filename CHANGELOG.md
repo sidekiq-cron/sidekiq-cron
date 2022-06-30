@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.6.0
+
+- Adds support for auto-loading the config/schedule.yml file (https://github.com/ondrejbartas/sidekiq-cron/pull/337)
+- Fix Sidekiq.options deprecation warning (https://github.com/ondrejbartas/sidekiq-cron/pull/338)
+
 ## 1.5.1
 
 -  Fixes an issue that prevented the gem to work in previous Sidekiq versions (https://github.com/ondrejbartas/sidekiq-cron/pull/335)
