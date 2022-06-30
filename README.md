@@ -27,7 +27,7 @@ Please be aware that Sidekiq-Cron < 1.0 was relying on rufus-scheduler < 3.5. Us
 
 ## Changelog
 
-Before upgrading to a new version, please read our [Changelog](Changes.md).
+Before upgrading to a new version, please read our [Changelog](CHANGELOG.md).
 
 ## Installation
 
