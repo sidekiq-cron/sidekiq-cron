@@ -83,6 +83,17 @@ If using Rails, this is evaluated against the timezone configured in Rails, othe
 If you want to have your jobs enqueued based on a different time zone you can specify a timezone in the cronline,
 like this `'0 22 * * 1-5 America/Chicago'`.
 
+#### Natural-language formats
+
+Since sidekiq-cron `v1.7.0`, you can use the natural-language formats supported by Fugit, such as:
+
+```rb
+"every day at five" # ==> '0 5 * * *'
+"every 3 hours"     # ==> '0 */3 * * *'
+```
+
+See [the relevant part of Fugit documentation](https://github.com/floraison/fugit#fugitnat) for details.
+
 #### Second-precision (sub-minute) cronlines
 
 In addition to the standard 5-parameter cronline format, sidekiq-cron supports scheduling jobs with second-precision using a modified 6-parameter cronline format:
