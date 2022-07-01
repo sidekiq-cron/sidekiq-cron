@@ -130,6 +130,22 @@ describe "Cron Job" do
     end
   end
 
+  describe 'cron formats' do
+    before do
+      @args = {
+        name: "Test",
+        klass: "CronTestClass"
+      }
+    end
+
+    it 'should support natural language format' do
+      @args[:cron] = "every 3 hours"
+      @job = Sidekiq::Cron::Job.new(@args)
+      assert @job.valid?
+      assert_equal Fugit::Cron.new("0 */3 * * *"), @job.send(:parsed_cron)
+    end
+  end
+
   describe 'parse_enqueue_time' do
     before do
       @args = {
