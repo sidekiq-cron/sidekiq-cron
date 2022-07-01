@@ -479,7 +479,7 @@ module Sidekiq
           enqueued: @last_enqueue_time
         }
 
-        @history_size ||= (SidekiqOptions[:cron_history_size] || 10).to_i - 1
+        @history_size ||= (Sidekiq::Options[:cron_history_size] || 10).to_i - 1
         Sidekiq.redis do |conn|
           conn.lpush jid_history_key,
                      Sidekiq.dump_json(jid_history)
