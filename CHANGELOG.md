@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Enable to use latest fugit to parse cron notation allowing use of natural language (ie `"every 30 minutes"`)
+
 ## 1.6.0
 
 - Adds support for auto-loading the config/schedule.yml file (https://github.com/ondrejbartas/sidekiq-cron/pull/337)
@@ -30,7 +34,6 @@ All notable changes to this project will be documented in this file.
 
 - Add confirmation dialog when enquing jobs from UI
 - Start to support Sidekiq `average_scheduled_poll_interval` option (replaced `poll_interval`)
-- Enable to use latest fugit to parse cron notation alowing use of natural language (ie `"every 30 minutes"`)
 - Fix deprecation warning for Redis 4.6.x
 - Fix different response from Redis#exists in different Redis versions
 - All PRs:

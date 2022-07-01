@@ -85,7 +85,7 @@ like this `'0 22 * * 1-5 America/Chicago'`.
 
 #### Natural-language formats
 
-Since sidekiq-cron `v1.3.0`, you can use the natural-language formats supported by Fugit, such as:
+Since sidekiq-cron `v1.7.0`, you can use the natural-language formats supported by Fugit, such as:
 
 ```rb
 "every day at five" # ==> '0 5 * * *'
