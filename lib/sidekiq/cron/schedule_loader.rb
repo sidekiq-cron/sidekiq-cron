@@ -1,9 +1,10 @@
-require "sidekiq"
-require "sidekiq/cron/job"
+require 'sidekiq'
+require 'sidekiq/cron/job'
+require 'sidekiq/options'
 
 if Sidekiq.server?
   Sidekiq.configure_server do |config|
-    schedule_file = Sidekiq::Options[:cron_schedule_file] || "config/schedule.yml"
+    schedule_file = Sidekiq::Options[:cron_schedule_file] || 'config/schedule.yml'
 
     if File.exist?(schedule_file)
       config.on(:startup) do

@@ -1,6 +1,7 @@
 require 'fugit'
 require 'sidekiq'
 require 'sidekiq/cron/support'
+require 'sidekiq/options'
 
 module Sidekiq
   module Cron

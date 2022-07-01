@@ -1,4 +1,4 @@
-require "sidekiq"
+require 'sidekiq'
 
 module Sidekiq
   module Options
