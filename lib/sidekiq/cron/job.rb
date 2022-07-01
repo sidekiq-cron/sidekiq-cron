@@ -478,8 +478,8 @@ module Sidekiq
           jid: jid,
           enqueued: @last_enqueue_time
         }
-        cron_history_size = Sidekiq.respond_to?(:[]) ? Sidekiq[:cron_history_size] : Sidekiq.options[:cron_history_size]
-        @history_size ||= (cron_history_size || 10).to_i - 1
+
+        @history_size ||= (SidekiqOptions[:cron_history_size] || 10).to_i - 1
         Sidekiq.redis do |conn|
           conn.lpush jid_history_key,
                      Sidekiq.dump_json(jid_history)
