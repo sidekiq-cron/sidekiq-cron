@@ -85,11 +85,11 @@ like this `'0 22 * * 1-5 America/Chicago'`.
 
 #### Natural-language formats
 
-Since sidekiq-cron `v1.7.0`, you can use the natural-language formats supported by Fugit, such as:
+Since Sidekiq-Cron `v1.7.0`, you can use the natural-language formats supported by Fugit, such as:
 
 ```rb
-"every day at five" # ==> '0 5 * * *'
-"every 3 hours"     # ==> '0 */3 * * *'
+"every day at five" # => '0 5 * * *'
+"every 3 hours"     # => '0 */3 * * *'
 ```
 
 See [the relevant part of Fugit documentation](https://github.com/floraison/fugit#fugitnat) for details.
@@ -258,8 +258,6 @@ Sidekiq.configure_server do |config|
   end
 end
 ```
-
-Or you can use for loading jobs from yml file [sidekiq-cron-tasks](https://github.com/coverhound/sidekiq-cron-tasks) which will add rake task `bundle exec rake sidekiq_cron:load` to your rails application.
 
 ### Finding jobs
 
