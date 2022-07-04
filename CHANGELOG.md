@@ -4,12 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- Enable to use latest fugit to parse cron notation allowing use of natural language (ie `"every 30 minutes"`)
+- Enable to use cron notation in natural language (ie `every 30 minutes`) (https://github.com/ondrejbartas/sidekiq-cron/pull/312)
 
 ## 1.6.0
 
-- Adds support for auto-loading the config/schedule.yml file (https://github.com/ondrejbartas/sidekiq-cron/pull/337)
-- Fix Sidekiq.options deprecation warning (https://github.com/ondrejbartas/sidekiq-cron/pull/338)
+- Adds support for auto-loading the `config/schedule.yml` file (https://github.com/ondrejbartas/sidekiq-cron/pull/337)
+- Fix `Sidekiq.options` deprecation warning (https://github.com/ondrejbartas/sidekiq-cron/pull/338)
 
 ## 1.5.1
 
