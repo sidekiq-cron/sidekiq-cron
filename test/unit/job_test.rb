@@ -2,14 +2,14 @@ require './test/test_helper'
 
 describe "Cron Job" do
   before do
-    #clear all previous saved data from redis
+    # Clear all previous saved data from Redis.
     Sidekiq.redis do |conn|
       conn.keys("cron_job*").each do |key|
         conn.del(key)
       end
     end
 
-    #clear all queues
+    # Clear all queues.
     Sidekiq::Queue.all.each do |queue|
       queue.clear
     end
@@ -75,7 +75,6 @@ describe "Cron Job" do
   end
 
   describe "invalid job" do
-
     before do
       @job = Sidekiq::Cron::Job.new()
     end
@@ -838,7 +837,7 @@ describe "Cron Job" do
     end
 
     it "last_enqueue_time shouldn't be rewritten after save" do
-      #adding last_enqueue_time to initialize is only for test purpose
+      # Adding last_enqueue_time to initialize is only for testing purposes.
       last_enqueue_time = '2013-01-01 23:59:59 +0000'
       expected_enqueue_time = DateTime.parse(last_enqueue_time).to_time.utc
       Sidekiq::Cron::Job.create(@args.merge('last_enqueue_time' => last_enqueue_time))
@@ -1016,10 +1015,10 @@ describe "Cron Job" do
         cron: "* * * * *",
         klass: "CronTestClass"
       }
-      #first time is always
-      #after next cron time!
+      # First time is always after next cron time!
       @time = Time.now.utc + 120
     end
+
     it "be always false when status is disabled" do
       refute Sidekiq::Cron::Job.new(@args.merge(status: 'disabled')).should_enque? @time
       refute Sidekiq::Cron::Job.new(@args.merge(status: 'disabled')).should_enque? @time - 60
@@ -1041,7 +1040,6 @@ describe "Cron Job" do
       assert Sidekiq::Cron::Job.new(@args).should_enque? @time + 235
       refute Sidekiq::Cron::Job.new(@args).should_enque? @time + 235
 
-      #just for check
       refute Sidekiq::Cron::Job.new(@args).should_enque? @time
       refute Sidekiq::Cron::Job.new(@args).should_enque? @time + 135
       refute Sidekiq::Cron::Job.new(@args).should_enque? @time + 235
@@ -1057,7 +1055,7 @@ describe "Cron Job" do
       assert job.test_and_enque_for_time!(@time), "should enqueue"
 
       future_now = @time + 1 * 60 * 60
-      Time.stubs(:now).returns(future_now) # save uses Time.now.utc
+      Time.stubs(:now).returns(future_now) # Save uses Time.now.utc
       job.save
       assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time!(future_now + 30), "should enqueue"
     end
@@ -1074,7 +1072,7 @@ describe "Cron Job" do
       end
       assert_equal Sidekiq::Queue.all.first.size, 1, "Sidekiq queue 1 job in queue"
 
-      # 20 hours after
+      # 20 hours after.
       assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time! @time + 1 * 60 * 60
       refute Sidekiq::Cron::Job.new(@args).test_and_enque_for_time! @time + 1 * 60 * 60
 
@@ -1095,7 +1093,6 @@ describe "Cron Job" do
   end
 
   describe "load" do
-
     describe "from hash" do
       before do
         @jobs_hash = {
@@ -1130,7 +1127,7 @@ describe "Cron Job" do
 
       it "return errors on loaded jobs" do
         assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
-        #set something bag to hash
+        # Set something bad to hash.
         @jobs_hash['name_of_job']['cron'] = "bad cron"
         out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
         assert_equal 1, out.size, "should have 1 error"

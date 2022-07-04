@@ -7,7 +7,7 @@ describe 'Performance Poller' do
     REDIS.with { |c| c.respond_to?(:redis) ? c.redis.flushdb : c.flushdb }
     Sidekiq.redis = REDIS
 
-    #clear all previous saved data from redis
+    # Clear all previous saved data from Redis.
     Sidekiq.redis do |conn|
       conn.keys("cron_job*").each do |key|
         conn.del(key)

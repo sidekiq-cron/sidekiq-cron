@@ -28,7 +28,6 @@ module Sidekiq
               const
             end
 
-            # owner is in Object, so raise
             constant.const_get(name, false)
           end
         end
