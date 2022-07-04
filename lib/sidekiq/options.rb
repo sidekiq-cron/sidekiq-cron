@@ -6,8 +6,8 @@ module Sidekiq
       new_version? ? Sidekiq[key] : Sidekiq.options[key]
     end
 
-    def self.[]=(config, key, value)
-      new_version? ? config[key] = value : config.options[key] = value
+    def self.[]=(key, value)
+      new_version? ? Sidekiq[key] = value : Sidekiq.options[key] = value
     end
 
     # sidekiq --version >= 6.5.0
