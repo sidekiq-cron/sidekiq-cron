@@ -125,14 +125,14 @@ describe 'Cron web' do
         assert_equal 1, conn.llen("queue:default"), "Queue should have 1 job"
       end
 
-      #should enqueue more times
+      # Should enqueue more times.
       post "/cron/#{job_name}/enque"
 
       Sidekiq.redis do |conn|
         assert_equal 2, conn.llen("queue:default"), "Queue should have 2 job"
       end
 
-      #should enqueue to cron job queue
+      # Should enqueue to cron job queue.
       post "/cron/#{cron_job_name}/enque"
 
       Sidekiq.redis do |conn|

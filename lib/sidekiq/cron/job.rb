@@ -6,14 +6,16 @@ require 'sidekiq/options'
 module Sidekiq
   module Cron
     class Job
-      #how long we would like to store informations about previous enqueues
+      # How long we would like to store informations about previous enqueues.
       REMEMBER_THRESHOLD = 24 * 60 * 60
+
+      # Time format for enqueued jobs.
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
-      # Use the exists? method if we're on a newer version of redis.
+      # Use the exists? method if we're on a newer version of Redis.
       REDIS_EXISTS_METHOD = Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
 
-      #crucial part of whole enquing job
+      # Crucial part of whole enqueuing job.
       def should_enque? time
         enqueue = false
         enqueue = Sidekiq.redis do |conn|
@@ -25,18 +27,16 @@ module Sidekiq
         enqueue
       end
 
-      # remove previous informations about run times
-      # this will clear redis and make sure that redis will
-      # not overflow with memory
+      # Remove previous information about run times,
+      # this will clear Redis and make sure that Redis will not overflow with memory.
       def remove_previous_enques time
         Sidekiq.redis do |conn|
           conn.zremrangebyscore(job_enqueued_key, 0, "(#{(time.to_f - REMEMBER_THRESHOLD).to_s}")
         end
       end
 
-      #test if job should be enqued If yes add it to queue
+      # Test if job should be enqueued.
       def test_and_enque_for_time! time
-        #should this job be enqued?
         if should_enque?(time)
           enque!
 
@@ -44,7 +44,7 @@ module Sidekiq
         end
       end
 
-      #enque cron job to queue
+      # Enqueue cron job to queue.
       def enque! time = Time.now.utc
         @last_enqueue_time = time.strftime(LAST_ENQUEUE_TIME_FORMAT)
 
@@ -97,7 +97,7 @@ module Sidekiq
         klass_const.set(queue: queue_name_with_prefix).perform_async(*enqueue_args)
       end
 
-      # siodekiq worker message
+      # Sidekiq worker message.
       def sidekiq_worker_message
         message = @message.is_a?(String) ? Sidekiq.load_json(@message) : @message
         message["args"] = enqueue_args
@@ -126,8 +126,8 @@ module Sidekiq
         queue_name
       end
 
-      # active job has different structure how it is loading data from sidekiq
-      # queue, it createaswrapper arround job
+      # Active Job has different structure how it is loading data from Sidekiq
+      # queue, it creates a wrapper around job.
       def active_job_message
         {
           'class'        => 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper',
@@ -143,8 +143,8 @@ module Sidekiq
         }
       end
 
-      # load cron jobs from Hash
-      # input structure should look like:
+      # Load cron jobs from Hash.
+      # Input structure should look like:
       # {
       #   'name_of_job' => {
       #     'class'       => 'MyClass',
@@ -166,15 +166,15 @@ module Sidekiq
         load_from_array array
       end
 
-      # like to {#load_from_hash}
-      # If exists old jobs in redis but removed from args, destroy old jobs
+      # Like #load_from_hash.
+      # If exists old jobs in Redis but removed from args, destroy old jobs.
       def self.load_from_hash! hash
         destroy_removed_jobs(hash.keys)
         load_from_hash(hash)
       end
 
-      # load cron jobs from Array
-      # input structure should look like:
+      # Load cron jobs from Array.
+      # Input structure should look like:
       # [
       #   {
       #     'name'        => 'name_of_job',
@@ -199,15 +199,15 @@ module Sidekiq
         errors
       end
 
-      # like to {#load_from_array}
-      # If exists old jobs in redis but removed from args, destroy old jobs
+      # Like #load_from_array.
+      # If exists old jobs in Redis but removed from args, destroy old jobs.
       def self.load_from_array! array
         job_names = array.map { |job| job["name"] }
         destroy_removed_jobs(job_names)
         load_from_array(array)
       end
 
-      # get all cron jobs
+      # Get all cron jobs.
       def self.all
         job_hashes = nil
         Sidekiq.redis do |conn|
@@ -219,7 +219,7 @@ module Sidekiq
           end
         end
         job_hashes.compact.reject(&:empty?).collect do |h|
-          # no need to fetch missing args from redis since we just got this hash from there
+          # No need to fetch missing args from Redis since we just got this hash from there
           Sidekiq::Cron::Job.new(h.merge(fetch_missing_args: false))
         end
       end
@@ -233,7 +233,7 @@ module Sidekiq
       end
 
       def self.find name
-        #if name is hash try to get name from it
+        # If name is hash try to get name from it.
         name = name[:name] || name['name'] if name.is_a?(Hash)
 
         output = nil
@@ -245,12 +245,12 @@ module Sidekiq
         output if output && output.valid?
       end
 
-      # create new instance of cron job
+      # Create new instance of cron job.
       def self.create hash
         new(hash).save
       end
 
-      #destroy job by name
+      # Destroy job by name.
       def self.destroy name
         #if name is hash try to get name from it
         name = name[:name] || name['name'] if name.is_a?(Hash)
@@ -274,20 +274,20 @@ module Sidekiq
         @cron = args["cron"]
         @description = args["description"] if args["description"]
 
-        #get class from klass or class
+        # Get class from klass or class.
         @klass = args["klass"] || args["class"]
 
-        #set status of job
+        # Set status of job.
         @status = args['status'] || status_from_redis
 
-        #set last enqueue time - from args or from existing job
+        # Set last enqueue time - from args or from existing job.
         if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
           @last_enqueue_time = parse_enqueue_time(args['last_enqueue_time'])
         else
           @last_enqueue_time = last_enqueue_time_from_redis
         end
 
-        #get right arguments for job
+        # Get right arguments for job.
         @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
         @args = args["args"].nil? ? [] : parse_args( args["args"] )
 
@@ -307,8 +307,8 @@ module Sidekiq
             "args"  => @args,
           }
 
-          #get right data for message
-          #only if message wasn't specified before
+          # Get right data for message,
+          # only if message wasn't specified before.
           klass_data = case @klass
             when Class
               @klass.get_sidekiq_options
@@ -316,21 +316,21 @@ module Sidekiq
               begin
                 Sidekiq::Cron::Support.constantize(@klass).get_sidekiq_options
               rescue Exception => e
-                #Unknown class
+                # Unknown class
                 {"queue"=>"default"}
               end
           end
 
           message_data = klass_data.merge(message_data)
-          #override queue if setted in config
-          #only if message is hash - can be string (dumped JSON)
+
+          # Override queue if setted in config,
+          # only if message is hash - can be string (dumped JSON).
           if args['queue']
             @queue = message_data['queue'] = args['queue']
           else
             @queue = message_data['queue'] || "default"
           end
 
-          #dump message as json
           @message = message_data
         end
 
@@ -392,13 +392,12 @@ module Sidekiq
             conn.lrange(jid_history_key, 0, -1) rescue nil
           end
 
-        # returns nil if out nil
         out && out.map do |jid_history_raw|
           Sidekiq.load_json jid_history_raw
         end
       end
 
-      #export job data to hash
+      # Export job data to hash.
       def to_hash
         {
           name: @name,
@@ -422,7 +421,7 @@ module Sidekiq
       end
 
       def valid?
-        #clear previous errors
+        # Clear previous errors.
         @errors = []
 
         errors << "'name' must be set" if @name.nil? || @name.size == 0
@@ -431,10 +430,9 @@ module Sidekiq
         else
           begin
             c = Fugit.do_parse(@cron)
-              #
-              # since `Fugit.do_parse` might yield a Fugit::Duration or an EtOrbi::EoTime
-              # https://github.com/floraison/fugit#fugitparses
-              #
+
+            # Since `Fugit.do_parse` might yield a Fugit::Duration or an EtOrbi::EoTime
+            # https://github.com/floraison/fugit#fugitparses
             if c.is_a?(Fugit::Cron)
               @parsed_cron = c
             else
@@ -460,28 +458,19 @@ module Sidekiq
         end
       end
 
-      # add job to cron jobs
-      # input:
-      #   name: (string) - name of job
-      #   cron: (string: '* * * * *' - cron specification when to run job
-      #   class: (string|class) - which class to perform
-      # optional input:
-      #   queue: (string) - which queue to use for enquing (will override class queue)
-      #   args: (array|hash|nil) - arguments for permorm method
-
       def save
-        #if job is invalid return false
+        # If job is invalid, return false.
         return false unless valid?
 
         Sidekiq.redis do |conn|
 
-          #add to set of all jobs
+          # Add to set of all jobs
           conn.sadd self.class.jobs_key, redis_key
 
-          #add informations for this job!
+          # Add informations for this job!
           conn.hmset redis_key, *hash_to_redis(to_hash)
 
-          #add information about last time! - don't enque right after scheduler poller starts!
+          # Add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
           conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
         end
@@ -490,7 +479,7 @@ module Sidekiq
 
       def save_last_enqueue_time
         Sidekiq.redis do |conn|
-          # update last enqueue time
+          # Update last enqueue time.
           conn.hset redis_key, 'last_enqueue_time', @last_enqueue_time
         end
       end
@@ -505,32 +494,30 @@ module Sidekiq
         Sidekiq.redis do |conn|
           conn.lpush jid_history_key,
                      Sidekiq.dump_json(jid_history)
-          # keep only last 10 entries in a fifo manner
+          # Keep only last 10 entries in a fifo manner.
           conn.ltrim jid_history_key, 0, @history_size
         end
       end
 
-      # remove job from cron jobs by name
-      # input:
-      #   first arg: name (string) - name of job (must be same - case sensitive)
       def destroy
         Sidekiq.redis do |conn|
-          #delete from set
+          # Delete from set.
           conn.srem self.class.jobs_key, redis_key
 
-          #delete runned timestamps
+          # Delete runned timestamps.
           conn.del job_enqueued_key
 
-          # delete jid_history
+          # Delete jid_history.
           conn.del jid_history_key
 
-          #delete main job
+          # Delete main job.
           conn.del redis_key
         end
+
         Sidekiq.logger.info { "Cron Jobs - deleted job with name: #{@name}" }
       end
 
-      # remove all job from cron
+      # Remove all job from cron.
       def self.destroy_all!
         all.each do |job|
           job.destroy
@@ -538,7 +525,7 @@ module Sidekiq
         Sidekiq.logger.info { "Cron Jobs - deleted all jobs" }
       end
 
-      # remove "removed jobs" between current jobs and new jobs
+      # Remove "removed jobs" between current jobs and new jobs
       def self.destroy_removed_jobs new_job_names
         current_job_names = Sidekiq::Cron::Job.all.map(&:name)
         removed_job_names = current_job_names - new_job_names
@@ -581,10 +568,9 @@ module Sidekiq
       def parsed_cron
         @parsed_cron ||= begin
                            c = Fugit.parse(@cron)
-                           #
-                           # since `Fugit.parse` might yield a Fugit::Duration or an EtOrbi::EoTime
+
+                           # Since `Fugit.parse` might yield a Fugit::Duration or an EtOrbi::EoTime
                            # https://github.com/floraison/fugit#fugitparses
-                           #
                            if c.is_a?(Fugit::Cron)
                              c
                            else
@@ -600,9 +586,8 @@ module Sidekiq
       end
 
       # Try parsing inbound args into an array.
-      # args from Redis will be encoded JSON;
-      # try to load JSON, then failover
-      # to string array.
+      # Args from Redis will be encoded JSON,
+      # try to load JSON, then failover to string array.
       def parse_args(args)
         case args
         when String
@@ -610,14 +595,14 @@ module Sidekiq
             parsed_args = Sidekiq.load_json(args)
             symbolize_args? ? symbolize_args(parsed_args) : parsed_args
           rescue JSON::ParserError
-            [*args]   # cast to string array
+            [*args]
           end
         when Hash
           symbolize_args? ? [symbolize_args(args)] : [args]
         when Array
           symbolize_args? ? symbolize_args(args) : args
         else
-          [*args]     # cast to string array
+          [*args]
         end
       end
 
@@ -649,29 +634,26 @@ module Sidekiq
 
       def not_past_scheduled_time?(current_time)
         last_cron_time = parsed_cron.previous_time(current_time).utc
-          # or could it be?
-        #last_cron_time = last_time(current_time)
         return false if (current_time.to_i - last_cron_time.to_i) > 60
         true
       end
 
-      # Redis key for set of all cron jobs
+      # Redis key for set of all cron jobs.
       def self.jobs_key
         "cron_jobs"
       end
 
-      # Redis key for storing one cron job
+      # Redis key for storing one cron job.
       def self.redis_key name
         "cron_job:#{name}"
       end
 
-      # Redis key for storing one cron job
+      # Redis key for storing one cron job.
       def redis_key
         self.class.redis_key @name
       end
 
-      # Redis key for storing one cron job run times
-      # (when poller added job to queue)
+      # Redis key for storing one cron job run times (when poller added job to queue)
       def self.job_enqueued_key name
         "cron_job:#{name}:enqueued"
       end
@@ -680,8 +662,6 @@ module Sidekiq
         "cron_job:#{name}:jid_history"
       end
 
-      # Redis key for storing one cron job run times
-      # (when poller added job to queue)
       def job_enqueued_key
         self.class.job_enqueued_key @name
       end
@@ -690,12 +670,10 @@ module Sidekiq
         self.class.jid_history_key @name
       end
 
-      # Give Hash
-      # returns array for using it for redis.hmset
+      # Give Hash returns array for using it for redis.hmset
       def hash_to_redis hash
         hash.inject([]){ |arr,kv| arr + [kv[0], kv[1]] }
       end
-
     end
   end
 end

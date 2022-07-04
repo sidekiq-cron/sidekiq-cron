@@ -5,7 +5,7 @@ describe 'Cron Poller' do
     REDIS.with { |c| c.respond_to?(:redis) ? c.redis.flushdb : c.flushdb }
     Sidekiq.redis = REDIS
 
-    #clear all previous saved data from redis
+    # Clear all previous saved data from Redis.
     Sidekiq.redis do |conn|
       conn.keys("cron_job*").each do |key|
         conn.del(key)
@@ -27,7 +27,7 @@ describe 'Cron Poller' do
     now = Time.now.utc + 3600
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
-    #new jobs!
+
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 
@@ -38,7 +38,7 @@ describe 'Cron Poller' do
       assert_equal 0, conn.llen("queue:super")
     end
 
-    #30 seconds after!
+    # 30 seconds after!
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 30)
     Time.stubs(:now).returns(enqueued_time)
 
@@ -54,7 +54,7 @@ describe 'Cron Poller' do
     now = Time.now.utc + 3600
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 1)
     Time.stubs(:now).returns(enqueued_time)
-    #new jobs!
+
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 
@@ -79,7 +79,7 @@ describe 'Cron Poller' do
     now = Time.now.utc + 3600
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 8, 1)
     Time.stubs(:now).returns(enqueued_time)
-    #new jobs!
+
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 
@@ -104,7 +104,7 @@ describe 'Cron Poller' do
     now = Time.now.utc + 3600
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 8, 1)
     Time.stubs(:now).returns(enqueued_time)
-    #new jobs!
+
     Sidekiq::Cron::Job.create(@args)
     Sidekiq::Cron::Job.create(@args2)
 

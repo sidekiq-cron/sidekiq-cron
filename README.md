@@ -321,8 +321,7 @@ add `require 'sidekiq/cron/web'` after `require 'sidekiq/web'`.
 
 With this, you will get:
 
-![Web UI](examples/web-cron-ui.png)
-
+![Web UI](examples/web-cron-ui.jpeg)
 
 ## Under the hood
 
