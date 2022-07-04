@@ -1,15 +1,10 @@
 require 'fugit'
 require 'sidekiq'
-require 'sidekiq/util'
 require 'sidekiq/cron/support'
 
 module Sidekiq
   module Cron
-
     class Job
-      include Util
-      extend Util
-
       #how long we would like to store informations about previous enqueues
       REMEMBER_THRESHOLD = 24 * 60 * 60
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
@@ -76,7 +71,7 @@ module Sidekiq
 
         save_last_enqueue_time
         add_jid_history jid
-        logger.debug { "enqueued #{@name}: #{@message}" }
+        Sidekiq.logger.debug { "enqueued #{@name}: #{@message}" }
       end
 
       def is_active_job?
@@ -480,7 +475,7 @@ module Sidekiq
           time = Time.now.utc
           conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
         end
-        logger.info { "Cron Jobs - added job with name: #{@name}" }
+        Sidekiq.logger.info { "Cron Jobs - added job with name: #{@name}" }
       end
 
       def save_last_enqueue_time
@@ -495,7 +490,8 @@ module Sidekiq
           jid: jid,
           enqueued: @last_enqueue_time
         }
-        @history_size ||= (Sidekiq.options[:cron_history_size] || 10).to_i - 1
+        cron_history_size = Sidekiq.respond_to?(:[]) ? Sidekiq[:cron_history_size] : Sidekiq.options[:cron_history_size]
+        @history_size ||= (cron_history_size || 10).to_i - 1
         Sidekiq.redis do |conn|
           conn.lpush jid_history_key,
                      Sidekiq.dump_json(jid_history)
@@ -521,7 +517,7 @@ module Sidekiq
           #delete main job
           conn.del redis_key
         end
-        logger.info { "Cron Jobs - deleted job with name: #{@name}" }
+        Sidekiq.logger.info { "Cron Jobs - deleted job with name: #{@name}" }
       end
 
       # remove all job from cron
@@ -529,7 +525,7 @@ module Sidekiq
         all.each do |job|
           job.destroy
         end
-        logger.info { "Cron Jobs - deleted all jobs" }
+        Sidekiq.logger.info { "Cron Jobs - deleted all jobs" }
       end
 
       # remove "removed jobs" between current jobs and new jobs
