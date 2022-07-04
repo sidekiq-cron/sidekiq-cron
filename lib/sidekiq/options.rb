@@ -6,7 +6,7 @@ module Sidekiq
       new_version? ? Sidekiq[key] : Sidekiq.options[key]
     end
 
-    def self.set_config(config, key, value)
+    def self.[]=(config, key, value)
       new_version? ? config[key] = value : config.options[key] = value
     end
 
