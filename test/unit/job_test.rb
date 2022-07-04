@@ -248,8 +248,11 @@ describe "Cron Job" do
                                  "queue"=>:super,
                                  "backtrace"=>true,
                                  "class"=>"CronTestClassWithQueue"}
-      assert job_args[-1].is_a?(Float)
-      assert job_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+      assert job_args.empty?
+
+      enqueue_args = job.enqueue_args
+      assert enqueue_args[-1].is_a?(Float)
+      assert enqueue_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
     end
 
     it "be initialized with 'class', 2 arguments and date_as_argument" do
@@ -261,9 +264,12 @@ describe "Cron Job" do
                                  "queue"=>:super,
                                  "backtrace"=>true,
                                  "class"=>"CronTestClassWithQueue"}
-      assert job_args[-1].is_a?(Float)
-      assert job_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
-      assert_equal job_args[0..-2], ["arg1", :arg2]
+      assert_equal job_args, ["arg1", :arg2]
+
+      enqueue_args = job.enqueue_args
+      assert_equal enqueue_args[0..-2], ["arg1", :arg2]
+      assert enqueue_args[-1].is_a?(Float)
+      assert enqueue_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
     end
 
   end
@@ -318,6 +324,21 @@ describe "Cron Job" do
         "args"  => [{:foo=>"bar"}]
       }
       assert_equal @job.sidekiq_worker_message, payload
+    end
+
+    describe 'with date_as_argument' do
+      before do
+        @args.merge!(date_as_argument: true)
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      let(:args) { @job.sidekiq_worker_message['args'] }
+
+      it 'should add timestamp to args' do
+        assert_equal args[0], {foo: 'bar'}
+        assert args[-1].is_a?(Float)
+        assert args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+      end
     end
   end
 
@@ -375,6 +396,22 @@ describe "Cron Job" do
         }]
       }
       assert_equal @job.active_job_message, payload
+    end
+
+    describe 'with date_as_argument' do
+      before do
+        @args.merge!(date_as_argument: true)
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      let(:args) { @job.active_job_message['args'][0]['arguments'] }
+
+      it 'should add timestamp to args' do
+        args = @job.active_job_message['args'][0]['arguments']
+        assert_equal args[0], {foo: 'bar'}
+        assert args[-1].is_a?(Float)
+        assert args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+      end
     end
   end
 
@@ -529,6 +566,23 @@ describe "Cron Job" do
             .returns(ActiveJobCronTestClass.new)
         @job.enque!
       end
+
+      describe 'with date_as_argument' do
+        before do
+          @args.merge!(date_as_argument: true)
+          @job = Sidekiq::Cron::Job.new(@args)
+        end
+
+        it 'should add timestamp to args' do
+          ActiveJobCronTestClass.expects(:perform_later)
+                                .returns(ActiveJobCronTestClass.new)
+                                .with { |*args|
+                                  assert args[-1].is_a?(Float)
+                                  assert args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+                                }
+          @job.enque!
+        end
+      end
     end
 
     describe 'active job with queue_name_prefix' do
@@ -655,6 +709,24 @@ describe "Cron Job" do
         @job.expects(:enqueue_sidekiq_worker)
             .returns(true)
         @job.enque!
+      end
+
+      describe 'with date_as_argument' do
+        before do
+          @args.merge!(date_as_argument: true)
+          @job = Sidekiq::Cron::Job.new(@args)
+        end
+
+        it 'should add timestamp to args' do
+          CronTestClass::Setter.any_instance
+                               .expects(:perform_async)
+                               .returns(true)
+                               .with { |*args|
+                                 assert args[-1].is_a?(Float)
+                                 assert args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+                               }
+          @job.enque!
+        end
       end
     end
 
