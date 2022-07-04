@@ -270,7 +270,6 @@ describe "Cron Job" do
       assert enqueue_args[-1].is_a?(Float)
       assert enqueue_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
     end
-
   end
 
   describe "cron test" do
@@ -863,6 +862,7 @@ describe "Cron Job" do
         assert_equal job.name, "Test"
       end
     end
+
     it "from String" do
       args = {
         name: "Test",
@@ -875,6 +875,7 @@ describe "Cron Job" do
         assert_equal job.name, "Test"
       end
     end
+
     it "from Array" do
       args = {
         name: "Test",
@@ -946,7 +947,6 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args)
       assert Sidekiq::Cron::Job.find('name' => "Test"), "String keys"
     end
-
   end
 
   describe "destroy" do
@@ -983,7 +983,6 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args)
       assert Sidekiq::Cron::Job.destroy('name' => "Test"), "String keys"
     end
-
   end
 
   describe "destroy_removed_jobs" do
@@ -1081,7 +1080,7 @@ describe "Cron Job" do
       end
       assert_equal Sidekiq::Queue.all.first.size, 2, "Sidekiq queue 2 jobs in queue"
 
-      # 26 hour after
+      # 26 hour after.
       assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time! @time + 26 * 60 * 60
       refute Sidekiq::Cron::Job.new(@args).test_and_enque_for_time! @time + 26 * 60 * 60
 

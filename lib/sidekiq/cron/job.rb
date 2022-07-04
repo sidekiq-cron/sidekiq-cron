@@ -12,10 +12,10 @@ module Sidekiq
       # Time format for enqueued jobs.
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
-      # Use the exists? method if we're on a newer version of redis.
+      # Use the exists? method if we're on a newer version of Redis.
       REDIS_EXISTS_METHOD = Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
 
-      # Crucial part of whole enquing job.
+      # Crucial part of whole enqueuing job.
       def should_enque? time
         enqueue = false
         enqueue = Sidekiq.redis do |conn|
