@@ -5,12 +5,12 @@ require './lib/sidekiq/cron/version'
 Gem::Specification.new do |s|
   s.name = "sidekiq-cron"
   s.version = Sidekiq::Cron::VERSION
-
-  s.required_ruby_version = ">= 2.6"
-  s.require_paths = ["lib"]
+  s.summary = "Scheduler/Cron for Sidekiq jobs"
+  s.description = "Enables to set jobs to be run in specified time (using CRON notation or natural language)"
+  s.homepage = "https://github.com/ondrejbartas/sidekiq-cron"
   s.authors = ["Ondrej Bartas"]
-  s.description = "Enables to set jobs to be run in specified time (using CRON notation)"
   s.email = "ondrej@bartas.cz"
+  s.licenses = ["MIT"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -24,9 +24,7 @@ Gem::Specification.new do |s|
     "sidekiq-cron.gemspec",
   ]
 
-  s.homepage = "https://github.com/ondrejbartas/sidekiq-cron"
-  s.licenses = ["MIT"]
-  s.summary = "Sidekiq-Cron helps to add repeated scheduled jobs"
+  s.required_ruby_version = ">= 2.6"
 
   s.add_dependency("fugit", "~> 1")
   s.add_dependency("sidekiq", ">= 4.2.1")
