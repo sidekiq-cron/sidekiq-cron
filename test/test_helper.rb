@@ -13,6 +13,7 @@ require 'mocha/minitest'
 require 'sidekiq'
 require "sidekiq-pro" if ENV['SIDEKIQ_PRO_VERSION']
 require 'sidekiq/web'
+require "sidekiq/cli"
 
 Sidekiq.logger.level = Logger::ERROR
 
