@@ -7,7 +7,7 @@ describe 'ScheduleLoader' do
 
   describe 'Schedule is defined in hash' do
     before do
-      Sidekiq::Options[:cron_schedule_file] = 'test/unit/schedule_hash.yml'
+      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_hash.yml'
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
@@ -19,7 +19,7 @@ describe 'ScheduleLoader' do
 
   describe 'Schedule is defined in array' do
     before do
-      Sidekiq::Options[:cron_schedule_file] = 'test/unit/schedule_array.yml'
+      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_array.yml'
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
@@ -31,7 +31,7 @@ describe 'ScheduleLoader' do
 
   describe 'Schedule is not defined in hash nor array' do
     before do
-      Sidekiq::Options[:cron_schedule_file] = 'test/unit/schedule_string.yml'
+      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_string.yml'
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
@@ -39,7 +39,7 @@ describe 'ScheduleLoader' do
       e = assert_raises StandardError do
         Sidekiq.options[:lifecycle_events][:startup].first.call
       end
-      assert_equal 'Not supported schedule format. Confirm your test/unit/schedule_string.yml', e.message
+      assert_equal 'Not supported schedule format. Confirm your test/unit/fixtures/schedule_string.yml', e.message
     end
   end
 end
