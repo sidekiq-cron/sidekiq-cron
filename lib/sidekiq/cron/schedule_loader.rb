@@ -8,7 +8,14 @@ if Sidekiq.server?
 
     if File.exist?(schedule_file)
       config.on(:startup) do
-        Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+        schedule = YAML.load_file(schedule_file)
+        if schedule.kind_of?(Hash)
+          Sidekiq::Cron::Job.load_from_hash schedule
+        elsif schedule.kind_of?(Array)
+          Sidekiq::Cron::Job.load_from_array schedule
+        else
+          raise "Not supported schedule format. Confirm your #{schedule_file}"
+        end
       end
     end
   end
