@@ -252,7 +252,7 @@ module Sidekiq
 
       # Destroy job by name.
       def self.destroy name
-        #if name is hash try to get name from it
+        # If name is hash try to get name from it.
         name = name[:name] || name['name'] if name.is_a?(Hash)
 
         if job = find(name)

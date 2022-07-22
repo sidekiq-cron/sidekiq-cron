@@ -64,10 +64,10 @@ gem "sidekiq-cron"
   'queue' => 'name of queue',
   'args' => '[Array or Hash] of arguments which will be passed to perform method',
   'date_as_argument' => true, # add the time of execution as last argument of the perform method
-  'active_job' => true,  # enqueue job through rails 4.2+ active job interface
-  'queue_name_prefix' => 'prefix', # rails 4.2+ active job queue with prefix
-  'queue_name_delimiter' => '.',  # rails 4.2+ active job queue with custom delimiter
-  'description' => 'A sentence describing what work this job performs.'
+  'active_job' => true,  # enqueue job through Rails 4.2+ Active Job interface
+  'queue_name_prefix' => 'prefix', # Rails 4.2+ Active Job queue with prefix
+  'queue_name_delimiter' => '.', # Rails 4.2+ Active Job queue with custom delimiter
+  'description' => 'A sentence describing what work this job performs'
   'status' => 'disabled' # default: enabled
 }
 ```
