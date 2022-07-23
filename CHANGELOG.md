@@ -2,9 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 1.7.0
 
 - Enable to use cron notation in natural language (ie `every 30 minutes`) (https://github.com/ondrejbartas/sidekiq-cron/pull/312)
+- Fix `date_as_argument` feature to add timestamp argument at every cron job execution (https://github.com/ondrejbartas/sidekiq-cron/pull/329)
+- Introduce `Sidekiq::Options` to centralize reading/writing options from different Sidekiq versions (https://github.com/ondrejbartas/sidekiq-cron/pull/341)
+- Make auto schedule loading compatible with Array format (https://github.com/ondrejbartas/sidekiq-cron/pull/345)
 
 ## 1.6.0
 
@@ -55,7 +58,7 @@ All notable changes to this project will be documented in this file.
 
 - Updated readme
 - Fix unit tests - changed argument error when getting invalid cron format
-- When fallbacking old job enqueued time use `Time.parse` without format (so ruby can decide best method to parse it)
+- When fallbacking old job enqueued time use `Time.parse` without format (so Ruby can decide best method to parse it)
 - Add option `date_as_argument` which will add to your job arguments on last place `Time.now.to_f` when it was eneuqued
 - Add option `description` which will allow you to add notes to your jobs so in web view you can see it
 - Fixed translations
@@ -79,8 +82,8 @@ All notable changes to this project will be documented in this file.
 - Fix poller to enqueu all jobs in poll start time
 - Add performance test for enqueue of jobs (10 000 jobs in less than 19s)
 - Fix problem with default queue
-- Remove redis-namespace from dependencies
-- Update ruby versions in travis
+- Remove `redis-namespace` from dependencies
+- Update Ruby versions in Travis
 
 ## 0.5.0
 
@@ -92,7 +95,7 @@ All notable changes to this project will be documented in this file.
 - Add Russian locale
 - User Rack.env in tests
 - Faster enqueue of jobs
-- Permit to use ActiveJob::Base.queue_name_delimiter
+- Permit to use `ActiveJob::Base.queue_name_delimiter`
 - Fix problem with multiple times enqueue #84
 - Fix problem with enqueue of unknown class
 
