@@ -281,11 +281,12 @@ module Sidekiq
         @status = args['status'] || status_from_redis
 
         # Set last enqueue time - from args or from existing job.
-        if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
-          @last_enqueue_time = parse_enqueue_time(args['last_enqueue_time'])
-        else
-          @last_enqueue_time = last_enqueue_time_from_redis
-        end
+        last_enqueue_time = if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
+                              parse_enqueue_time(args['last_enqueue_time'])
+                            else
+                              last_enqueue_time_from_redis
+                            end
+        @last_enqueue_time = last_enqueue_time&.strftime(LAST_ENQUEUE_TIME_FORMAT)
 
         # Get right arguments for job.
         @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
