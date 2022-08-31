@@ -465,7 +465,7 @@ module Sidekiq
         Sidekiq.redis do |conn|
 
           # Add to set of all jobs
-          conn.sadd self.class.jobs_key, redis_key
+          conn.sadd self.class.jobs_key, [redis_key]
 
           # Add informations for this job!
           conn.hmset redis_key, *hash_to_redis(to_hash)
@@ -502,7 +502,7 @@ module Sidekiq
       def destroy
         Sidekiq.redis do |conn|
           # Delete from set.
-          conn.srem self.class.jobs_key, redis_key
+          conn.srem self.class.jobs_key, [redis_key]
 
           # Delete runned timestamps.
           conn.del job_enqueued_key

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Fix deprecation warnings with redis-rb v4.8.0 (https://github.com/ondrejbartas/sidekiq-cron/pull/356
+
 ## 1.7.0
 
 - Enable to use cron notation in natural language (ie `every 30 minutes`) (https://github.com/ondrejbartas/sidekiq-cron/pull/312)
