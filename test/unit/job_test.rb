@@ -929,7 +929,7 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args.merge(name: "Test3"))
 
       Sidekiq.redis do |conn|
-        conn.sadd Sidekiq::Cron::Job.jobs_key, "some_other_key"
+        conn.sadd Sidekiq::Cron::Job.jobs_key, ["some_other_key"]
       end
 
       assert_equal Sidekiq::Cron::Job.all.size, 3, "All have to return only valid 3 jobs"
