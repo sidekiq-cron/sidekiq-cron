@@ -13,7 +13,7 @@ module Sidekiq
 
       # Add cron poller and execute normal initialize of Sidekiq launcher.
       def initialize(options)
-        @cron_poller = Sidekiq::Cron::Poller.new
+        @cron_poller = Sidekiq::Cron::Poller.new(options)
         super(options)
       end
 
