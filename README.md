@@ -105,7 +105,7 @@ For example: `"*/30 * * * * *"` would schedule a job to run every 30 seconds.
 Note that if you plan to schedule jobs with second precision you may need to override the default schedule poll interval so it is lower than the interval of your jobs:
 
 ```ruby
-Sidekiq[:average_scheduled_poll_interval] = 10
+Sidekiq[:cron_poll_interval] = 10
 ```
 
 The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
@@ -332,7 +332,7 @@ Sidekiq-Cron adds itself into this start procedure and starts another thread wit
 Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
 
 ```ruby
-Sidekiq[:average_scheduled_poll_interval] = 10
+Sidekiq[:cron_poll_interval] = 10
 ```
 
 Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
