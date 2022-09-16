@@ -5,20 +5,17 @@ require 'sidekiq/options'
 
 module Sidekiq
   module Cron
-    POLL_INTERVAL = Sidekiq::Options[:average_scheduled_poll_interval] || 30
+    POLL_INTERVAL = 30
 
     # The Poller checks Redis every N seconds for sheduled cron jobs.
     class Poller < Sidekiq::Scheduled::Poller
-      def initialize
-        Sidekiq.configure_server do
-          Sidekiq::Options[:poll_interval_average] = POLL_INTERVAL
-        end
-
+      def initialize(options = {})
         if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
-          # Sidekiq Poller init requires a config argument.
-          super(Sidekiq)
-        else
           super
+        else
+          # Old version of Sidekiq does not accept a config argument.
+          @config = options
+          super()
         end
       end
 
@@ -44,6 +41,10 @@ module Sidekiq
         Sidekiq.logger.error "CRON JOB: #{ex.message}"
         Sidekiq.logger.error "CRON JOB: #{ex.backtrace.first}"
         handle_exception(ex) if respond_to?(:handle_exception)
+      end
+
+      def poll_interval_average
+        @config[:average_scheduled_poll_interval] || POLL_INTERVAL
       end
     end
   end
