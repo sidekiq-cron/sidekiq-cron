@@ -44,7 +44,7 @@ module Sidekiq
       end
 
       def poll_interval_average
-        @config[:average_scheduled_poll_interval] || POLL_INTERVAL
+        @config[:cron_poll_interval] || POLL_INTERVAL
       end
     end
   end
