@@ -43,7 +43,7 @@ module Sidekiq
         handle_exception(ex) if respond_to?(:handle_exception)
       end
 
-      def poll_interval_average
+      def poll_interval_average(process_count = 1)
         @config[:cron_poll_interval] || POLL_INTERVAL
       end
     end
