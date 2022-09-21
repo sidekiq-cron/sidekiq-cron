@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Fix deprecation warnings with redis-rb v4.8.0 (https://github.com/ondrejbartas/sidekiq-cron/pull/356)
 - Fix poller affecting Sidekiq scheduled set poller (https://github.com/ondrejbartas/sidekiq-cron/pull/359)
 - Fix default polling interval (https://github.com/ondrejbartas/sidekiq-cron/pull/362)
+- Add italian locale (https://github.com/ondrejbartas/sidekiq-cron/pull/367)
 
 ## 1.7.0
 
