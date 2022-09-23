@@ -5,8 +5,6 @@ require 'sidekiq/options'
 
 module Sidekiq
   module Cron
-    POLL_INTERVAL = 30
-
     # The Poller checks Redis every N seconds for sheduled cron jobs.
     class Poller < Sidekiq::Scheduled::Poller
       def initialize(options = {})
@@ -44,7 +42,7 @@ module Sidekiq
       end
 
       def poll_interval_average(process_count = 1)
-        @config[:cron_poll_interval] || POLL_INTERVAL
+        @config[:cron_poll_interval]
       end
     end
   end
