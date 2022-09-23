@@ -337,6 +337,8 @@ Sidekiq[:cron_poll_interval] = 10
 
 Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
 
+When running with many Sidekiq processes, the polling can add significant load to Redis. You can disable polling on some processes by setting `Sidekiq[:cron_poll_interval] = 0` on these processes.
+
 ## Contributing
 
 **Thanks to all [contributors](https://github.com/ondrejbartas/sidekiq-cron/graphs/contributors), you’re awesome and this wouldn’t be possible without you!**
