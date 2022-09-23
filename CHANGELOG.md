@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Fix poller affecting Sidekiq scheduled set poller (https://github.com/ondrejbartas/sidekiq-cron/pull/359)
 - Fix default polling interval (https://github.com/ondrejbartas/sidekiq-cron/pull/362)
 - Add italian locale (https://github.com/ondrejbartas/sidekiq-cron/pull/367)
+- Allow disabling of cron polling (https://github.com/ondrejbartas/sidekiq-cron/pull/368)
 
 ## 1.7.0
 
