@@ -2,7 +2,9 @@ require './test/test_helper'
 require 'benchmark'
 
 describe 'Performance Poller' do
-  X = 10000
+  JOBS_NUMBER = 10_000
+  MAX_SECONDS = 60
+
   before do
     REDIS.with { |c| c.respond_to?(:redis) ? c.redis.flushdb : c.flushdb }
     Sidekiq.redis = REDIS
@@ -20,7 +22,7 @@ describe 'Performance Poller' do
       klass: "CronTestClass"
     }
 
-    X.times do |i|
+    JOBS_NUMBER.times do |i|
       Sidekiq::Cron::Job.create(args.merge(name: "Test#{i}"))
     end
 
@@ -30,7 +32,7 @@ describe 'Performance Poller' do
     Time.stubs(:now).returns(enqueued_time)
   end
 
-  it 'should enqueue 10000 jobs in less than 50s' do
+  it "should enqueue #{JOBS_NUMBER} jobs in less than #{MAX_SECONDS}s" do
     Sidekiq.redis do |conn|
       assert_equal 0, conn.llen("queue:default"), 'Queue should be empty'
     end
@@ -40,10 +42,10 @@ describe 'Performance Poller' do
     }
 
     Sidekiq.redis do |conn|
-      assert_equal X, conn.llen("queue:default"), 'Queue should be full'
+      assert_equal JOBS_NUMBER, conn.llen("queue:default"), 'Queue should be full'
     end
 
     puts "Performance test finished in #{bench.real}"
-    assert_operator bench.real, :<, 50
+    assert_operator bench.real, :<, MAX_SECONDS
   end
 end
