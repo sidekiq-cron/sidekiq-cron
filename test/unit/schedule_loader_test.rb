@@ -42,4 +42,17 @@ describe 'ScheduleLoader' do
       assert_equal 'Not supported schedule format. Confirm your test/unit/fixtures/schedule_string.yml', e.message
     end
   end
+
+  describe 'Schedule is defined using ERB' do
+    it 'properly parses the schedule file' do
+      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_erb.yml'
+      load 'sidekiq/cron/schedule_loader.rb'
+
+      Sidekiq.options[:lifecycle_events][:startup].first.call
+
+      job = Sidekiq::Cron::Job.find("daily_job")
+      assert_equal job.klass, "DailyJob"
+      assert_equal job.cron, "every day at 5 pm"
+    end
+  end
 end
