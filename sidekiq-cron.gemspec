@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version = Sidekiq::Cron::VERSION
   s.summary = "Scheduler/Cron for Sidekiq jobs"
   s.description = "Enables to set jobs to be run in specified time (using CRON notation or natural language)"
-  s.homepage = "https://github.com/ondrejbartas/sidekiq-cron"
+  s.homepage = "https://github.com/sidekiq-cron/sidekiq-cron"
   s.authors = ["Ondrej Bartas"]
   s.email = "ondrej@bartas.cz"
   s.licenses = ["MIT"]
