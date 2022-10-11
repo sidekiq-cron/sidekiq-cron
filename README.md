@@ -1,7 +1,7 @@
 # Sidekiq-Cron
 
 [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](https://badge.fury.io/rb/sidekiq-cron)
-[![Build Status](https://github.com/ondrejbartas/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/ondrejbartas/sidekiq-cron/actions)
+[![Build Status](https://github.com/sidekiq-cron/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/sidekiq-cron/sidekiq-cron/actions)
 [![Coverage Status](https://coveralls.io/repos/github/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/github/ondrejbartas/sidekiq-cron?branch=master)
 [![Join the chat at https://gitter.im/ondrejbartas/sidekiq-cron](https://badges.gitter.im/ondrejbartas/sidekiq-cron.svg)](https://gitter.im/ondrejbartas/sidekiq-cron?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -241,10 +241,9 @@ second_job:
 
 There are multiple ways to load the jobs from a YAML file
 
-1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file.
-2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration,
-i.e. `cron_schedule_file: "config/users_schedule.yml"`
-3. Load the file manually as follows
+1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file (it supports ERB)
+2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration, i.e. `cron_schedule_file: "config/users_schedule.yml"`
+3. Load the file manually as follows:
 
 ```ruby
 # config/initializers/sidekiq.rb
@@ -342,7 +341,7 @@ When running with many Sidekiq processes, the polling can add significant load t
 
 ## Contributing
 
-**Thanks to all [contributors](https://github.com/ondrejbartas/sidekiq-cron/graphs/contributors), you’re awesome and this wouldn’t be possible without you!**
+**Thanks to all [contributors](https://github.com/sidekiq-cron/sidekiq-cron/graphs/contributors), you’re awesome and this wouldn’t be possible without you!**
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
