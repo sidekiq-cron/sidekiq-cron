@@ -53,12 +53,13 @@ gem "sidekiq-cron"
 
 ## Getting Started
 
-**Job properties:**
+ ### Job properties
 
 ```ruby
 {
+  # MANDATORY
   'name' => 'name_of_job', # must be uniq!
-  'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, 15:01, ... (HH:MM)
+  'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, ...
   'class' => 'MyClass',
   # OPTIONAL
   'queue' => 'name of queue',
