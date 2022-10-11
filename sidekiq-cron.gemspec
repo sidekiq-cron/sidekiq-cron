@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency("minitest", "~> 5.15")
   s.add_development_dependency("mocha", "~> 1.14")
-  s.add_development_dependency("redis-namespace", "~> 1.8")
   s.add_development_dependency("rack", "~> 2.2")
   s.add_development_dependency("rack-test", "~> 1.1")
   s.add_development_dependency("rake", "~> 13.0")
