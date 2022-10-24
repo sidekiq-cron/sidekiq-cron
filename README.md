@@ -3,7 +3,6 @@
 [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](https://badge.fury.io/rb/sidekiq-cron)
 [![Build Status](https://github.com/sidekiq-cron/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/sidekiq-cron/sidekiq-cron/actions)
 [![Coverage Status](https://coveralls.io/repos/github/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/github/ondrejbartas/sidekiq-cron?branch=master)
-[![Join the chat at https://gitter.im/ondrejbartas/sidekiq-cron](https://badges.gitter.im/ondrejbartas/sidekiq-cron.svg)](https://gitter.im/ondrejbartas/sidekiq-cron?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 > A scheduling add-on for [Sidekiq](https://sidekiq.org/)
 
