@@ -159,9 +159,9 @@ module Sidekiq
       # }
       #
       def self.load_from_hash hash
-        array = hash.inject([]) do |out,(key, job)|
+        array = hash.map do |key, job|
           job['name'] = key
-          out << job
+          job
         end
         load_from_array array
       end
@@ -672,7 +672,7 @@ module Sidekiq
 
       # Give Hash returns array for using it for redis.hmset
       def hash_to_redis hash
-        hash.inject([]){ |arr,kv| arr + [kv[0], kv[1]] }
+        hash.flat_map{ |key, value| [key, value || ""] }
       end
     end
   end
