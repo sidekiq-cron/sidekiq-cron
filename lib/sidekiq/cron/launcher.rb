@@ -14,11 +14,11 @@ module Sidekiq
       attr_reader :cron_poller
 
       # Add cron poller and execute normal initialize of Sidekiq launcher.
-      def initialize(options)
-        options[:cron_poll_interval] = DEFAULT_POLL_INTERVAL if options[:cron_poll_interval].nil?
+      def initialize(config)
+        config[:cron_poll_interval] = DEFAULT_POLL_INTERVAL if config[:cron_poll_interval].nil?
 
-        @cron_poller = Sidekiq::Cron::Poller.new(options) if options[:cron_poll_interval] > 0
-        super(options)
+        @cron_poller = Sidekiq::Cron::Poller.new(config) if config[:cron_poll_interval] > 0
+        super
       end
 
       # Execute normal run of launcher and run cron poller.

@@ -2,11 +2,9 @@ require './test/test_helper'
 
 describe 'Cron Poller' do
   before do
-    REDIS.with { |c| c.respond_to?(:redis) ? c.redis.flushdb : c.flushdb }
-    Sidekiq.redis = REDIS
-
     # Clear all previous saved data from Redis.
     Sidekiq.redis do |conn|
+      conn.flushdb
       conn.keys("cron_job*").each do |key|
         conn.del(key)
       end
@@ -20,7 +18,7 @@ describe 'Cron Poller' do
     }
     @args2 = @args.merge(name: 'with_queue', klass: 'CronTestClassWithQueue', cron: "*/10 * * * *")
 
-    @poller = Sidekiq::Cron::Poller.new
+    @poller = Sidekiq::Cron::Poller.new(Sidekiq::Config.new)
   end
 
   it 'not enqueue any job - new jobs' do
