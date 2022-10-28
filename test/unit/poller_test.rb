@@ -5,11 +5,7 @@ describe 'Cron Poller' do
     # Clear all previous saved data from Redis.
     Sidekiq.redis do |conn|
       conn.flushdb
-      conn.keys("cron_job*").each do |key|
-        conn.del(key)
-      end
     end
-
 
     @args = {
       name: "Test",
