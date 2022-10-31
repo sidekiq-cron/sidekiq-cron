@@ -7,6 +7,16 @@ module Sidekiq
   module Cron
     # The Poller checks Redis every N seconds for sheduled cron jobs.
     class Poller < Sidekiq::Scheduled::Poller
+      def initialize(config = nil)
+        if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
+          super
+        else
+          # Old version of Sidekiq does not accept a config argument.
+          @config = config
+          super()
+        end
+      end
+
       def enqueue
         time = Time.now.utc
         Sidekiq::Cron::Job.all.each do |job|
@@ -32,7 +42,7 @@ module Sidekiq
       end
 
       def poll_interval_average(process_count = 1)
-        Sidekiq::Options[:cron_poll_interval]
+        @config[:cron_poll_interval]
       end
     end
   end

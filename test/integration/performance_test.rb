@@ -21,7 +21,7 @@ describe 'Performance Poller' do
       Sidekiq::Cron::Job.create(args.merge(name: "Test#{i}"))
     end
 
-    @poller = Sidekiq::Cron::Poller.new(Sidekiq::Config.new)
+    @poller = Sidekiq::Cron::Poller.new(Sidekiq.const_defined?(:Config) ? Sidekiq::Config.new : {})
     now = Time.now.utc + 3600
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 10, 5)
     Time.stubs(:now).returns(enqueued_time)
