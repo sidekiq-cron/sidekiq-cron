@@ -23,9 +23,7 @@ module Sidekiq
             not_enqueued_after?(time) &&
             conn.zadd(job_enqueued_key, formatted_enqueue_time(time), formatted_last_time(time))
         end
-        enqueue = false if enqueue == 0
-        enqueue = true if enqueue == 1
-        enqueue
+        enqueue == true || enqueue == 1
       end
 
       # Remove previous information about run times,
@@ -474,9 +472,7 @@ module Sidekiq
           # Add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
           exists = conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
-          exists = false if exists == 0
-          exists = true if exists == 1
-          conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s) unless exists
+          conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s) unless exists == true || exists == 1
         end
         Sidekiq.logger.info { "Cron Jobs - added job with name: #{@name}" }
       end
@@ -555,9 +551,7 @@ module Sidekiq
         out = Sidekiq.redis do |conn|
           conn.public_send(REDIS_EXISTS_METHOD, redis_key(name))
         end
-        out = false if out == 0
-        out = true if out == 1
-        out
+        out == true || out == 1
       end
 
       def exists?
