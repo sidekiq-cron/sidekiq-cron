@@ -14,7 +14,7 @@ describe 'Cron Poller' do
     }
     @args2 = @args.merge(name: 'with_queue', klass: 'CronTestClassWithQueue', cron: "*/10 * * * *")
 
-    @poller = Sidekiq::Cron::Poller.new(Sidekiq.const_defined?(Config) ? Sidekiq::Config.new : {})
+    @poller = Sidekiq::Cron::Poller.new(Sidekiq.const_defined?(:Config) ? Sidekiq::Config.new : {})
   end
 
   it 'not enqueue any job - new jobs' do
