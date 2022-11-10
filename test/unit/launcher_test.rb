@@ -11,7 +11,7 @@ describe 'Cron launcher' do
         assert_equal Sidekiq::Cron::Launcher::DEFAULT_POLL_INTERVAL, options[:cron_poll_interval]
       end
 
-     Sidekiq::Launcher.new(Sidekiq.respond_to?(:default_configuration) ? Sidekiq.default_configuration : Sidekiq)
+      Sidekiq::Launcher.new(Sidekiq.respond_to?(:default_configuration) ? Sidekiq.default_configuration : Sidekiq)
     end
 
     it 'initializes poller with the configured poll interval' do
