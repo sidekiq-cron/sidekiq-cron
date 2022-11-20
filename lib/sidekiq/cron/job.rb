@@ -400,7 +400,7 @@ module Sidekiq
       def to_hash
         {
           name: @name,
-		  klass: @klass.to_s,
+          klass: @klass.to_s,
           cron: @cron,
           description: @description,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
