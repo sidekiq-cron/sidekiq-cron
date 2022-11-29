@@ -593,7 +593,8 @@ describe "Cron Job" do
           end
 
           it 'enques via active_job interface' do
-            ActiveJobCronTestClass.expects(:perform_later)
+            @job.expects(:enqueue_active_job)
+                .returns(ActiveJobCronTestClass.new)
             @job.enque!
           end
         end
@@ -604,7 +605,8 @@ describe "Cron Job" do
           end
 
           it 'enques via active_job interface' do
-            CronTestClass.expects(:perform_later)
+            @job.expects(:enqueue_active_job)
+                .returns(ActiveJobCronTestClass.new)
             @job.enque!
           end
         end
