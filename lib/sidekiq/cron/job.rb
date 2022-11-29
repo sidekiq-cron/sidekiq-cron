@@ -76,8 +76,7 @@ module Sidekiq
       end
 
       def is_active_job?(klass = nil)
-        klass ||= Sidekiq::Cron::Support.constantize(@klass.to_s)
-        @active_job || defined?(ActiveJob::Base) && klass < ActiveJob::Base
+        @active_job || defined?(ActiveJob::Base) && (klass || Sidekiq::Cron::Support.constantize(@klass.to_s)) < ActiveJob::Base
       rescue NameError
         false
       end
