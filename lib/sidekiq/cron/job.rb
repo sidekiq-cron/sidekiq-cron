@@ -75,7 +75,8 @@ module Sidekiq
         Sidekiq.logger.debug { "enqueued #{@name}: #{@message}" }
       end
 
-      def is_active_job?(klass = Sidekiq::Cron::Support.constantize(@klass.to_s))
+      def is_active_job?(klass = nil)
+        klass ||= Sidekiq::Cron::Support.constantize(@klass.to_s)
         @active_job || defined?(ActiveJob::Base) && klass < ActiveJob::Base
       rescue NameError
         false
