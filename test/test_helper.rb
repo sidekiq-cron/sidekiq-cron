@@ -17,7 +17,6 @@ require 'sidekiq-cron'
 require 'sidekiq/cron/web'
 
 redis_url = ENV['REDIS_URL'] || 'redis://0.0.0.0:6379'
-REDIS = Sidekiq::RedisConnection.create(:url => redis_url)
 
 Sidekiq.logger.level = Logger::ERROR
 Sidekiq.configure_client do |config|
