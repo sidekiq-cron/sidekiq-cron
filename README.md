@@ -20,10 +20,6 @@ Works with ActiveJob (Rails 4.2+).
 
 You don't need Sidekiq PRO, you can use this gem with plain Sidekiq.
 
-## Upgrade from < 0.6 to 1.0
-
-Please be aware that Sidekiq-Cron < 1.0 was relying on rufus-scheduler < 3.5. Using those older versions with rufus-scheduler >= 3.5 ends up with jobs failing on creation. Sidekiq-Cron 1.0 includes a patch that switches from rufus-scheduler to rufus-scheduler's core dependency, fugit.
-
 ## Changelog
 
 Before upgrading to a new version, please read our [Changelog](CHANGELOG.md).
@@ -154,7 +150,7 @@ class HardWorker
   end
 end
 
-Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker') # execute at every 5 minutes, ex: 12:05, 12:10, 12:15...etc
+Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker') # execute at every 5 minutes
 # => true
 ```
 
@@ -310,7 +306,7 @@ job.enque!
 Just start Sidekiq workers by running:
 
 ```
-$ sidekiq
+$ bundle exec sidekiq
 ```
 
 ### Web UI for Cron Jobs
