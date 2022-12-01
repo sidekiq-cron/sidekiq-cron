@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.9.0
+
+- Sidekiq v7 support (https://github.com/sidekiq-cron/sidekiq-cron/pull/369)
+- Add support for ERB templates in the auto schedule loader (https://github.com/sidekiq-cron/sidekiq-cron/pull/373)
+
 ## 1.8.0
 
 - Fix deprecation warnings with redis-rb v4.8.0 (https://github.com/sidekiq-cron/sidekiq-cron/pull/356)
@@ -122,9 +127,3 @@ All notable changes to this project will be documented in this file.
 - Suport for Active Job
 - Sidekiq cron web ui needs to be loaded by: require 'sidekiq/cron/web'
 - Add load_from_hash! and load_from_array! which cleanup jobs before adding new ones
-
-## 0.1.1
-
-- Add Web front-end with enabled/disable job, enqueue now, delete job
-- Add cron poller - enqueue cron jobs
-- Add cron job - save all needed data to Redis
