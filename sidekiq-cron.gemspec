@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 2.6"
 
-  s.add_dependency("fugit", "~> 1")
+  s.add_dependency("fugit", "~> 1.8")
   s.add_dependency("sidekiq", ">= 4.2.1")
 
   s.add_development_dependency("minitest", "~> 5.15")
