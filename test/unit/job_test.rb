@@ -178,11 +178,11 @@ describe "Cron Job" do
     end
 
     it 'returns formatted_last_time' do
-      assert_equal '2015-01-02T02:04:00Z', @job.formated_last_time(@time)
+      assert_equal '2015-01-02T02:04:00Z', @job.formatted_last_time(@time)
     end
 
-    it 'returns formated_enqueue_time' do
-      assert_equal '1420164240.0', @job.formated_enqueue_time(@time)
+    it 'returns formatted_enqueue_time' do
+      assert_equal '1420164240.0', @job.formatted_enqueue_time(@time)
     end
   end
 

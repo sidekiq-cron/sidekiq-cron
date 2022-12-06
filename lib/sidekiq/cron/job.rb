@@ -13,18 +13,17 @@ module Sidekiq
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
       # Use the exists? method if we're on a newer version of Redis.
-      REDIS_EXISTS_METHOD = Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
+      REDIS_EXISTS_METHOD = Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("7.0.0") || Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
 
       # Crucial part of whole enqueuing job.
       def should_enque? time
-        enqueue = false
         enqueue = Sidekiq.redis do |conn|
           status == "enabled" &&
             not_past_scheduled_time?(time) &&
             not_enqueued_after?(time) &&
-            conn.zadd(job_enqueued_key, formated_enqueue_time(time), formated_last_time(time))
+            conn.zadd(job_enqueued_key, formatted_enqueue_time(time), formatted_last_time(time))
         end
-        enqueue
+        enqueue == true || enqueue == 1
       end
 
       # Remove previous information about run times,
@@ -159,9 +158,9 @@ module Sidekiq
       # }
       #
       def self.load_from_hash hash
-        array = hash.inject([]) do |out,(key, job)|
+        array = hash.map do |key, job|
           job['name'] = key
-          out << job
+          job
         end
         load_from_array array
       end
@@ -401,18 +400,18 @@ module Sidekiq
       def to_hash
         {
           name: @name,
-          klass: @klass,
+          klass: @klass.to_s,
           cron: @cron,
           description: @description,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
-          date_as_argument: @date_as_argument,
+          date_as_argument: date_as_argument? ? "1" : "0",
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
-          active_job: @active_job,
+          active_job: @active_job ? "1" : "0",
           queue_name_prefix: @active_job_queue_name_prefix,
           queue_name_delimiter: @active_job_queue_name_delimiter,
-          last_enqueue_time: @last_enqueue_time,
-          symbolize_args: @symbolize_args,
+          last_enqueue_time: @last_enqueue_time.to_s,
+          symbolize_args: symbolize_args? ? "1" : "0",
         }
       end
 
@@ -472,7 +471,8 @@ module Sidekiq
 
           # Add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
-          conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time).to_s) unless conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
+          exists = conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
+          conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s) unless exists == true || exists == 1
         end
         Sidekiq.logger.info { "Cron Jobs - added job with name: #{@name}" }
       end
@@ -539,20 +539,19 @@ module Sidekiq
         parsed_cron.previous_time(now.utc).utc
       end
 
-      def formated_enqueue_time now = Time.now.utc
+      def formatted_enqueue_time now = Time.now.utc
         last_time(now).getutc.to_f.to_s
       end
 
-      def formated_last_time now = Time.now.utc
+      def formatted_last_time now = Time.now.utc
         last_time(now).getutc.iso8601
       end
 
       def self.exists? name
-        out = false
-        Sidekiq.redis do |conn|
-          out = conn.public_send(REDIS_EXISTS_METHOD, redis_key(name))
+        out = Sidekiq.redis do |conn|
+          conn.public_send(REDIS_EXISTS_METHOD, redis_key(name))
         end
-        out
+        out == true || out == 1
       end
 
       def exists?
@@ -672,7 +671,7 @@ module Sidekiq
 
       # Give Hash returns array for using it for redis.hmset
       def hash_to_redis hash
-        hash.inject([]){ |arr,kv| arr + [kv[0], kv[1]] }
+        hash.flat_map{ |key, value| [key, value || ""] }
       end
     end
   end
