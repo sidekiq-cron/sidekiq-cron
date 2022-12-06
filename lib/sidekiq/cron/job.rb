@@ -56,7 +56,7 @@ module Sidekiq
 
         jid =
           if klass_const
-            if defined?(ActiveJob::Base) && klass_const < ActiveJob::Base
+            if is_active_job?(klass_const)
               enqueue_active_job(klass_const).try :provider_job_id
             else
               enqueue_sidekiq_worker(klass_const)
@@ -74,8 +74,8 @@ module Sidekiq
         Sidekiq.logger.debug { "enqueued #{@name}: #{@message}" }
       end
 
-      def is_active_job?
-        @active_job || defined?(ActiveJob::Base) && Sidekiq::Cron::Support.constantize(@klass.to_s) < ActiveJob::Base
+      def is_active_job?(klass = nil)
+        @active_job || defined?(ActiveJob::Base) && (klass || Sidekiq::Cron::Support.constantize(@klass.to_s)) < ActiveJob::Base
       rescue NameError
         false
       end

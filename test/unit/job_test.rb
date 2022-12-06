@@ -581,6 +581,36 @@ describe "Cron Job" do
           @job.enque!
         end
       end
+
+      describe 'with active_job == true' do
+        before do
+          @args.merge!(active_job: true)
+        end
+
+        describe 'with active_job job class' do
+          before do
+            @job = Sidekiq::Cron::Job.new(@args.merge(klass: 'ActiveJobCronTestClass'))
+          end
+
+          it 'enques via active_job interface' do
+            @job.expects(:enqueue_active_job)
+                .returns(ActiveJobCronTestClass.new)
+            @job.enque!
+          end
+        end
+
+        describe 'with non sidekiq job class' do
+          before do
+            @job = Sidekiq::Cron::Job.new(@args.merge(klass: 'CronTestClass'))
+          end
+
+          it 'enques via active_job interface' do
+            @job.expects(:enqueue_active_job)
+                .returns(ActiveJobCronTestClass.new)
+            @job.enque!
+          end
+        end
+      end
     end
 
     describe 'active job with queue_name_prefix' do
