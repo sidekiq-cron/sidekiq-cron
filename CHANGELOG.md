@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+- Fix schedule.yml YAML load errors on Ruby 3.1 (https://github.com/sidekiq-cron/sidekiq-cron/pull/386)
+
 ## 1.9.0
 
 - Sidekiq v7 support (https://github.com/sidekiq-cron/sidekiq-cron/pull/369)
