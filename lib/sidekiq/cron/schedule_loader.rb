@@ -8,7 +8,7 @@ if Sidekiq.server?
 
     if File.exist?(schedule_file)
       config.on(:startup) do
-        schedule = YAML.load(ERB.new(IO.read(schedule_file)).result)
+        schedule = Sidekiq::Cron::Support.load_yaml(ERB.new(IO.read(schedule_file)).result)
         if schedule.kind_of?(Hash)
           Sidekiq::Cron::Job.load_from_hash schedule
         elsif schedule.kind_of?(Array)
