@@ -2,8 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 1.9.1
+
+- Always enqueue via Active Job interface when defined in cron job config (https://github.com/sidekiq-cron/sidekiq-cron/pull/381)
 - Fix schedule.yml YAML load errors on Ruby 3.1 (https://github.com/sidekiq-cron/sidekiq-cron/pull/386)
+- Require Fugit v1.8 to refactor internals (https://github.com/sidekiq-cron/sidekiq-cron/pull/385)
 
 ## 1.9.0
 
