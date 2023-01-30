@@ -414,7 +414,7 @@ module Sidekiq
         }
 
         if date_as_argument?
-          h.merge!(date_as_argument: date_as_argument? ? "1" : "0")
+          h.merge!(date_as_argument: "1")
         end
 
         h
