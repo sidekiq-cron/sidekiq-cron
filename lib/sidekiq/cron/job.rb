@@ -398,13 +398,12 @@ module Sidekiq
 
       # Export job data to hash.
       def to_hash
-        {
+        h = {
           name: @name,
           klass: @klass.to_s,
           cron: @cron,
           description: @description,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
-          date_as_argument: date_as_argument? ? "1" : "0",
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
           active_job: @active_job ? "1" : "0",
@@ -413,6 +412,12 @@ module Sidekiq
           last_enqueue_time: @last_enqueue_time.to_s,
           symbolize_args: symbolize_args? ? "1" : "0",
         }
+
+        if date_as_argument?
+          h.merge!(date_as_argument: date_as_argument? ? "1" : "0")
+        end
+
+        h
       end
 
       def errors
