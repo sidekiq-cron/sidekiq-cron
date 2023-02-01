@@ -398,7 +398,7 @@ module Sidekiq
 
       # Export job data to hash.
       def to_hash
-        h = {
+        hash = {
           name: @name,
           klass: @klass.to_s,
           cron: @cron,
@@ -414,10 +414,10 @@ module Sidekiq
         }
 
         if date_as_argument?
-          h.merge!(date_as_argument: "1")
+          hash.merge!(date_as_argument: "1")
         end
 
-        h
+        hash
       end
 
       def errors
