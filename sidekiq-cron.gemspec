@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency("fugit", "~> 1.8")
   s.add_dependency("sidekiq", ">= 6")
+  s.add_dependency("globalid", "= 1.0.0")
 
   s.add_development_dependency("minitest", "~> 5.15")
   s.add_development_dependency("mocha", "~> 1.14")
