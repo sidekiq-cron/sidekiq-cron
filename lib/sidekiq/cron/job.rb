@@ -1,4 +1,5 @@
 require 'fugit'
+require 'globalid'
 require 'sidekiq'
 require 'sidekiq/cron/support'
 require 'sidekiq/options'
@@ -85,7 +86,8 @@ module Sidekiq
       end
 
       def enqueue_args
-        date_as_argument? ? @args + [Time.now.to_f] : @args
+        args = date_as_argument? ? @args + [Time.now.to_f] : @args
+        deserialize_argument(args)
       end
 
       def enqueue_active_job(klass_const)
@@ -569,6 +571,8 @@ module Sidekiq
       # try to load JSON, then failover to string array.
       def parse_args(args)
         case args
+        when GlobalID::Identification
+          convert_to_global_id_hash(args)
         when String
           begin
             parsed_args = Sidekiq.load_json(args)
@@ -577,8 +581,10 @@ module Sidekiq
             [*args]
           end
         when Hash
+          args = serialize_argument(args)
           symbolize_args? ? [symbolize_args(args)] : [args]
         when Array
+          args = serialize_argument(args)
           symbolize_args? ? symbolize_args(args) : args
         else
           [*args]
@@ -652,6 +658,72 @@ module Sidekiq
       # Give Hash returns array for using it for redis.hmset
       def hash_to_redis hash
         hash.flat_map{ |key, value| [key, value || ""] }
+      end
+
+      # 以下、ApplicationRecordを引数に含める場合の対応
+      # 
+      # e.g. UserモデルをJobのパラメータとして使用する
+      # class ExampleJob < ActiveJob::Base
+      #   queue_as :default
+      #
+      #   def perform(user)
+      #     # Do something
+      #   end
+      # end
+      # 
+      # Sidekiq::Cron::Job.create(name: 'Example', cron: '*/5 * * * *', class: 'ExampleJob', args: User.first) 
+      # Sidekiq::Cron::Job.create(name: 'Example', cron: '*/5 * * * *', class: 'ExampleJob', args: [User.first]) 
+      # 
+      # 参考:
+      # https://github.com/rails/rails/blob/v7.0.4/activejob/lib/active_job/arguments.rb
+      
+      GLOBALID_KEY = "_aj_globalid"
+
+      def convert_to_global_id_hash(argument)
+        { GLOBALID_KEY => argument.to_global_id.to_s }
+      rescue URI::GID::MissingModelIdError
+        raise SerializationError, "Unable to serialize #{argument.class} " \
+          "without an id. (Maybe you forgot to call save?)"
+      end
+
+      def deserialize_argument(argument)
+        case argument
+        when String
+          argument
+        when Array
+          argument.map { |arg| deserialize_argument(arg) }
+        when Hash
+          if serialized_global_id?(argument)
+            deserialize_global_id argument
+          else
+            argument.transform_values { |v| deserialize_argument(v) }
+          end
+        else
+          argument
+        end
+      end
+
+      def serialized_global_id?(hash)
+        hash.size == 1 && hash.include?(GLOBALID_KEY)
+      end
+
+      def deserialize_global_id(hash)
+        GlobalID::Locator.locate hash[GLOBALID_KEY]
+      end
+
+      def serialize_argument(argument)
+        case argument
+        when GlobalID::Identification
+          convert_to_global_id_hash(argument)
+        when Array
+          argument.map { |arg| serialize_argument(arg) }
+        when Hash
+          argument.each_with_object({}) do |(key, value), hash|
+            hash[key] = serialize_argument(value)
+          end
+        else
+          argument
+        end
       end
     end
   end
