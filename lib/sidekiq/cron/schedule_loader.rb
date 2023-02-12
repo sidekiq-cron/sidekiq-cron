@@ -10,8 +10,10 @@ if Sidekiq.server?
       config.on(:startup) do
         schedule = Sidekiq::Cron::Support.load_yaml(ERB.new(IO.read(schedule_file)).result)
         if schedule.kind_of?(Hash)
+          Sidekiq::Cron::Job.destroy_all!
           Sidekiq::Cron::Job.load_from_hash schedule
         elsif schedule.kind_of?(Array)
+          Sidekiq::Cron::Job.destroy_all!
           Sidekiq::Cron::Job.load_from_array schedule
         else
           raise "Not supported schedule format. Confirm your #{schedule_file}"
