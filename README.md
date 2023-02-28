@@ -26,12 +26,6 @@ Before upgrading to a new version, please read our [Changelog](CHANGELOG.md).
 
 ## Installation
 
-### Requirements
-
-- Redis 2.8 or greater is required (Redis 3.0.3 or greater is recommended for large scale use)
-- Sidekiq 4.2 or greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
-- Sidekiq 6.5 requires Sidekiq-Cron 1.5+
-
 Install the gem:
 
 ```
