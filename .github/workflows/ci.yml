@@ -20,14 +20,15 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
+    env:
+      SIDEKIQ_VERSION: "${{ matrix.sidekiq }}"
     steps:
     - uses: actions/checkout@v3
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
+
       with:
         bundler-cache: true # 'bundle install' and cache gems
         ruby-version: ${{ matrix.ruby }}
     - name: Run tests
-      env:
-        SIDEKIQ_VERSION: "${{ matrix.sidekiq }}"
       run: bundle exec rake test
