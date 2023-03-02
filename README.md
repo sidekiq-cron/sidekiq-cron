@@ -1,4 +1,4 @@
-# Sidekiq-Cron
+![Sidekiq-Cron](logos/cover.png)
 
 [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](https://badge.fury.io/rb/sidekiq-cron)
 [![Build Status](https://github.com/sidekiq-cron/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/sidekiq-cron/sidekiq-cron/actions)
