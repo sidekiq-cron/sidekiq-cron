@@ -165,6 +165,26 @@ unless job.save
 end
 ```
 
+Use ActiveRecord models as arguments
+
+```rb
+class Person < ApplicationRecord
+end
+
+class HardWorker < ActiveJob::Base
+  queue_as :default
+
+  def perform(person)
+    puts "person: #{person}"
+  end
+end
+
+
+person = Person.create(id: 1)
+Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker', args: person)
+# => true
+```
+
 Load more jobs from hash:
 
 ```ruby

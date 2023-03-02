@@ -1,4 +1,5 @@
 require './test/test_helper'
+require "./test/models/person"
 
 describe "Cron Job" do
   before do
@@ -336,6 +337,45 @@ describe "Cron Job" do
         assert_equal args[0], {foo: 'bar'}
         assert args[-1].is_a?(Float)
         assert args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+      end
+    end
+
+    describe 'with GlobalID::Identification args' do      
+      before do
+        @args.merge!(args: Person.new(1))
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      let(:args) { @job.sidekiq_worker_message['args'] }
+
+      it 'should add timestamp to args' do
+        assert_equal args[0], Person.new(1)
+      end
+    end
+
+    describe 'with GlobalID::Identification args in Array' do      
+      before do
+        @args.merge!(args: [Person.new(1)])
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      let(:args) { @job.sidekiq_worker_message['args'] }
+
+      it 'should add timestamp to args' do
+        assert_equal args[0], Person.new(1)
+      end
+    end
+
+    describe 'with GlobalID::Identification args in Hash' do      
+      before do
+        @args.merge!(args: {person: Person.new(1)})
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      let(:args) { @job.sidekiq_worker_message['args'] }
+
+      it 'should add timestamp to args' do
+        assert_equal args[0], {person: Person.new(1)}
       end
     end
   end
@@ -968,6 +1008,42 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.new(args).tap do |job|
         assert_equal job.args, ["This is array"]
         assert_equal job.name, "Test"
+      end
+    end
+
+    it "from GlobalID::Identification" do
+      args = {
+        name: "Test",
+        cron: "* * * * *",
+        klass: "CronTestClass",
+        args: Person.new(1)
+      }
+      Sidekiq::Cron::Job.new(args).tap do |job|
+        assert_equal job.args, [{"_sc_globalid"=>"gid://app/Person/1"}]
+      end
+    end
+
+    it "from GlobalID::Identification in Array" do
+      args = {
+        name: "Test",
+        cron: "* * * * *",
+        klass: "CronTestClass",
+        args: [Person.new(1)]
+      }
+      Sidekiq::Cron::Job.new(args).tap do |job|
+        assert_equal job.args, [{"_sc_globalid"=>"gid://app/Person/1"}]
+      end
+    end
+
+    it "from GlobalID::Identification in Hash" do
+      args = {
+        name: "Test",
+        cron: "* * * * *",
+        klass: "CronTestClass",
+        args: {person: Person.new(1)}
+      }
+      Sidekiq::Cron::Job.new(args).tap do |job|
+        assert_equal job.args, [{person: {"_sc_globalid"=>"gid://app/Person/1"}}]
       end
     end
   end

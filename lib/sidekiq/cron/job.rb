@@ -1,4 +1,5 @@
 require 'fugit'
+require 'globalid'
 require 'sidekiq'
 require 'sidekiq/cron/support'
 require 'sidekiq/options'
@@ -14,6 +15,9 @@ module Sidekiq
 
       # Use the exists? method if we're on a newer version of Redis.
       REDIS_EXISTS_METHOD = Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("7.0.0") || Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
+
+      # Use serialize/deserialize key of GlobalID.
+      GLOBALID_KEY = "_sc_globalid"
 
       # Crucial part of whole enqueuing job.
       def should_enque? time
@@ -85,7 +89,8 @@ module Sidekiq
       end
 
       def enqueue_args
-        date_as_argument? ? @args + [Time.now.to_f] : @args
+        args = date_as_argument? ? @args + [Time.now.to_f] : @args
+        deserialize_argument(args)
       end
 
       def enqueue_active_job(klass_const)
@@ -574,6 +579,8 @@ module Sidekiq
       # try to load JSON, then failover to string array.
       def parse_args(args)
         case args
+        when GlobalID::Identification
+          [convert_to_global_id_hash(args)]
         when String
           begin
             parsed_args = Sidekiq.load_json(args)
@@ -582,8 +589,10 @@ module Sidekiq
             [*args]
           end
         when Hash
+          args = serialize_argument(args)
           symbolize_args? ? [symbolize_args(args)] : [args]
         when Array
+          args = serialize_argument(args)
           symbolize_args? ? symbolize_args(args) : args
         else
           [*args]
@@ -661,6 +670,53 @@ module Sidekiq
 
       def serialized_last_enqueue_time
         @last_enqueue_time&.strftime(LAST_ENQUEUE_TIME_FORMAT)
+      end
+      
+      def convert_to_global_id_hash(argument)
+        { GLOBALID_KEY => argument.to_global_id.to_s }
+      rescue URI::GID::MissingModelIdError
+        raise "Unable to serialize #{argument.class} " \
+          "without an id. (Maybe you forgot to call save?)"
+      end
+
+      def deserialize_argument(argument)
+        case argument
+        when String
+          argument
+        when Array
+          argument.map { |arg| deserialize_argument(arg) }
+        when Hash
+          if serialized_global_id?(argument)
+            deserialize_global_id argument
+          else
+            argument.transform_values { |v| deserialize_argument(v) }
+          end
+        else
+          argument
+        end
+      end
+
+      def serialized_global_id?(hash)
+        hash.size == 1 && hash.include?(GLOBALID_KEY)
+      end
+
+      def deserialize_global_id(hash)
+        GlobalID::Locator.locate hash[GLOBALID_KEY]
+      end
+
+      def serialize_argument(argument)
+        case argument
+        when GlobalID::Identification
+          convert_to_global_id_hash(argument)
+        when Array
+          argument.map { |arg| serialize_argument(arg) }
+        when Hash
+          argument.each_with_object({}) do |(key, value), hash|
+            hash[key] = serialize_argument(value)
+          end
+        else
+          argument
+        end
       end
     end
   end
