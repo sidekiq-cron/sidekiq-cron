@@ -409,7 +409,7 @@ module Sidekiq
           active_job: @active_job ? "1" : "0",
           queue_name_prefix: @active_job_queue_name_prefix,
           queue_name_delimiter: @active_job_queue_name_delimiter,
-          last_enqueue_time: @last_enqueue_time.to_s,
+          last_enqueue_time: serialized_last_enqueue_time,
           symbolize_args: symbolize_args? ? "1" : "0",
         }
 
@@ -477,7 +477,7 @@ module Sidekiq
       def save_last_enqueue_time
         Sidekiq.redis do |conn|
           # Update last enqueue time.
-          conn.hset redis_key, 'last_enqueue_time', @last_enqueue_time.strftime(LAST_ENQUEUE_TIME_FORMAT)
+          conn.hset redis_key, 'last_enqueue_time', serialized_last_enqueue_time
         end
       end
 
@@ -656,8 +656,11 @@ module Sidekiq
 
       # Give Hash returns array for using it for redis.hmset
       def hash_to_redis hash
-        hash[:last_enqueue_time] = hash[:last_enqueue_time]&.strftime(LAST_ENQUEUE_TIME_FORMAT)
         hash.flat_map{ |key, value| [key, value || ""] }
+      end
+
+      def serialized_last_enqueue_time
+        @last_enqueue_time&.strftime(LAST_ENQUEUE_TIME_FORMAT)
       end
     end
   end
