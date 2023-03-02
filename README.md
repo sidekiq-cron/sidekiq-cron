@@ -1,4 +1,4 @@
-# Sidekiq-Cron
+![Sidekiq-Cron](logos/cover.png)
 
 [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](https://badge.fury.io/rb/sidekiq-cron)
 [![Build Status](https://github.com/sidekiq-cron/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/sidekiq-cron/sidekiq-cron/actions)
@@ -330,7 +330,7 @@ add `require 'sidekiq/cron/web'` after `require 'sidekiq/web'`.
 
 With this, you will get:
 
-![Web UI](examples/web-cron-ui.jpeg)
+![Web UI](docs/images/web-cron-ui.jpeg)
 
 ## Under the hood
 
