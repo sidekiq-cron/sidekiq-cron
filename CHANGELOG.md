@@ -2,35 +2,54 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.9.1
+
+- Always enqueue via Active Job interface when defined in cron job config (https://github.com/sidekiq-cron/sidekiq-cron/pull/381)
+- Fix schedule.yml YAML load errors on Ruby 3.1 (https://github.com/sidekiq-cron/sidekiq-cron/pull/386)
+- Require Fugit v1.8 to refactor internals (https://github.com/sidekiq-cron/sidekiq-cron/pull/385)
+
+## 1.9.0
+
+- Sidekiq v7 support (https://github.com/sidekiq-cron/sidekiq-cron/pull/369)
+- Add support for ERB templates in the auto schedule loader (https://github.com/sidekiq-cron/sidekiq-cron/pull/373)
+
+## 1.8.0
+
+- Fix deprecation warnings with redis-rb v4.8.0 (https://github.com/sidekiq-cron/sidekiq-cron/pull/356)
+- Fix poller affecting Sidekiq scheduled set poller (https://github.com/sidekiq-cron/sidekiq-cron/pull/359)
+- Fix default polling interval (https://github.com/sidekiq-cron/sidekiq-cron/pull/362)
+- Add italian locale (https://github.com/sidekiq-cron/sidekiq-cron/pull/367)
+- Allow disabling of cron polling (https://github.com/sidekiq-cron/sidekiq-cron/pull/368)
+
 ## 1.7.0
 
-- Enable to use cron notation in natural language (ie `every 30 minutes`) (https://github.com/ondrejbartas/sidekiq-cron/pull/312)
-- Fix `date_as_argument` feature to add timestamp argument at every cron job execution (https://github.com/ondrejbartas/sidekiq-cron/pull/329)
-- Introduce `Sidekiq::Options` to centralize reading/writing options from different Sidekiq versions (https://github.com/ondrejbartas/sidekiq-cron/pull/341)
-- Make auto schedule loading compatible with Array format (https://github.com/ondrejbartas/sidekiq-cron/pull/345)
+- Enable to use cron notation in natural language (ie `every 30 minutes`) (https://github.com/sidekiq-cron/sidekiq-cron/pull/312)
+- Fix `date_as_argument` feature to add timestamp argument at every cron job execution (https://github.com/sidekiq-cron/sidekiq-cron/pull/329)
+- Introduce `Sidekiq::Options` to centralize reading/writing options from different Sidekiq versions (https://github.com/sidekiq-cron/sidekiq-cron/pull/341)
+- Make auto schedule loading compatible with Array format (https://github.com/sidekiq-cron/sidekiq-cron/pull/345)
 
 ## 1.6.0
 
-- Adds support for auto-loading the `config/schedule.yml` file (https://github.com/ondrejbartas/sidekiq-cron/pull/337)
-- Fix `Sidekiq.options` deprecation warning (https://github.com/ondrejbartas/sidekiq-cron/pull/338)
+- Adds support for auto-loading the `config/schedule.yml` file (https://github.com/sidekiq-cron/sidekiq-cron/pull/337)
+- Fix `Sidekiq.options` deprecation warning (https://github.com/sidekiq-cron/sidekiq-cron/pull/338)
 
 ## 1.5.1
 
--  Fixes an issue that prevented the gem to work in previous Sidekiq versions (https://github.com/ondrejbartas/sidekiq-cron/pull/335)
+-  Fixes an issue that prevented the gem to work in previous Sidekiq versions (https://github.com/sidekiq-cron/sidekiq-cron/pull/335)
 
 ## 1.5.0
 
-- Integrate Sidekiq v6.5 breaking changes (https://github.com/ondrejbartas/sidekiq-cron/pull/331)
-- Add portuguese translations (https://github.com/ondrejbartas/sidekiq-cron/pull/332)
+- Integrate Sidekiq v6.5 breaking changes (https://github.com/sidekiq-cron/sidekiq-cron/pull/331)
+- Add portuguese translations (https://github.com/sidekiq-cron/sidekiq-cron/pull/332)
 
 ## 1.4.0
 
-- Fix buttons order in job show view (https://github.com/ondrejbartas/sidekiq-cron/pull/302)
-- Dark Mode support in UI (https://github.com/ondrejbartas/sidekiq-cron/pull/317/282)
-- Remove invocation of deprecated Redis functionality (https://github.com/ondrejbartas/sidekiq-cron/pull/318)
-- Internal code cleanup (https://github.com/ondrejbartas/sidekiq-cron/pull/317)
-- Optimize gem size (https://github.com/ondrejbartas/sidekiq-cron/pull/322)
-- Fix "Show All" button on cron jobs view with Sidekiq 6.3.0+ (https://github.com/ondrejbartas/sidekiq-cron/pull/321)
+- Fix buttons order in job show view (https://github.com/sidekiq-cron/sidekiq-cron/pull/302)
+- Dark Mode support in UI (https://github.com/sidekiq-cron/sidekiq-cron/pull/317/282)
+- Remove invocation of deprecated Redis functionality (https://github.com/sidekiq-cron/sidekiq-cron/pull/318)
+- Internal code cleanup (https://github.com/sidekiq-cron/sidekiq-cron/pull/317)
+- Optimize gem size (https://github.com/sidekiq-cron/sidekiq-cron/pull/322)
+- Fix "Show All" button on cron jobs view with Sidekiq 6.3.0+ (https://github.com/sidekiq-cron/sidekiq-cron/pull/321)
 - Documentation updates
 
 ## 1.3.0
@@ -40,12 +59,12 @@ All notable changes to this project will be documented in this file.
 - Fix deprecation warning for Redis 4.6.x
 - Fix different response from Redis#exists in different Redis versions
 - All PRs:
-  - https://github.com/ondrejbartas/sidekiq-cron/pull/275
-  - https://github.com/ondrejbartas/sidekiq-cron/pull/287
-  - https://github.com/ondrejbartas/sidekiq-cron/pull/309
-  - https://github.com/ondrejbartas/sidekiq-cron/pull/299
-  - https://github.com/ondrejbartas/sidekiq-cron/pull/314
-  - https://github.com/ondrejbartas/sidekiq-cron/pull/288
+  - https://github.com/sidekiq-cron/sidekiq-cron/pull/275
+  - https://github.com/sidekiq-cron/sidekiq-cron/pull/287
+  - https://github.com/sidekiq-cron/sidekiq-cron/pull/309
+  - https://github.com/sidekiq-cron/sidekiq-cron/pull/299
+  - https://github.com/sidekiq-cron/sidekiq-cron/pull/314
+  - https://github.com/sidekiq-cron/sidekiq-cron/pull/288
 
 ## 1.2.0
 
@@ -114,9 +133,3 @@ All notable changes to this project will be documented in this file.
 - Suport for Active Job
 - Sidekiq cron web ui needs to be loaded by: require 'sidekiq/cron/web'
 - Add load_from_hash! and load_from_array! which cleanup jobs before adding new ones
-
-## 0.1.1
-
-- Add Web front-end with enabled/disable job, enqueue now, delete job
-- Add cron poller - enqueue cron jobs
-- Add cron job - save all needed data to Redis

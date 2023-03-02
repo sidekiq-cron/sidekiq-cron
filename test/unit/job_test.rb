@@ -178,11 +178,11 @@ describe "Cron Job" do
     end
 
     it 'returns formatted_last_time' do
-      assert_equal '2015-01-02T02:04:00Z', @job.formated_last_time(@time)
+      assert_equal '2015-01-02T02:04:00Z', @job.formatted_last_time(@time)
     end
 
-    it 'returns formated_enqueue_time' do
-      assert_equal '1420164240.0', @job.formated_enqueue_time(@time)
+    it 'returns formatted_enqueue_time' do
+      assert_equal '1420164240.0', @job.formatted_enqueue_time(@time)
     end
   end
 
@@ -581,6 +581,36 @@ describe "Cron Job" do
           @job.enque!
         end
       end
+
+      describe 'with active_job == true' do
+        before do
+          @args.merge!(active_job: true)
+        end
+
+        describe 'with active_job job class' do
+          before do
+            @job = Sidekiq::Cron::Job.new(@args.merge(klass: 'ActiveJobCronTestClass'))
+          end
+
+          it 'enques via active_job interface' do
+            @job.expects(:enqueue_active_job)
+                .returns(ActiveJobCronTestClass.new)
+            @job.enque!
+          end
+        end
+
+        describe 'with non sidekiq job class' do
+          before do
+            @job = Sidekiq::Cron::Job.new(@args.merge(klass: 'CronTestClass'))
+          end
+
+          it 'enques via active_job interface' do
+            @job.expects(:enqueue_active_job)
+                .returns(ActiveJobCronTestClass.new)
+            @job.enque!
+          end
+        end
+      end
     end
 
     describe 'active job with queue_name_prefix' do
@@ -743,6 +773,58 @@ describe "Cron Job" do
         @job.expects(:sidekiq_worker_message)
             .returns('class' => 'UnknownClass', 'args' => [], 'queue' => 'another')
         @job.enque!
+      end
+    end
+  end
+
+  # @note sidekiq-cron 1.6.0 cannot process options correctly if any date_as_argument evaluates to true.
+  # This has been tested to resolve issues in environments where multiple sidekiq-cron versions are running when updating from 1.6.0
+  # See https://github.com/sidekiq-cron/sidekiq-cron/issues/350#issuecomment-1409798837 for more information.
+  describe "compat with sidekiq cron 1.6.0" do
+    describe "#to_hash with date_as_argument false" do
+      before do
+        @args = {
+          name: "Test",
+          cron: "* * * * *",
+          klass: "CronTestClass",
+          date_as_argument: false,
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it "should not have date_as_argument property" do
+        assert !@job.to_hash.key?(:date_as_argument)
+      end
+    end
+
+    describe "#to_hash with no date_as_argument option" do
+      before do
+        @args = {
+          name: "Test",
+          cron: "* * * * *",
+          klass: "CronTestClass",
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it "should not have date_as_argument property" do
+        assert !@job.to_hash.key?(:date_as_argument)
+      end
+    end
+
+    describe "#to_hash with date_as_argument" do
+      before do
+        @args = {
+          name: "Test",
+          cron: "* * * * *",
+          klass: "CronTestClass",
+          date_as_argument: true,
+        }
+        @job = Sidekiq::Cron::Job.new(@args)
+      end
+
+      it "should have date_as_argument property with value '1'" do
+        assert_equal @job.to_hash[:date_as_argument], '1'
       end
     end
   end
@@ -929,7 +1011,7 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args.merge(name: "Test3"))
 
       Sidekiq.redis do |conn|
-        conn.sadd Sidekiq::Cron::Job.jobs_key, "some_other_key"
+        conn.sadd Sidekiq::Cron::Job.jobs_key, ["some_other_key"]
       end
 
       assert_equal Sidekiq::Cron::Job.all.size, 3, "All have to return only valid 3 jobs"

@@ -3,31 +3,25 @@ ENV['RACK_ENV'] = 'test'
 
 require 'simplecov'
 SimpleCov.start do
-  add_filter "/test/"
-  add_group 'SidekiqCron', 'lib/'
+  add_filter "test/"
+  add_group 'Sidekiq-Cron', 'lib/'
 end
 
 require "minitest/autorun"
 require "rack/test"
 require 'mocha/minitest'
 require 'sidekiq'
-require "sidekiq-pro" if ENV['SIDEKIQ_PRO_VERSION']
 require 'sidekiq/web'
 require "sidekiq/cli"
-
-Sidekiq.logger.level = Logger::ERROR
-
-redis_url = ENV['REDIS_URL'] || 'redis://0.0.0.0:6379'
-REDIS = Sidekiq::RedisConnection.create(:url => redis_url, :namespace => 'testy')
-
-Sidekiq.configure_client do |config|
-  config.redis = { :url => redis_url, :namespace => 'testy' }
-end
-
 require 'sidekiq-cron'
 require 'sidekiq/cron/web'
 
-# For testing os symbilize args!
+Sidekiq.logger.level = Logger::ERROR
+Sidekiq.configure_client do |config|
+  config.redis = { url: ENV['REDIS_URL'] || 'redis://0.0.0.0:6379' }
+end
+
+# For testing symbolize args
 class Hash
   def symbolize_keys
     transform_keys { |key| key.to_sym rescue key }

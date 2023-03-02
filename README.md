@@ -1,9 +1,8 @@
 # Sidekiq-Cron
 
 [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](https://badge.fury.io/rb/sidekiq-cron)
-[![Build Status](https://github.com/ondrejbartas/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/ondrejbartas/sidekiq-cron/actions)
+[![Build Status](https://github.com/sidekiq-cron/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/sidekiq-cron/sidekiq-cron/actions)
 [![Coverage Status](https://coveralls.io/repos/github/ondrejbartas/sidekiq-cron/badge.svg?branch=master)](https://coveralls.io/github/ondrejbartas/sidekiq-cron?branch=master)
-[![Join the chat at https://gitter.im/ondrejbartas/sidekiq-cron](https://badges.gitter.im/ondrejbartas/sidekiq-cron.svg)](https://gitter.im/ondrejbartas/sidekiq-cron?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 > A scheduling add-on for [Sidekiq](https://sidekiq.org/)
 
@@ -21,21 +20,11 @@ Works with ActiveJob (Rails 4.2+).
 
 You don't need Sidekiq PRO, you can use this gem with plain Sidekiq.
 
-## Upgrade from < 0.6 to 1.0
-
-Please be aware that Sidekiq-Cron < 1.0 was relying on rufus-scheduler < 3.5. Using those older versions with rufus-scheduler >= 3.5 ends up with jobs failing on creation. Sidekiq-Cron 1.0 includes a patch that switches from rufus-scheduler to rufus-scheduler's core dependency, fugit.
-
 ## Changelog
 
 Before upgrading to a new version, please read our [Changelog](CHANGELOG.md).
 
 ## Installation
-
-### Requirements
-
-- Redis 2.8 or greater is required (Redis 3.0.3 or greater is recommended for large scale use)
-- Sidekiq 4.2 or greater is required (for Sidekiq < 4 use version sidekiq-cron 0.3.1)
-- Sidekiq 6.5 requires Sidekiq-Cron 1.5+
 
 Install the gem:
 
@@ -53,12 +42,13 @@ gem "sidekiq-cron"
 
 ## Getting Started
 
-**Job properties:**
+ ### Job properties
 
 ```ruby
 {
+  # MANDATORY
   'name' => 'name_of_job', # must be uniq!
-  'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, 15:01, ... (HH:MM)
+  'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, ...
   'class' => 'MyClass',
   # OPTIONAL
   'queue' => 'name of queue',
@@ -105,7 +95,7 @@ For example: `"*/30 * * * * *"` would schedule a job to run every 30 seconds.
 Note that if you plan to schedule jobs with second precision you may need to override the default schedule poll interval so it is lower than the interval of your jobs:
 
 ```ruby
-Sidekiq[:average_scheduled_poll_interval] = 10
+Sidekiq::Options[:cron_poll_interval] = 10
 ```
 
 The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
@@ -154,7 +144,7 @@ class HardWorker
   end
 end
 
-Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker') # execute at every 5 minutes, ex: 12:05, 12:10, 12:15...etc
+Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker') # execute at every 5 minutes
 # => true
 ```
 
@@ -240,10 +230,9 @@ second_job:
 
 There are multiple ways to load the jobs from a YAML file
 
-1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file.
-2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration,
-i.e. `cron_schedule_file: "config/users_schedule.yml"`
-3. Load the file manually as follows
+1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file (it supports ERB)
+2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration, i.e. `cron_schedule_file: "config/users_schedule.yml"`
+3. Load the file manually as follows:
 
 ```ruby
 # config/initializers/sidekiq.rb
@@ -311,7 +300,7 @@ job.enque!
 Just start Sidekiq workers by running:
 
 ```
-$ sidekiq
+$ bundle exec sidekiq
 ```
 
 ### Web UI for Cron Jobs
@@ -332,14 +321,16 @@ Sidekiq-Cron adds itself into this start procedure and starts another thread wit
 Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
 
 ```ruby
-Sidekiq[:average_scheduled_poll_interval] = 10
+Sidekiq::Options[:cron_poll_interval] = 10
 ```
 
 Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
 
+When running with many Sidekiq processes, the polling can add significant load to Redis. You can disable polling on some processes by setting `Sidekiq::Options[:cron_poll_interval] = 0` on these processes.
+
 ## Contributing
 
-**Thanks to all [contributors](https://github.com/ondrejbartas/sidekiq-cron/graphs/contributors), you’re awesome and this wouldn’t be possible without you!**
+**Thanks to all [contributors](https://github.com/sidekiq-cron/sidekiq-cron/graphs/contributors), you’re awesome and this wouldn’t be possible without you!**
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.

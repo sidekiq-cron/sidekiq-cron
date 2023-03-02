@@ -12,8 +12,7 @@ describe 'Cron web' do
   before do
     env 'rack.session', { csrf: TOKEN }
     env 'HTTP_X_CSRF_TOKEN', TOKEN
-    REDIS.with { |c| c.respond_to?(:redis) ? c.redis.flushdb : c.flushdb }
-    Sidekiq.redis = REDIS
+    Sidekiq.redis { |c| c.flushdb }
   end
 
   let(:job_name) { "TestNameOfCronJob" }

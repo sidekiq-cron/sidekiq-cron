@@ -1,0 +1,6 @@
+---
+default: &default
+  cron: <%= "every day at 5 pm" %>
+  class: <%= "DailyJob" %>
+
+daily_job: *default
