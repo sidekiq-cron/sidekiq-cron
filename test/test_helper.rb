@@ -2,6 +2,12 @@ $TESTING = true
 ENV['RACK_ENV'] = 'test'
 
 require 'simplecov'
+
+if ENV['CI']
+  require 'simplecov-cobertura'
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
+end
+
 SimpleCov.start do
   add_filter "test/"
   add_group 'Sidekiq-Cron', 'lib/'
