@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.10.0
+
+- Remove EOL Ruby 2.6 support (https://github.com/sidekiq-cron/sidekiq-cron/pull/399)
+- Add a logo for the project! (https://github.com/sidekiq-cron/sidekiq-cron/pull/402)
+- Added support for ActiveRecord serialize/deserialize using GlobalID (https://github.com/sidekiq-cron/sidekiq-cron/pull/395)
+- Allow for keyword args (`embedded: true`) in Poller (https://github.com/sidekiq-cron/sidekiq-cron/pull/398)
+- Make last_enqueue_time be always an instance of Time (https://github.com/sidekiq-cron/sidekiq-cron/pull/354)
+- Fix argument error problem update from 1.6.0 to newer (https://github.com/sidekiq-cron/sidekiq-cron/pull/392)
+- Clear old jobs while loading the jobs from schedule via the schedule loader (https://github.com/sidekiq-cron/sidekiq-cron/pull/405)
+
 ## 1.9.1
 
 - Always enqueue via Active Job interface when defined in cron job config (https://github.com/sidekiq-cron/sidekiq-cron/pull/381)
