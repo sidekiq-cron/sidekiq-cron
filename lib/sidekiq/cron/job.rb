@@ -469,7 +469,7 @@ module Sidekiq
           conn.sadd self.class.jobs_key, [redis_key]
 
           # Add informations for this job!
-          conn.hmset redis_key, *hash_to_redis(to_hash)
+          conn.hset redis_key, to_hash.transform_values! { |v| v || "" }
 
           # Add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
@@ -661,11 +661,6 @@ module Sidekiq
 
       def jid_history_key
         self.class.jid_history_key @name
-      end
-
-      # Give Hash returns array for using it for redis.hmset
-      def hash_to_redis hash
-        hash.flat_map{ |key, value| [key, value || ""] }
       end
 
       def serialized_last_enqueue_time
