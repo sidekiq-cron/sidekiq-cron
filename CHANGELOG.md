@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.10.1
+
+- use `hset` instead of deprecated `hmset` (https://github.com/sidekiq-cron/sidekiq-cron/pull/410)
+
 ## 1.10.0
 
 - Remove EOL Ruby 2.6 support (https://github.com/sidekiq-cron/sidekiq-cron/pull/399)
