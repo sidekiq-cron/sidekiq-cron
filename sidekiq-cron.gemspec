@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
     "LICENSE.txt",
     "README.md"
   ]
-  s.files = Dir.glob('lib/**/*') + Dir.glob('test/**/*') + [
+  s.files = Dir.glob('lib/**/*') + [
     "CHANGELOG.md",
     "Gemfile",
     "LICENSE.txt",
