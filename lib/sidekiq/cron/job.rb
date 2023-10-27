@@ -197,7 +197,7 @@ module Sidekiq
       def self.load_from_array array
         errors = {}
         array.each do |job_data|
-          job = new(job_data)
+          job = new(job_data.merge(source: "schedule"))
           errors[job.name] = job.errors unless job.save
         end
         errors
@@ -267,7 +267,7 @@ module Sidekiq
       end
 
       attr_accessor :name, :cron, :description, :klass, :args, :message
-      attr_reader   :last_enqueue_time, :fetch_missing_args
+      attr_reader   :last_enqueue_time, :fetch_missing_args, :source
 
       def initialize input_args = {}
         args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
@@ -277,6 +277,7 @@ module Sidekiq
         @name = args["name"]
         @cron = args["cron"]
         @description = args["description"] if args["description"]
+        @source = args["source"] == "schedule" ? "schedule" : "dynamic"
 
         # Get class from klass or class.
         @klass = args["klass"] || args["class"]
@@ -408,6 +409,7 @@ module Sidekiq
           klass: @klass.to_s,
           cron: @cron,
           description: @description,
+          source: @source,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,

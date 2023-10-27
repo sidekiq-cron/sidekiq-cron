@@ -124,7 +124,7 @@ describe "Cron Job" do
     end
 
     it "have to_hash method" do
-      [:name,:klass,:cron,:description,:args,:message,:status].each do |key|
+      [:name,:klass,:cron,:description,:source,:args,:message,:status].each do |key|
         assert @job.to_hash.has_key?(key), "to_hash must have key: #{key}"
       end
     end
