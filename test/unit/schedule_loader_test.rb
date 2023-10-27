@@ -11,8 +11,8 @@ describe 'ScheduleLoader' do
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
-    it 'calls Sidekiq::Cron::Job.load_from_hash' do
-      Sidekiq::Cron::Job.expects(:load_from_hash)
+    it 'calls Sidekiq::Cron::Job.load_from_hash!' do
+      Sidekiq::Cron::Job.expects(:load_from_hash!)
       Sidekiq::Options[:lifecycle_events][:startup].first.call
     end
   end
@@ -23,8 +23,8 @@ describe 'ScheduleLoader' do
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
-    it 'calls Sidekiq::Cron::Job.load_from_array' do
-      Sidekiq::Cron::Job.expects(:load_from_array)
+    it 'calls Sidekiq::Cron::Job.load_from_array!' do
+      Sidekiq::Cron::Job.expects(:load_from_array!)
       Sidekiq::Options[:lifecycle_events][:startup].first.call
     end
   end
