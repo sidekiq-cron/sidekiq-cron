@@ -136,6 +136,8 @@ which will ensure that arguments you are passing to it will be symbolized when p
 
 #### Adding Cron job
 
+Refer to [Schedule vs Dynamic jobs](#schedule-vs-dynamic-jobs) to understand the difference.
+
 ```ruby
 class HardWorker
   include Sidekiq::Worker
@@ -323,14 +325,13 @@ job.enque!
 
 ### Schedule vs Dynamic jobs
 
-There are 2 possible sources for jobs i.e. `schedule/dynamic`.
-Jobs that are loaded with schedule files have source as `schedule`,
-while the jobs that are created at runtime without `source=schedule` argument will have source as dynamic.
+There are two potential job sources: `schedule` and `dynamic`.
+Jobs associated with schedule files are labeled as `schedule` as their source,
+whereas jobs created at runtime without the `source=schedule` argument are classified as `dynamic`.
 
-The major difference is that, upon loading the schedule,
-stale `schedule` jobs are destroyed,
-this will keep the jobs in the schedule in sync.
-The `dynamic` jobs are not affected by this.
+The key distinction lies in how these jobs are managed.
+When a schedule is loaded, any stale `schedule` jobs are automatically removed to ensure synchronization within the schedule.
+The `dynamic` jobs remain unaffected by this process.
 
 ### How to start scheduling?
 
