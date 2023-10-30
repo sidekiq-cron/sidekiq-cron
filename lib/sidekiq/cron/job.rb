@@ -162,19 +162,19 @@ module Sidekiq
       #   }
       # }
       #
-      def self.load_from_hash hash
+      def self.load_from_hash(hash, options = {})
         array = hash.map do |key, job|
           job['name'] = key
           job
         end
-        load_from_array array
+        load_from_array(array, options)
       end
 
       # Like #load_from_hash.
       # If exists old jobs in Redis but removed from args, destroy old jobs.
-      def self.load_from_hash! hash
+      def self.load_from_hash!(hash, options = {})
         destroy_removed_jobs(hash.keys)
-        load_from_hash(hash)
+        load_from_hash(hash, options)
       end
 
       # Load cron jobs from Array.
@@ -194,10 +194,10 @@ module Sidekiq
       #   }
       # ]
       #
-      def self.load_from_array array
+      def self.load_from_array(array, options = {})
         errors = {}
         array.each do |job_data|
-          job = new(job_data.merge(source: "schedule"))
+          job = new(job_data.merge(options.with_indifferent_access))
           errors[job.name] = job.errors unless job.save
         end
         errors
@@ -205,10 +205,10 @@ module Sidekiq
 
       # Like #load_from_array.
       # If exists old jobs in Redis but removed from args, destroy old jobs.
-      def self.load_from_array! array
+      def self.load_from_array!(array, options = {})
         job_names = array.map { |job| job["name"] }
         destroy_removed_jobs(job_names)
-        load_from_array(array)
+        load_from_array(array, options)
       end
 
       # Get all cron jobs.

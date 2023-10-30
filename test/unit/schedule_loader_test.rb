@@ -53,6 +53,7 @@ describe 'ScheduleLoader' do
       job = Sidekiq::Cron::Job.find("daily_job")
       assert_equal job.klass, "DailyJob"
       assert_equal job.cron, "every day at 5 pm"
+      assert_equal job.source, "schedule"
     end
   end
 end
