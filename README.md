@@ -42,7 +42,7 @@ gem "sidekiq-cron"
 
 ## Getting Started
 
- ### Job properties
+### Job properties
 
 ```ruby
 {
@@ -51,6 +51,7 @@ gem "sidekiq-cron"
   'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, ...
   'class' => 'MyClass',
   # OPTIONAL
+  'source' => 'dynamic', # source of the job, `schedule`/`dynamic` (default: `dynamic`)
   'queue' => 'name of queue',
   'args' => '[Array or Hash] of arguments which will be passed to perform method',
   'date_as_argument' => true, # add the time of execution as last argument of the perform method
@@ -223,7 +224,10 @@ array = [
 Sidekiq::Cron::Job.load_from_array array
 ```
 
-Bang-suffixed methods will remove jobs that are not present in the given hash/array, update jobs that have the same names, and create new ones when the names are previously unknown.
+Bang-suffixed methods will
+remove jobs where source is `schedule` and are not present in the given hash/array,
+update jobs that have the same names,
+and create new ones when the names are previously unknown.
 
 ```ruby
 Sidekiq::Cron::Job.load_from_hash! hash
@@ -262,7 +266,9 @@ Sidekiq.configure_server do |config|
     schedule_file = "config/users_schedule.yml"
 
     if File.exist?(schedule_file)
-      Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
+      schedule = YAML.load_file(schedule_file)
+
+      Sidekiq::Cron::Job.load_from_hash!(schedule, source: "schedule")
     end
   end
 end
@@ -314,6 +320,17 @@ job.status
 # enqueue job right now!
 job.enque!
 ```
+
+### Schedule vs Dynamic jobs
+
+There are 2 possible sources for jobs i.e. `schedule/dynamic`.
+Jobs that are loaded with schedule files have source as `schedule`,
+while the jobs that are created at runtime without `source=schedule` argument will have source as dynamic.
+
+The major difference is that, upon loading the schedule,
+stale `schedule` jobs are destroyed,
+this will keep the jobs in the schedule in sync.
+The `dynamic` jobs are not affected by this.
 
 ### How to start scheduling?
 
