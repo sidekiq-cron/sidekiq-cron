@@ -226,10 +226,7 @@ array = [
 Sidekiq::Cron::Job.load_from_array array
 ```
 
-Bang-suffixed methods will
-remove jobs where source is `schedule` and are not present in the given hash/array,
-update jobs that have the same names,
-and create new ones when the names are previously unknown.
+Bang-suffixed methods will remove jobs where source is `schedule` and are not present in the given hash/array, update jobs that have the same names, and create new ones when the names are previously unknown.
 
 ```ruby
 Sidekiq::Cron::Job.load_from_hash! hash
