@@ -124,7 +124,7 @@ describe "Cron Job" do
     end
 
     it "have to_hash method" do
-      [:name,:klass,:cron,:description,:args,:message,:status].each do |key|
+      [:name,:klass,:cron,:description,:source,:args,:message,:status].each do |key|
         assert @job.to_hash.has_key?(key), "to_hash must have key: #{key}"
       end
     end
@@ -1143,25 +1143,34 @@ describe "Cron Job" do
     end
   end
 
-  describe "destroy_removed_jobs" do
+  describe "destroy_removed_jobs only destroys non dynamic jobs" do
     before do
       args1 = {
         name: "WillBeErasedJob",
         cron: "* * * * *",
-        klass: "CronTestClass"
+        klass: "CronTestClass",
+        source: "schedule"
       }
       Sidekiq::Cron::Job.create(args1)
 
       args2 = {
-        name: "ContinueRemainingJob",
+        name: "ContinueRemainingScheduleJob",
+        cron: "* * * * *",
+        klass: "CronTestClass",
+        source: "schedule"
+      }
+      Sidekiq::Cron::Job.create(args2)
+
+      args2 = {
+        name: "ContinueRemainingDynamicJob",
         cron: "* * * * *",
         klass: "CronTestClass"
       }
       Sidekiq::Cron::Job.create(args2)
     end
 
-    it "be destroied removed job that not exists in args" do
-      assert_equal Sidekiq::Cron::Job.destroy_removed_jobs(["ContinueRemainingJob"]), ["WillBeErasedJob"], "Should be destroyed WillBeErasedJob"
+    it "be destroyed removed job that not exists in args" do
+      assert_equal Sidekiq::Cron::Job.destroy_removed_jobs(["ContinueRemainingScheduleJob"]), ["WillBeErasedJob"], "Should be destroyed WillBeErasedJob"
     end
   end
 
@@ -1273,13 +1282,31 @@ describe "Cron Job" do
       end
 
       it "duplicate jobs are not loaded" do
-        out = Sidekiq::Cron::Job.load_from_hash @jobs_hash
+        out = Sidekiq::Cron::Job.load_from_hash! @jobs_hash
         assert_equal out.size, 0, "should have no errors"
         assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
 
-        out_2 = Sidekiq::Cron::Job.load_from_hash @jobs_hash
+        out_2 = Sidekiq::Cron::Job.load_from_hash! @jobs_hash
         assert_equal out_2.size, 0, "should have no errors"
         assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after loading again"
+      end
+
+      it "dynamic jobs are not cleared" do
+        args = {
+          name: "DynamicJob",
+          cron: "* * * * *",
+          klass: "CronTestClass",
+          source: "dynamic"
+        }
+        Sidekiq::Cron::Job.create(args)
+
+        out = Sidekiq::Cron::Job.load_from_hash! @jobs_hash
+        assert_equal out.size, 0, "should have no errors"
+        assert_equal Sidekiq::Cron::Job.all.size, 3, "Should have 3 jobs after load"
+
+        out_2 = Sidekiq::Cron::Job.load_from_hash! @jobs_hash
+        assert_equal out_2.size, 0, "should have no errors"
+        assert_equal Sidekiq::Cron::Job.all.size, 3, "Should have 3 jobs after loading again"
       end
 
       it "return errors on loaded jobs" do

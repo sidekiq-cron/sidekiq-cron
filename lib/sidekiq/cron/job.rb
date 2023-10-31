@@ -162,19 +162,19 @@ module Sidekiq
       #   }
       # }
       #
-      def self.load_from_hash hash
+      def self.load_from_hash(hash, options = {})
         array = hash.map do |key, job|
           job['name'] = key
           job
         end
-        load_from_array array
+        load_from_array(array, options)
       end
 
       # Like #load_from_hash.
       # If exists old jobs in Redis but removed from args, destroy old jobs.
-      def self.load_from_hash! hash
+      def self.load_from_hash!(hash, options = {})
         destroy_removed_jobs(hash.keys)
-        load_from_hash(hash)
+        load_from_hash(hash, options)
       end
 
       # Load cron jobs from Array.
@@ -194,10 +194,10 @@ module Sidekiq
       #   }
       # ]
       #
-      def self.load_from_array array
+      def self.load_from_array(array, options = {})
         errors = {}
         array.each do |job_data|
-          job = new(job_data)
+          job = new(job_data.merge(options))
           errors[job.name] = job.errors unless job.save
         end
         errors
@@ -205,10 +205,10 @@ module Sidekiq
 
       # Like #load_from_array.
       # If exists old jobs in Redis but removed from args, destroy old jobs.
-      def self.load_from_array! array
+      def self.load_from_array!(array, options = {})
         job_names = array.map { |job| job["name"] }
         destroy_removed_jobs(job_names)
-        load_from_array(array)
+        load_from_array(array, options)
       end
 
       # Get all cron jobs.
@@ -267,7 +267,7 @@ module Sidekiq
       end
 
       attr_accessor :name, :cron, :description, :klass, :args, :message
-      attr_reader   :last_enqueue_time, :fetch_missing_args
+      attr_reader   :last_enqueue_time, :fetch_missing_args, :source
 
       def initialize input_args = {}
         args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
@@ -277,6 +277,7 @@ module Sidekiq
         @name = args["name"]
         @cron = args["cron"]
         @description = args["description"] if args["description"]
+        @source = args["source"] == "schedule" ? "schedule" : "dynamic"
 
         # Get class from klass or class.
         @klass = args["klass"] || args["class"]
@@ -408,6 +409,7 @@ module Sidekiq
           klass: @klass.to_s,
           cron: @cron,
           description: @description,
+          source: @source,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
@@ -529,7 +531,7 @@ module Sidekiq
 
       # Remove "removed jobs" between current jobs and new jobs
       def self.destroy_removed_jobs new_job_names
-        current_job_names = Sidekiq::Cron::Job.all.map(&:name)
+        current_job_names = Sidekiq::Cron::Job.all.filter_map { |j| j.name if j.source == "schedule" }
         removed_job_names = current_job_names - new_job_names
         removed_job_names.each { |j| Sidekiq::Cron::Job.destroy(j) }
         removed_job_names
