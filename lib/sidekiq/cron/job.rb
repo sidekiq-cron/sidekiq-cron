@@ -197,7 +197,7 @@ module Sidekiq
       def self.load_from_array(array, options = {})
         errors = {}
         array.each do |job_data|
-          job = new(job_data.merge(options.with_indifferent_access))
+          job = new(job_data.merge(options))
           errors[job.name] = job.errors unless job.save
         end
         errors
