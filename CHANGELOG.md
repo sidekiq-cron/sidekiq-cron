@@ -59,7 +59,7 @@ All notable changes to this project will be documented in this file.
 ## 1.4.0
 
 - Fix buttons order in job show view (https://github.com/sidekiq-cron/sidekiq-cron/pull/302)
-- Dark Mode support in UI (https://github.com/sidekiq-cron/sidekiq-cron/pull/317/282)
+- Dark Mode support in UI (https://github.com/sidekiq-cron/sidekiq-cron/pull/282)
 - Remove invocation of deprecated Redis functionality (https://github.com/sidekiq-cron/sidekiq-cron/pull/318)
 - Internal code cleanup (https://github.com/sidekiq-cron/sidekiq-cron/pull/317)
 - Optimize gem size (https://github.com/sidekiq-cron/sidekiq-cron/pull/322)
