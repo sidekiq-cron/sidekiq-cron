@@ -2,9 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.11.0
+
+- Differentiates b/w "schedule" vs "dynamic" jobs (https://github.com/sidekiq-cron/sidekiq-cron/pull/431)
+- Clears scheduled jobs upon schedule load (https://github.com/sidekiq-cron/sidekiq-cron/pull/431)
+- Reduce gem size by excluding test files (https://github.com/sidekiq-cron/sidekiq-cron/pull/414)
+
 ## 1.10.1
 
-- use `hset` instead of deprecated `hmset` (https://github.com/sidekiq-cron/sidekiq-cron/pull/410)
+- Use `hset` instead of deprecated `hmset` (https://github.com/sidekiq-cron/sidekiq-cron/pull/410)
 
 ## 1.10.0
 
