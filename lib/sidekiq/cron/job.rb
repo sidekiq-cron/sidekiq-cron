@@ -294,7 +294,7 @@ module Sidekiq
 
         # Get right arguments for job.
         @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
-        @args = args["args"].nil? ? [] : parse_args( args["args"] )
+        @args = parse_args(args["args"])
 
         @date_as_argument = args["date_as_argument"] == true || ("#{args["date_as_argument"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
 
@@ -564,6 +564,10 @@ module Sidekiq
 
       def sort_name
         "#{status == "enabled" ? 0 : 1}_#{name}".downcase
+      end
+
+      def args=(args)
+        @args = parse_args(args)
       end
 
       private
