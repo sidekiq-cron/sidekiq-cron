@@ -340,7 +340,7 @@ describe "Cron Job" do
       end
     end
 
-    describe 'with GlobalID::Identification args' do      
+    describe 'with GlobalID::Identification args' do
       before do
         @args.merge!(args: Person.new(1))
         @job = Sidekiq::Cron::Job.new(@args)
@@ -353,7 +353,7 @@ describe "Cron Job" do
       end
     end
 
-    describe 'with GlobalID::Identification args in Array' do      
+    describe 'with GlobalID::Identification args in Array' do
       before do
         @args.merge!(args: [Person.new(1)])
         @job = Sidekiq::Cron::Job.new(@args)
@@ -366,7 +366,7 @@ describe "Cron Job" do
       end
     end
 
-    describe 'with GlobalID::Identification args in Hash' do      
+    describe 'with GlobalID::Identification args in Hash' do
       before do
         @args.merge!(args: {person: Person.new(1)})
         @job = Sidekiq::Cron::Job.new(@args)
@@ -1408,6 +1408,47 @@ describe "Cron Job" do
 
         assert_equal Sidekiq::Cron::Job.all.first.sidekiq_worker_message, payload
       end
+    end
+  end
+
+  describe "args=" do
+    before do
+      @job = Sidekiq::Cron::Job.new(name: "test")
+    end
+
+    it "should set args" do
+      @job.args = [1, 2, 3]
+      assert_equal @job.args, [1, 2, 3]
+    end
+
+    it "should set args from string" do
+      @job.args = "(1, 2, 3)"
+      assert_equal @job.args, ["(1, 2, 3)"]
+    end
+
+    it "should set args from hash" do
+      @job.args = {a: 1, b: 2}
+      assert_equal @job.args, [{a: 1, b: 2}]
+    end
+
+    it "should set args from array" do
+      @job.args = [{a: 1, b: 2}]
+      assert_equal @job.args, [{a: 1, b: 2}]
+    end
+
+    it "should set args from GlobalID::Identification" do
+      @job.args = Person.new(1)
+      assert_equal @job.args, [{"_sc_globalid"=>"gid://app/Person/1"}]
+    end
+
+    it "should set args from GlobalID::Identification in Array" do
+      @job.args = [Person.new(1)]
+      assert_equal @job.args, [{"_sc_globalid"=>"gid://app/Person/1"}]
+    end
+
+    it "should set args from GlobalID::Identification in Hash" do
+      @job.args = {person: Person.new(1)}
+      assert_equal @job.args, [{person: {"_sc_globalid"=>"gid://app/Person/1"}}]
     end
   end
 end
