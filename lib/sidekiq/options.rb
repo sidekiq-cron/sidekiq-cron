@@ -3,11 +3,15 @@ require 'sidekiq'
 module Sidekiq
   module Options
     def self.[](key)
-      options_field ? Sidekiq.public_send(options_field)[key] : Sidekiq[key]
+      self.config[key]
     end
 
     def self.[]=(key, value)
-      options_field ? Sidekiq.public_send(options_field)[key] = value : Sidekiq[key] = value
+      self.config[key] = value
+    end
+
+    def self.config
+      options_field ? Sidekiq.public_send(options_field) : Sidekiq
     end
 
     def self.options_field
