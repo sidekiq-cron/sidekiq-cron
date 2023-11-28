@@ -21,11 +21,12 @@ module Sidekiq
 
       # Crucial part of whole enqueuing job.
       def should_enque? time
+        return false unless status == "enabled"
+        return false unless not_past_scheduled_time?(time)
+        return false unless not_enqueued_after?(time)
+
         enqueue = Sidekiq.redis do |conn|
-          status == "enabled" &&
-            not_past_scheduled_time?(time) &&
-            not_enqueued_after?(time) &&
-            conn.zadd(job_enqueued_key, formatted_enqueue_time(time), formatted_last_time(time))
+          conn.zadd(job_enqueued_key, formatted_enqueue_time(time), formatted_last_time(time))
         end
         enqueue == true || enqueue == 1
       end
@@ -239,12 +240,11 @@ module Sidekiq
       def self.find name
         # If name is hash try to get name from it.
         name = name[:name] || name['name'] if name.is_a?(Hash)
+        return unless exists? name
 
         output = nil
         Sidekiq.redis do |conn|
-          if exists? name
-            output = Job.new conn.hgetall( redis_key(name) )
-          end
+          output = Job.new conn.hgetall( redis_key(name) )
         end
         output if output && output.valid?
       end
