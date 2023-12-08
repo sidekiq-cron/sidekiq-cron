@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.12.0
+
+- Remove Sidekiq.server? check from schedule loader (https://github.com/sidekiq-cron/sidekiq-cron/pull/436)
+- Parse arguments on `args=` method (https://github.com/sidekiq-cron/sidekiq-cron/pull/442)
+- Only check out a Redis connection if necessary (https://github.com/sidekiq-cron/sidekiq-cron/pull/438)
+
 ## 1.11.0
 
 - Differentiates b/w "schedule" vs "dynamic" jobs (https://github.com/sidekiq-cron/sidekiq-cron/pull/431)
