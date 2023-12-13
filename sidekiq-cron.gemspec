@@ -26,9 +26,10 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 2.7"
 
+  s.add_dependency("cronex", ">= 0.13.0")
   s.add_dependency("fugit", "~> 1.8")
-  s.add_dependency("sidekiq", ">= 6")
   s.add_dependency("globalid", ">= 1.0.1")
+  s.add_dependency("sidekiq", ">= 6")
 
   s.add_development_dependency("minitest", "~> 5.15")
   s.add_development_dependency("mocha", "~> 2.1")

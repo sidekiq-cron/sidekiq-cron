@@ -1,4 +1,5 @@
 require 'fugit'
+require 'cronex'
 require 'globalid'
 require 'sidekiq'
 require 'sidekiq/cron/support'
@@ -368,6 +369,12 @@ module Sidekiq
         JSON.pretty_generate Sidekiq.load_json(message)
       rescue JSON::ParserError
         message
+      end
+
+      def human_cron
+        Cronex::ExpressionDescriptor.new(cron).description
+      rescue => e
+        cron
       end
 
       def status_from_redis
