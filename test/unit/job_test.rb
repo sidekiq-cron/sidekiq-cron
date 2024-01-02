@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require './test/test_helper'
 require "./test/models/person"
 
@@ -1044,6 +1046,170 @@ describe "Cron Job" do
       }
       Sidekiq::Cron::Job.new(args).tap do |job|
         assert_equal job.args, [{person: {"_sc_globalid"=>"gid://app/Person/1"}}]
+      end
+    end
+  end
+
+  describe 'with jobs in and out of namespaces' do
+    let(:custom_namespace) { 'my-custom-namespace' }
+
+    let(:no_namespace_to_hash) do
+      {
+        name: 'no-namespace-test-job',
+        klass: 'NoNamespaceCronTestClass',
+        cron: '* * * * *',
+        description: '',
+        args: '[]',
+        message: '{}',
+        status: 'enabled',
+        active_job: '1',
+        queue_name_prefix: nil,
+        queue_name_delimiter: nil,
+        last_enqueue_time: nil,
+        symbolize_args: '0'
+      }
+    end
+
+    before do
+      # A job created without a namespace, like it would have been prior to
+      # namespaces implementation.
+      Sidekiq.redis do |conn|
+        conn.sadd 'cron_jobs', 'cron_job:no-namespace-job'
+        conn.hset 'cron_job:no-namespace-job',
+                  (no_namespace_to_hash.transform_values! { |v| v || '' })
+      end
+
+      # A job in the 'default' namespace
+      Sidekiq::Cron::Job.create(
+        name: 'DefaultJob',
+        cron: '* * * * *',
+        klass: 'CronTestClass'
+      )
+
+      # A job in a custom namespace
+      Sidekiq::Cron::Job.create(
+        name: 'CustomJob',
+        cron: '* * * * *',
+        klass: 'CronTestClass',
+        namespace: custom_namespace
+      )
+
+      Sidekiq::Cron::Job.migrate_old_jobs_if_needed!
+    end
+
+    describe 'all' do
+      describe 'when passing nil' do
+        it 'should return jobs from the default namespace' do
+          assert_equal 2,
+                       Sidekiq::Cron::Job.all(nil).size,
+                       'all(nil) should have returned 2 jobs : one from the ' \
+                       'default namespace and one out of any namespaces'
+          assert_equal Sidekiq::Cron::Job.all(nil).collect(&:namespace).uniq.first,
+                       'default',
+                       'All the jobs returned by all(nil) should have the "default" namespace'
+        end
+      end
+
+      describe 'when passing a blank string' do
+        it 'should return jobs from the default namespace' do
+          assert_equal 2,
+                       Sidekiq::Cron::Job.all('').size,
+                       "all('') should have returned 2 jobs : one from the " \
+                       'default namespace and one out of any namespaces'
+          assert_equal Sidekiq::Cron::Job.all('').collect(&:namespace).uniq.first,
+                       'default',
+                       'All the jobs returned by all(nil) should have the "default" namespace'
+        end
+      end
+
+      describe 'when passing no arguments' do
+        it 'should return jobs from the default namespace' do
+          assert_equal 2,
+                       Sidekiq::Cron::Job.all.size,
+                       'all() should have returned 2 jobs : one from the ' \
+                       'default namespace and one out of any namespaces'
+          assert_equal Sidekiq::Cron::Job.all.collect(&:namespace).uniq.first,
+                       'default',
+                       'All the jobs returned by all(nil) should have the "default" namespace'
+        end
+      end
+
+      describe 'when passing a namespace' do
+        it 'should return jobs from the default namespace' do
+          assert_equal Sidekiq::Cron::Job.all(custom_namespace).size, 1, 'Should have 1 job'
+          assert_equal Sidekiq::Cron::Job.all(custom_namespace).first.namespace,
+                       custom_namespace,
+                       "all(#{custom_namespace.inspect}) should have returned " \
+                       'jobs from the default namespace'
+        end
+      end
+
+      describe "when passing a namespace which doesn't exist" do
+        it 'should return jobs from the default namespace' do
+          assert_equal Sidekiq::Cron::Job.all('rammstein').size, 0, 'Should have 0 jobs'
+        end
+      end
+
+      describe 'when passing an asterisk' do
+        it 'should return all the existing jobs from all namespaces and out of a namespace' do
+          assert_equal Sidekiq::Cron::Job.all('*').size, 3, 'Should have 3 jobs'
+        end
+      end
+    end
+
+    describe 'count' do
+      describe 'when passing nil' do
+        it 'should return jobs count from the default namespace' do
+          assert_equal 2,
+                       Sidekiq::Cron::Job.count(nil),
+                       'count(nil) should have returned 2 (one for the job ' \
+                       'from the default namespace and one for the job out ' \
+                       'of any namespaces)'
+        end
+      end
+
+      describe 'when passing a blank string' do
+        it 'should return jobs count from the default namespace' do
+          assert_equal 2,
+                       Sidekiq::Cron::Job.count(''),
+                       "count('') should have returned 2 (one for the job " \
+                       'from the default namespace and one for the job out ' \
+                       'of any namespaces)'
+        end
+      end
+
+      describe 'when passing no arguments' do
+        it 'should return jobs count from the default namespace' do
+          assert_equal 2,
+                       Sidekiq::Cron::Job.count,
+                       'count() should have returned 2 (one for the job ' \
+                       'from the default namespace and one for the job out ' \
+                       'of any namespaces)'
+        end
+      end
+
+      describe 'when passing a namespace' do
+        it 'should return jobs count from the passed namespace' do
+          assert_equal 1,
+                       Sidekiq::Cron::Job.count(custom_namespace),
+                       'Should have 1 job'
+        end
+      end
+
+      describe "when passing a namespace which doesn't exist" do
+        it 'should return jobs count of 0' do
+          assert_equal 0,
+                       Sidekiq::Cron::Job.count('rammstein'),
+                       'Should have 0 jobs'
+        end
+      end
+
+      describe 'when passing an asterisk' do
+        it 'should return the jobs count from all namespaces and out of any namespaces' do
+          assert_equal 3,
+                       Sidekiq::Cron::Job.count('*'),
+                       'Should have 3 jobs'
+        end
       end
     end
   end

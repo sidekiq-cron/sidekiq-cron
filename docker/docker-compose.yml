@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  redis:
+    image: redis
+  tests:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    image: sidekiq-cron-test
+    environment:
+    - REDIS_URL=redis://redis.test:6379/0
+    links:
+    - redis:redis.test
+    depends_on:
+    - redis
+    command: bundle exec rake test
+    volumes:
+    - ..:/sidekiq-cron

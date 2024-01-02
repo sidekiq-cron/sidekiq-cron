@@ -51,6 +51,7 @@ gem "sidekiq-cron"
   'cron' => '1 * * * *',  # execute at 1 minute of every hour, ex: 12:01, 13:01, 14:01, ...
   'class' => 'MyClass',
   # OPTIONAL
+  'namespace' => 'YourNamespace', # groups jobs together in a namespace (Default value is 'default'),
   'source' => 'dynamic', # source of the job, `schedule`/`dynamic` (default: `dynamic`)
   'queue' => 'name of queue',
   'args' => '[Array or Hash] of arguments which will be passed to perform method',
@@ -100,6 +101,60 @@ Sidekiq::Options[:cron_poll_interval] = 10
 ```
 
 The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
+
+### Namespacing
+
+#### Default namespace
+
+When not giving a namespace, the `default` one will be used.
+
+In the case you'd like to change this value, create a new initializer like so:
+
+`config/initializers/sidekiq-cron.rb`:
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.default_namespace = 'statics'
+end
+```
+
+#### Usage
+
+When creating a new job, you can optionaly give a `namespace` attribute, and then you can pass it too in the `find` or `destroy` methods.
+
+```ruby
+Sidekiq::Cron::Job.create(
+  name: 'Hard worker - every 5min',
+  namespace: 'Foo',
+  cron: '*/5 * * * *',
+  class: 'HardWorker'
+)
+# INFO: Cron Jobs - add job with name Hard worker - every 5min in the namespace Foo
+
+# Without specifing the namespace, Sidekiq::Cron use the `default` one, therefore `count` return 0.
+Sidekiq::Cron::Job.count
+#=> 0
+
+# Searching in the job's namespace returns 1.
+Sidekiq::Cron::Job.count 'Foo'
+#=> 1
+
+# Same applies to `all`. Without a namespace, no jobs found.
+Sidekiq::Cron::Job.all
+
+# But giving the job's namespace returns it.
+Sidekiq::Cron::Job.all 'Foo'
+#=> [#<Sidekiq::Cron::Job:0x00007f7848a326a0 ... @name="Hard worker - every 5min", @namespace="Foo", @cron="*/5 * * * *", @klass="HardWorker", @status="enabled" ... >]
+
+# If you'd like to get all the jobs across all the namespaces then pass an asterisk:
+Sidekiq::Cron::Job.all '*'
+#=> [#<Sidekiq::Cron::Job ...>]
+
+job = Sidekiq::Cron::Job.find('Hard worker - every 5min', 'Foo').first
+job.destroy
+# INFO: Cron Jobs - deleted job with name Hard worker - every 5min from namespace Foo
+#=> true
+```
 
 ### What objects/classes can be scheduled
 
@@ -381,6 +436,39 @@ You can execute the test suite by running:
 
 ```
 $ bundle exec rake test
+```
+
+### Using Docker
+
+[Docker](https://www.docker.com) allows you to run things in containers easing the development process.
+
+This project uses [Docker Compose](https://docs.docker.com/compose/) in order to orchestrate containers and get the test suite running on you local machine, and here you find the commands to run in order to get a complete environment to build and test this gem:
+
+1. Build the Docker image (only the first time):
+```
+docker compose -f docker/docker-compose.yml build
+```
+2. Run the test suite:
+```
+docker compose -f docker/docker-compose.yml run --rm tests
+```
+_This command will download the first time the project's dependencies (Redis so far), create the containers and run the default command to run the tests._
+
+#### Running other commands
+
+In the case you need to run a command in the gem's container, you would do it like so:
+
+```
+docker compose -f docker/docker-compose.yml run --rm tests <HERE IS YOUR COMMAND>
+```
+_Note that `tests` is the Docker Compose service name defined in the `docker/docker-compose.yml` file._
+
+#### Running a single test file
+
+Given you only want to run the tests from the `test/unit/web_extension_test.rb` file, you need to pass its path with the `TEST` env variable, so here is the command:
+
+```
+docker compose -f docker/docker-compose.yml run --rm --env TEST=test/unit/web_extension_test.rb tests
 ```
 
 ## License
