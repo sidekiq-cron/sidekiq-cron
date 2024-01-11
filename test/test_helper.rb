@@ -54,11 +54,19 @@ end
 
 module ActiveJob
   class Base
-    attr_accessor *%i[job_class provider_job_id queue_name arguments]
+    attr_accessor *%i[job_class provider_job_id arguments]
 
     def initialize
       yield self if block_given?
       self.provider_job_id ||= SecureRandom.hex(12)
+    end
+
+    def self.queue_name
+      @queue_name || "default"
+    end
+
+    def self.queue_as(name)
+      @queue_name = name
     end
 
     def self.queue_name_prefix
@@ -70,7 +78,7 @@ module ActiveJob
     end
 
     def self.set(options)
-      @queue = options['queue']
+      @queue_name = options['queue'] || queue_name
 
       self
     end
@@ -82,7 +90,7 @@ module ActiveJob
     def self.perform_later(*args)
       new do |instance|
         instance.job_class = self.class.name
-        instance.queue_name = @queue
+        instance.queue_name = self.class.queue_name
         instance.arguments = [*args]
       end
     end
@@ -90,4 +98,8 @@ module ActiveJob
 end
 
 class ActiveJobCronTestClass < ActiveJob::Base
+end
+
+class ActiveJobCronTestClassWithQueue < ActiveJob::Base
+  queue_as :super
 end

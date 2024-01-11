@@ -273,6 +273,18 @@ describe "Cron Job" do
       assert enqueue_args[-1].is_a?(Float)
       assert enqueue_args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
     end
+
+    describe "when job is Active Job worker class" do
+      it "be initialized with default attributes" do
+        job = Sidekiq::Cron::Job.new('klass' => 'ActiveJobCronTestClass')
+        assert_equal job.message, {"queue"=>"default", "class"=>"ActiveJobCronTestClass", "args"=>[]}
+      end
+
+      it "be initialized with class specified attributes" do
+        job = Sidekiq::Cron::Job.new('class' => 'ActiveJobCronTestClassWithQueue')
+        assert_equal job.message, {"queue"=>:super, "class"=>"ActiveJobCronTestClassWithQueue", "args"=>[]}
+      end
+    end
   end
 
   describe "cron test" do
@@ -643,7 +655,7 @@ describe "Cron Job" do
 
         describe 'with non sidekiq job class' do
           before do
-            @job = Sidekiq::Cron::Job.new(@args.merge(klass: 'CronTestClass'))
+            @job = Sidekiq::Cron::Job.new(@args.merge(klass: 'ActiveJobCronTestClass'))
           end
 
           it 'enques via active_job interface' do
