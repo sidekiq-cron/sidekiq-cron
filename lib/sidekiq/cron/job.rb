@@ -325,18 +325,7 @@ module Sidekiq
 
           # Get right data for message,
           # only if message wasn't specified before.
-          klass_data = case @klass
-            when Class
-              @klass.get_sidekiq_options
-            when String
-              begin
-                Sidekiq::Cron::Support.constantize(@klass).get_sidekiq_options
-              rescue Exception => e
-                # Unknown class
-                {"queue"=>"default"}
-              end
-          end
-
+          klass_data = get_job_class_options(@klass)
           message_data = klass_data.merge(message_data)
 
           # Override queue if setted in config,
@@ -734,7 +723,7 @@ module Sidekiq
       def serialized_last_enqueue_time
         @last_enqueue_time&.strftime(LAST_ENQUEUE_TIME_FORMAT)
       end
-      
+
       def convert_to_global_id_hash(argument)
         { GLOBALID_KEY => argument.to_global_id.to_s }
       rescue URI::GID::MissingModelIdError
@@ -779,6 +768,23 @@ module Sidekiq
           end
         else
           argument
+        end
+      end
+
+      def get_job_class_options(klass)
+        klass = klass.is_a?(Class) ? klass : begin
+          Sidekiq::Cron::Support.constantize(klass)
+        rescue Exception => e
+          # noop
+        end
+
+        if klass.nil?
+          # Unknown class
+          {"queue"=>"default"}
+        elsif is_active_job?(klass)
+          {"queue"=>klass.queue_name}
+        else
+          klass.get_sidekiq_options
         end
       end
     end
