@@ -313,6 +313,9 @@ module Sidekiq
         @active_job_queue_name_prefix = args["queue_name_prefix"]
         @active_job_queue_name_delimiter = args["queue_name_delimiter"]
 
+        # symbolize_args is only used when active_job is true
+        Sidekiq.logger.warn { "Cron Jobs - 'symbolize_args' is gonna be ignored, as it is only used when 'active_job' is true" } if @symbolize_args && !@active_job
+
         if args["message"]
           @message = args["message"]
           message_data = Sidekiq.load_json(@message) || {}

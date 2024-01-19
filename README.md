@@ -172,6 +172,8 @@ class HardWorker
 end
 ```
 
+For Sidekiq workers, `symbolize_args: true` in `Sidekiq::Cron::Job.create` or in Hash configuration is gonna be ignored as Sidekiq currently only allows for [simple JSON datatypes](https://github.com/sidekiq/sidekiq/wiki/The-Basics#:~:text=These%20two%20methods,not%20serialize%20properly.).
+
 #### Active Job Worker
 
 You can schedule `ExampleJob` which looks like:
