@@ -777,7 +777,7 @@ module Sidekiq
       def get_job_class_options(klass)
         klass = klass.is_a?(Class) ? klass : begin
           Sidekiq::Cron::Support.constantize(klass)
-        rescue Exception
+        rescue NameError
           # noop
         end
 
