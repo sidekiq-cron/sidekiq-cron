@@ -7,7 +7,7 @@ require 'sidekiq/options'
 
 module Sidekiq
   module Cron
-    # The Poller checks Redis every N seconds for sheduled cron jobs.
+    # The Poller checks Redis every N seconds for scheduled cron jobs.
     class Poller < Sidekiq::Scheduled::Poller
       def initialize(config = nil)
         if Gem::Version.new(Sidekiq::VERSION) < Gem::Version.new('6.5.0')
