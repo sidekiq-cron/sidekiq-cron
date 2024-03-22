@@ -1,7 +1,7 @@
 require 'sidekiq/cron/poller'
 
 # For Cron we need to add some methods to Launcher
-# so look at the code bellow.
+# so look at the code below.
 #
 # We are creating new cron poller instance and
 # adding start and stop commands to launcher.

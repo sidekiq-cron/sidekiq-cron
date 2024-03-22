@@ -71,7 +71,7 @@ describe "Cron Job" do
       assert @job.respond_to?(:disabled?)
     end
 
-    it 'have sort_name - used for sorting enabled disbaled jobs on frontend' do
+    it 'have sort_name - used for sorting enabled disabled jobs on frontend' do
       job = Sidekiq::Cron::Job.new(name: "TestName")
       assert_equal job.sort_name, "0_testname"
     end
@@ -119,7 +119,7 @@ describe "Cron Job" do
       @job = Sidekiq::Cron::Job.new(@args)
     end
 
-    it "have all setted attributes" do
+    it "have all set attributes" do
       @args.each do |key, value|
         assert_equal @job.send(key), value, "New job should have #{key} with value #{value} but it has: #{@job.send(key)}"
       end

@@ -156,6 +156,6 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.0
 
-- Suport for Active Job
+- Support for Active Job
 - Sidekiq cron web ui needs to be loaded by: require 'sidekiq/cron/web'
 - Add load_from_hash! and load_from_array! which cleanup jobs before adding new ones

@@ -10,7 +10,7 @@ require 'sidekiq/options'
 module Sidekiq
   module Cron
     class Job
-      # How long we would like to store informations about previous enqueues.
+      # How long we would like to store information about previous enqueues.
       REMEMBER_THRESHOLD = 24 * 60 * 60
 
       # Time format for enqueued jobs.
@@ -331,7 +331,7 @@ module Sidekiq
           klass_data = get_job_class_options(@klass)
           message_data = klass_data.merge(message_data)
 
-          # Override queue if setted in config,
+          # Override queue if set in config,
           # only if message is hash - can be string (dumped JSON).
           if args['queue']
             @queue = message_data['queue'] = args['queue']
@@ -481,7 +481,7 @@ module Sidekiq
           # Add to set of all jobs
           conn.sadd self.class.jobs_key(@namespace), [redis_key]
 
-          # Add informations for this job!
+          # Add information for this job!
           conn.hset redis_key, to_hash.transform_values! { |v| v || '' }
 
           # Add information about last time! - don't enque right after scheduler poller starts!
@@ -519,7 +519,7 @@ module Sidekiq
           # Delete from set.
           conn.srem self.class.jobs_key(@namespace), [redis_key]
 
-          # Delete runned timestamps.
+          # Delete ran timestamps.
           conn.del job_enqueued_key
 
           # Delete jid_history.

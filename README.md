@@ -120,7 +120,7 @@ end
 
 #### Usage
 
-When creating a new job, you can optionaly give a `namespace` attribute, and then you can pass it too in the `find` or `destroy` methods.
+When creating a new job, you can optionally give a `namespace` attribute, and then you can pass it too in the `find` or `destroy` methods.
 
 ```ruby
 Sidekiq::Cron::Job.create(
@@ -131,7 +131,7 @@ Sidekiq::Cron::Job.create(
 )
 # INFO: Cron Jobs - add job with name Hard worker - every 5min in the namespace Foo
 
-# Without specifing the namespace, Sidekiq::Cron use the `default` one, therefore `count` return 0.
+# Without specifying the namespace, Sidekiq::Cron use the `default` one, therefore `count` return 0.
 Sidekiq::Cron::Job.count
 #=> 0
 
