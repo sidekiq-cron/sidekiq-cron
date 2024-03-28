@@ -64,6 +64,8 @@ gem "sidekiq-cron"
 }
 ```
 
+**NOTE** The `status` of a job does not get changed in Redis when a job gets reloaded unless the `status` property is explicitly set.
+
 ### Time, cron and Sidekiq-Cron
 
 For testing your cron notation you can use [crontab.guru](https://crontab.guru).
