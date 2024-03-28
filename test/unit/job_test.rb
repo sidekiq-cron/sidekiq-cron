@@ -1532,6 +1532,8 @@ describe "Cron Job" do
         ]
       end
 
+      let(:job_names) { ["name_of_job", "Cool Job for Second Class"] }
+
       it "create new jobs and update old one with same settings" do
         assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
         out = Sidekiq::Cron::Job.load_from_array @jobs_array
@@ -1549,11 +1551,27 @@ describe "Cron Job" do
         assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after loading again"
       end
 
-      it "create new jobs and update old one with same settings with load_from_array" do
-        assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
-        out = Sidekiq::Cron::Job.load_from_array! @jobs_array
-        assert_equal out.size, 0, "should have 0 error"
-        assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+      describe "with string keys" do
+        it "create new jobs and update old one with same settings with load_from_array!" do
+          Sidekiq::Cron::Job.expects(:destroy_removed_jobs).with(job_names)
+
+          assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+          out = Sidekiq::Cron::Job.load_from_array! @jobs_array
+          assert_equal out.size, 0, "should have 0 error"
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+        end
+      end
+
+      describe "with symbol keys" do
+        it "create new jobs and update old one with same settings with load_from_array!" do
+          @jobs_array.map! { |job| job.transform_keys(&:to_sym) }
+          Sidekiq::Cron::Job.expects(:destroy_removed_jobs).with(job_names)
+
+          assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
+          out = Sidekiq::Cron::Job.load_from_array! @jobs_array
+          assert_equal out.size, 0, "should have 0 error"
+          assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
+        end
       end
     end
 
