@@ -212,7 +212,7 @@ module Sidekiq
       # Like #load_from_array.
       # If exists old jobs in Redis but removed from args, destroy old jobs.
       def self.load_from_array!(array, options = {})
-        job_names = array.map { |job| job["name"] }
+        job_names = array.map { |job| job["name"] || job[:name] }
         destroy_removed_jobs(job_names)
         load_from_array(array, options)
       end
