@@ -452,7 +452,7 @@ module Sidekiq
           errors << "'cron' must be set"
         else
           begin
-            @parsed_cron = Fugit.do_parse_cronish(@cron)
+            @parsed_cron = do_parse_cron(@cron)
           rescue => e
             errors << "'cron' -> #{@cron.inspect} -> #{e.class}: #{e.message}"
           end
@@ -593,7 +593,17 @@ module Sidekiq
       private
 
       def parsed_cron
-        @parsed_cron ||= Fugit.parse_cronish(@cron)
+        @parsed_cron ||= do_parse_cron(@cron)
+      end
+
+      def do_parse_cron(cron)
+        if Sidekiq::Cron.configuration.strict_cron_parsing?
+          Fugit.parse_cron(cron) || # Ex. '11 1 * * 1'
+          Fugit.parse_nat(cron, :multi => :fail) || # Ex. 'every Monday at 01:11'
+          fail(ArgumentError.new("invalid cron string #{cron.inspect}"))
+        else
+          Fugit.do_parse_cronish(cron)
+        end
       end
 
       def not_enqueued_after?(time)

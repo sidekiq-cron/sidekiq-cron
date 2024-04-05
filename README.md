@@ -104,6 +104,29 @@ Sidekiq::Options[:cron_poll_interval] = 10
 
 The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
 
+#### Strict Cron Parsing
+
+Enable stricter parsing for natural language cron strings.
+
+By default natural language cron string parsing is permissive. If a natural language cron string would create multiple cron lines, it will use the first one and ignore the rest. Strict parsing will throw an error in that case.
+
+Ex. `every day at 3:15 and 4:30`
+
+Before:
+- Equivalent to `15 3 * * *`.
+- `30 4 * * *` gets ignored.
+
+After:
+- Throws an error.
+
+This can be enabled in the configuration settings:
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.strict_cron_parsing!
+end
+```
+
 ### Namespacing
 
 #### Default namespace

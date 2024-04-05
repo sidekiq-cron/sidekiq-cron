@@ -21,6 +21,19 @@ module Sidekiq
 
       def initialize
         @default_namespace = 'default'
+        @strict_cron_parsing = false
+      end
+
+      # Throws an error when a natural language cron string would get
+      # parsed into multiple cron lines. By default the `fugit` gem is
+      # permissive when parsing natural language cron strings. Only the first
+      # cron line is used in that case and all other ones are ignored.
+      def strict_cron_parsing!
+        @strict_cron_parsing = true
+      end
+
+      def strict_cron_parsing?
+        @strict_cron_parsing
       end
     end
   end
