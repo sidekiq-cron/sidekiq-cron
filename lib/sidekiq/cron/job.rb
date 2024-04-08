@@ -597,12 +597,16 @@ module Sidekiq
       end
 
       def do_parse_cron(cron)
-        if Sidekiq::Cron.configuration.strict_cron_parsing?
+        case Sidekiq::Cron.configuration.natural_cron_parsing_mode
+        when :single
+          Fugit.do_parse_cronish(cron)
+        when :strict
           Fugit.parse_cron(cron) || # Ex. '11 1 * * 1'
           Fugit.parse_nat(cron, :multi => :fail) || # Ex. 'every Monday at 01:11'
           fail(ArgumentError.new("invalid cron string #{cron.inspect}"))
         else
-          Fugit.do_parse_cronish(cron)
+          mode = Sidekiq::Cron.configuration.natural_cron_parsing_mode
+          raise ArgumentError, "Unknown natural cron parsing mode: #{mode.inspect}"
         end
       end
 

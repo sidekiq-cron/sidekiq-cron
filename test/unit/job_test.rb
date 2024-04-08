@@ -111,14 +111,13 @@ describe "Cron Job" do
       @job.klass = "ExampleJob"
       assert @job.valid?
 
-      Sidekiq::Cron.configuration.strict_cron_parsing!
+      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :strict
 
       refute @job.valid?
       assert @job.errors.is_a?(Array)
       assert @job.errors.any?{|e| e.include?("cron")}, "Should have error for cron"
     ensure
-      Sidekiq::Cron.configuration = nil
-      Sidekiq::Cron.configure
+      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :single
     end
 
     it "return false on save" do
@@ -164,27 +163,25 @@ describe "Cron Job" do
     end
 
     it "should suppport cron format in strict mode" do
-      Sidekiq::Cron.configuration.strict_cron_parsing!
+      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :strict
 
       @args[:cron] = "55 * * * *"
       @job = Sidekiq::Cron::Job.new(@args)
       assert @job.valid?
       assert_equal Fugit::Cron.new("55 * * * *"), @job.send(:parsed_cron)
     ensure
-      Sidekiq::Cron.configuration = nil
-      Sidekiq::Cron.configure
+      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :single
     end
 
     it "should suppport natural language format in strict mode" do
-      Sidekiq::Cron.configuration.strict_cron_parsing!
+      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :strict
 
       @args[:cron] = "every 3 hours"
       @job = Sidekiq::Cron::Job.new(@args)
       assert @job.valid?
       assert_equal Fugit::Cron.new("0 */3 * * *"), @job.send(:parsed_cron)
     ensure
-      Sidekiq::Cron.configuration = nil
-      Sidekiq::Cron.configure
+      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :single
     end
   end
 

@@ -88,6 +88,38 @@ Since sidekiq-cron `v1.7.0`, you can use the natural-language formats supported 
 
 See [the relevant part of Fugit documentation](https://github.com/floraison/fugit#fugitnat) for details.
 
+There are multiple modes that determine how natural-language cron strings will be parsed.
+
+1. `:single` (default)
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  # Note: This doesn't need to be specified since it's the default.
+  config.natural_language_parsing_mode = :single
+end
+```
+
+This parses the first possible cron line from the given string and then ignores any additional cron lines.
+
+Ex. `every day at 3:15 and 4:30`
+
+- Equivalent to `15 3 * * *`.
+- `30 4 * * *` gets ignored.
+
+2. `:strict`
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.natural_language_parsing_mode = :strict
+end
+```
+
+This throws an error if the given string would be parsed into multiple cron lines.
+
+Ex. `every day at 3:15 and 4:30`
+
+- Would throw an error and the associated cron job would be invalid
+
 #### Second-precision (sub-minute) cronlines
 
 In addition to the standard 5-parameter cronline format, sidekiq-cron supports scheduling jobs with second-precision using a modified 6-parameter cronline format:
@@ -103,29 +135,6 @@ Sidekiq::Options[:cron_poll_interval] = 10
 ```
 
 The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
-
-#### Strict Cron Parsing
-
-Enable stricter parsing for natural language cron strings.
-
-By default natural language cron string parsing is permissive. If a natural language cron string would create multiple cron lines, it will use the first one and ignore the rest. Strict parsing will throw an error in that case.
-
-Ex. `every day at 3:15 and 4:30`
-
-Before:
-- Equivalent to `15 3 * * *`.
-- `30 4 * * *` gets ignored.
-
-After:
-- Throws an error.
-
-This can be enabled in the configuration settings:
-
-```ruby
-Sidekiq::Cron.configure do |config|
-  config.strict_cron_parsing!
-end
-```
 
 ### Namespacing
 
