@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0.rc1
+
+- Introduce `Namespacing` (https://github.com/sidekiq-cron/sidekiq-cron/pull/268)
+- Human readable cron format in UI (https://github.com/sidekiq-cron/sidekiq-cron/pull/445)
+- Add Bahasa Indonesia locale (https://github.com/sidekiq-cron/sidekiq-cron/pull/446)
+- Fetch queue name from ActiveJob class (https://github.com/sidekiq-cron/sidekiq-cron/pull/448)
+- Add natural language parsing mode (https://github.com/sidekiq-cron/sidekiq-cron/pull/459)
+
 ## 1.12.0
 
 - Remove Sidekiq.server? check from schedule loader (https://github.com/sidekiq-cron/sidekiq-cron/pull/436)
@@ -61,7 +69,7 @@ All notable changes to this project will be documented in this file.
 
 ## 1.5.1
 
--  Fixes an issue that prevented the gem to work in previous Sidekiq versions (https://github.com/sidekiq-cron/sidekiq-cron/pull/335)
+- Fixes an issue that prevented the gem to work in previous Sidekiq versions (https://github.com/sidekiq-cron/sidekiq-cron/pull/335)
 
 ## 1.5.0
 
