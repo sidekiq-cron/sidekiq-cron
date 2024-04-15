@@ -22,6 +22,75 @@ module Sidekiq
       # Use serialize/deserialize key of GlobalID.
       GLOBALID_KEY = "_sc_globalid"
 
+      attr_accessor :name, :namespace, :cron, :description, :klass, :args, :message
+      attr_reader   :last_enqueue_time, :fetch_missing_args, :source
+
+      def initialize input_args = {}
+        args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
+        @fetch_missing_args = args.delete('fetch_missing_args')
+        @fetch_missing_args = true if @fetch_missing_args.nil?
+
+        @name = args["name"]
+        @namespace = args["namespace"] || Sidekiq::Cron.configuration.default_namespace
+        @cron = args["cron"]
+        @description = args["description"] if args["description"]
+        @source = args["source"] == "schedule" ? "schedule" : "dynamic"
+
+        # Get class from klass or class.
+        @klass = args["klass"] || args["class"]
+
+        # Set status of job.
+        @status = args['status'] || status_from_redis
+
+        # Set last enqueue time - from args or from existing job.
+        if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
+          @last_enqueue_time = parse_enqueue_time(args['last_enqueue_time'])
+        else
+          @last_enqueue_time = last_enqueue_time_from_redis
+        end
+
+        # Get right arguments for job.
+        @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
+        @args = parse_args(args["args"])
+
+        @date_as_argument = args["date_as_argument"] == true || ("#{args["date_as_argument"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
+
+        @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
+        @active_job_queue_name_prefix = args["queue_name_prefix"]
+        @active_job_queue_name_delimiter = args["queue_name_delimiter"]
+
+        # symbolize_args is only used when active_job is true
+        Sidekiq.logger.warn { "Cron Jobs - 'symbolize_args' is gonna be ignored, as it is only used when 'active_job' is true" } if @symbolize_args && !@active_job
+
+        if args["message"]
+          @message = args["message"]
+          message_data = Sidekiq.load_json(@message) || {}
+          @queue = message_data['queue'] || "default"
+        elsif @klass
+          message_data = {
+            "class" => @klass.to_s,
+            "args"  => @args,
+          }
+
+          # Get right data for message,
+          # only if message wasn't specified before.
+          klass_data = get_job_class_options(@klass)
+          message_data = klass_data.merge(message_data)
+
+          # Override queue if set in config,
+          # only if message is hash - can be string (dumped JSON).
+          if args['queue']
+            @queue = message_data['queue'] = args['queue']
+          else
+            @queue = message_data['queue'] || "default"
+          end
+
+          @message = message_data
+        end
+
+        @queue_name_with_prefix = queue_name_with_prefix
+      end
+
       # Crucial part of whole enqueuing job.
       def should_enque? time
         return false unless status == "enabled"
@@ -274,75 +343,6 @@ module Sidekiq
         else
           false
         end
-      end
-
-      attr_accessor :name, :namespace, :cron, :description, :klass, :args, :message
-      attr_reader   :last_enqueue_time, :fetch_missing_args, :source
-
-      def initialize input_args = {}
-        args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
-        @fetch_missing_args = args.delete('fetch_missing_args')
-        @fetch_missing_args = true if @fetch_missing_args.nil?
-
-        @name = args["name"]
-        @namespace = args["namespace"] || Sidekiq::Cron.configuration.default_namespace
-        @cron = args["cron"]
-        @description = args["description"] if args["description"]
-        @source = args["source"] == "schedule" ? "schedule" : "dynamic"
-
-        # Get class from klass or class.
-        @klass = args["klass"] || args["class"]
-
-        # Set status of job.
-        @status = args['status'] || status_from_redis
-
-        # Set last enqueue time - from args or from existing job.
-        if args['last_enqueue_time'] && !args['last_enqueue_time'].empty?
-          @last_enqueue_time = parse_enqueue_time(args['last_enqueue_time'])
-        else
-          @last_enqueue_time = last_enqueue_time_from_redis
-        end
-
-        # Get right arguments for job.
-        @symbolize_args = args["symbolize_args"] == true || ("#{args["symbolize_args"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
-        @args = parse_args(args["args"])
-
-        @date_as_argument = args["date_as_argument"] == true || ("#{args["date_as_argument"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
-
-        @active_job = args["active_job"] == true || ("#{args["active_job"]}" =~ (/^(true|t|yes|y|1)$/i)) == 0 || false
-        @active_job_queue_name_prefix = args["queue_name_prefix"]
-        @active_job_queue_name_delimiter = args["queue_name_delimiter"]
-
-        # symbolize_args is only used when active_job is true
-        Sidekiq.logger.warn { "Cron Jobs - 'symbolize_args' is gonna be ignored, as it is only used when 'active_job' is true" } if @symbolize_args && !@active_job
-
-        if args["message"]
-          @message = args["message"]
-          message_data = Sidekiq.load_json(@message) || {}
-          @queue = message_data['queue'] || "default"
-        elsif @klass
-          message_data = {
-            "class" => @klass.to_s,
-            "args"  => @args,
-          }
-
-          # Get right data for message,
-          # only if message wasn't specified before.
-          klass_data = get_job_class_options(@klass)
-          message_data = klass_data.merge(message_data)
-
-          # Override queue if set in config,
-          # only if message is hash - can be string (dumped JSON).
-          if args['queue']
-            @queue = message_data['queue'] = args['queue']
-          else
-            @queue = message_data['queue'] || "default"
-          end
-
-          @message = message_data
-        end
-
-        @queue_name_with_prefix = queue_name_with_prefix
       end
 
       def status
