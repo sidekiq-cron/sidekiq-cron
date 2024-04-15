@@ -10,7 +10,7 @@
 
 Sidekiq-Cron runs a thread alongside Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` parsed by [Fugit](https://github.com/floraison/fugit)).
 
-Checks for new jobs to schedule every 30 seconds and doesn't schedule the same job multiple times when more than one Sidekiq worker is running.
+Checks for new jobs to schedule every 30 seconds and doesn't schedule the same job multiple times when more than one Sidekiq process is running.
 
 Scheduling jobs are added only when at least one Sidekiq process is running, but it is safe to use Sidekiq-Cron in environments where multiple Sidekiq processes or nodes are running.
 
@@ -208,7 +208,7 @@ end
 
 For Sidekiq workers, `symbolize_args: true` in `Sidekiq::Cron::Job.create` or in Hash configuration is gonna be ignored as Sidekiq currently only allows for [simple JSON datatypes](https://github.com/sidekiq/sidekiq/wiki/The-Basics#:~:text=These%20two%20methods,not%20serialize%20properly.).
 
-#### Active Job Worker
+#### Active Job
 
 You can schedule `ExampleJob` which looks like:
 
@@ -225,7 +225,7 @@ end
 For Active jobs you can use `symbolize_args: true` in `Sidekiq::Cron::Job.create` or in Hash configuration,
 which will ensure that arguments you are passing to it will be symbolized when passed back to `perform` method in worker.
 
-#### Adding Cron job
+### Adding Cron jobs
 
 Refer to [Schedule vs Dynamic jobs](#schedule-vs-dynamic-jobs) to understand the difference.
 
@@ -259,7 +259,7 @@ unless job.save
 end
 ```
 
-Use ActiveRecord models as arguments
+Use ActiveRecord models as arguments:
 
 ```rb
 class Person < ApplicationRecord
@@ -272,7 +272,6 @@ class HardWorker < ActiveJob::Base
     puts "person: #{person}"
   end
 end
-
 
 person = Person.create(id: 1)
 Sidekiq::Cron::Job.create(name: 'Hard worker - every 5min', cron: '*/5 * * * *', class: 'HardWorker', args: person)
@@ -324,7 +323,9 @@ Sidekiq::Cron::Job.load_from_hash! hash
 Sidekiq::Cron::Job.load_from_array! array
 ```
 
-Or from YAML (same notation as Resque-scheduler):
+### Loading jobs from schedule file
+
+You can also load multiple jobs from a YAML (same notation as `Resque-scheduler`) file:
 
 ```yaml
 # config/schedule.yml
