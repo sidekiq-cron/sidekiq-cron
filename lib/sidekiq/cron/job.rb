@@ -94,8 +94,8 @@ module Sidekiq
       # Crucial part of whole enqueuing job.
       def should_enque? time
         return false unless status == "enabled"
-        return false unless not_past_scheduled_time?(time)
-        return false unless not_enqueued_after?(time)
+        return false if past_scheduled_time?(time)
+        return false if enqueued_after?(time)
 
         enqueue = Sidekiq.redis do |conn|
           conn.zadd(job_enqueued_key, formatted_enqueue_time(time), formatted_last_time(time))
@@ -610,8 +610,8 @@ module Sidekiq
         end
       end
 
-      def not_enqueued_after?(time)
-        @last_enqueue_time.nil? || @last_enqueue_time.to_i < last_time(time).to_i
+      def enqueued_after?(time)
+        @last_enqueue_time && @last_enqueue_time.to_i >= last_time(time).to_i
       end
 
       # Try parsing inbound args into an array.
@@ -665,10 +665,11 @@ module Sidekiq
         DateTime.parse(timestamp).to_time.utc
       end
 
-      def not_past_scheduled_time?(current_time)
+      def past_scheduled_time?(current_time)
         last_cron_time = parsed_cron.previous_time(current_time).utc
-        return false if (current_time.to_i - last_cron_time.to_i) > 60
-        true
+        period = Sidekiq::Cron.configuration.reschedule_grace_period
+
+        current_time.to_i - last_cron_time.to_i > period
       end
 
       def self.default_if_blank(namespace)
