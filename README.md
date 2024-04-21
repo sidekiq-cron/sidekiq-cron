@@ -95,7 +95,7 @@ There are multiple modes that determine how natural-language cron strings will b
 ```ruby
 Sidekiq::Cron.configure do |config|
   # Note: This doesn't need to be specified since it's the default.
-  config.natural_language_parsing_mode = :single
+  config.natural_cron_parsing_mode = :single
 end
 ```
 
@@ -110,7 +110,7 @@ Ex. `every day at 3:15 and 4:30`
 
 ```ruby
 Sidekiq::Cron.configure do |config|
-  config.natural_language_parsing_mode = :strict
+  config.natural_cron_parsing_mode = :strict
 end
 ```
 
