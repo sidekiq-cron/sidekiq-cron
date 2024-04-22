@@ -451,6 +451,16 @@ Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can chang
 Sidekiq::Options[:cron_poll_interval] = 10
 ```
 
+When sidekiq (and sidekiq-cron) is not used in zero-downtime deployments, after the deployment is done sidekiq-cron starts to catch up. It will consider older jobs that missed their schedules during that time. By default, only jobs that should have started less than 1 minute ago are considered. This is problematic for some jobs, e.g., jobs that run once a day. If on average sidekiq is shut down for 10 minutes during deployments, you can configure sidekiq-cron to consider jobs that were about to be scheduled during that time:
+
+```ruby
+# config/initializers/sidekiq-cron.rb
+
+Sidekiq::Cron.configure do |config|
+  config.reschedule_grace_period = 600 # 10 minutes in seconds
+end
+```
+
 Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
 
 When running with many Sidekiq processes, the polling can add significant load to Redis. You can disable polling on some processes by setting `Sidekiq::Options[:cron_poll_interval] = 0` on these processes.
