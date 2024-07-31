@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 - Allows symbol keys in `.load_from_array!` (https://github.com/sidekiq-cron/sidekiq-cron/pull/458)
 - Add natural language parsing mode (https://github.com/sidekiq-cron/sidekiq-cron/pull/459)
 - Add ability to configure the past scheduled time threshold (https://github.com/sidekiq-cron/sidekiq-cron/pull/465)
-- Docs: clarify worker vs process  (https://github.com/sidekiq-cron/sidekiq-cron/issues/453)
+- Docs: clarify worker vs process terminology (https://github.com/sidekiq-cron/sidekiq-cron/issues/453)
 
 ## 1.12.0
 
