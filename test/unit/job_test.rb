@@ -1431,6 +1431,15 @@ describe "Cron Job" do
       refute Sidekiq::Cron::Job.new(@args.merge(cron: "0 1,13 * * *")).should_enque? @time
     end
 
+    it "should enqueue jobs that are within reschedule grace period" do
+      time = Time.new(2024, 4, 21, 12, 30, 0, "UTC")
+      refute Sidekiq::Cron::Job.new(@args.merge(cron: "10 * * * *")).should_enque? time
+
+      Sidekiq::Cron.configuration.stub(:reschedule_grace_period, 60 * 60) do
+        assert Sidekiq::Cron::Job.new(@args.merge(cron: "10 * * * *")).should_enque? time
+      end
+    end
+
     it 'doesnt skip enqueuing if job is resaved near next enqueue time' do
       job = Sidekiq::Cron::Job.new(@args)
       assert job.test_and_enque_for_time!(@time), "should enqueue"
