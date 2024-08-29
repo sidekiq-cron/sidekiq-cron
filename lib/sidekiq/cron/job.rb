@@ -490,6 +490,8 @@ module Sidekiq
           conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s) unless exists == true || exists == 1
         end
         Sidekiq.logger.info { "Cron Jobs - added job with name #{@name} in the namespace #{@namespace}" }
+
+        true
       end
 
       def save_last_enqueue_time
