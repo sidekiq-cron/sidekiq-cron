@@ -184,6 +184,9 @@ Sidekiq::Cron::Job.all 'Foo'
 Sidekiq::Cron::Job.all '*'
 #=> [#<Sidekiq::Cron::Job ...>]
 
+# If you'd like to paginate jobs, you can pass offset and limit
+Sidekiq::Cron::Job.all(offset: 0, limit: 9)
+
 job = Sidekiq::Cron::Job.find('Hard worker - every 5min', 'Foo').first
 job.destroy
 # INFO: Cron Jobs - deleted job with name Hard worker - every 5min from namespace Foo
