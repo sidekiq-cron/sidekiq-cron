@@ -1120,10 +1120,11 @@ describe "Cron Job" do
     end
 
     before do
+      time = Time.now.utc
       # A job created without a namespace, like it would have been prior to
       # namespaces implementation.
       Sidekiq.redis do |conn|
-        conn.sadd 'cron_jobs', 'cron_job:no-namespace-job'
+        conn.zadd 'cron_jobs', time.to_f.to_s, 'cron_job:no-namespace-job'
         conn.hset 'cron_job:no-namespace-job',
                   (no_namespace_to_hash.transform_values! { |v| v || '' })
       end
@@ -1202,6 +1203,80 @@ describe "Cron Job" do
       describe 'when passing an asterisk' do
         it 'should return all the existing jobs from all namespaces and out of a namespace' do
           assert_equal Sidekiq::Cron::Job.all('*').size, 3, 'Should have 3 jobs'
+        end
+      end
+    end
+
+    describe 'all with offset, limit' do
+      describe 'when not passing offset and limit' do
+        it 'should return all jobs from the default namespace' do
+          assert_equal 2,
+                       Sidekiq::Cron::Job.all.size,
+                       'all() should have returned 2 jobs: one from the ' \
+                         'default namespace and one out of any namespaces'
+        end
+      end
+
+      describe 'when passing offset and limit for pagination' do
+        it 'should return the first job when limit is 1' do
+          jobs = Sidekiq::Cron::Job.all(offset: 0, limit: 1)
+          assert_equal 1,
+                       jobs.size,
+                       'all(offset: 0, limit: 1) should return exactly 1 job'
+          assert_equal 'default',
+                       jobs.first.namespace,
+                       'The job should belong to the "default" namespace'
+        end
+      end
+
+      describe 'when passing offset 1 and limit 1' do
+        it 'should return the second job' do
+          jobs = Sidekiq::Cron::Job.all(offset: 1, limit: 1)
+          assert_equal 1,
+                       jobs.size,
+                       'all(offset: 1, limit: 1) should return exactly 1 job'
+          assert_equal 'default',
+                       jobs.first.namespace,
+                       'The job should belong to the "default" namespace'
+        end
+      end
+
+      describe 'when passing offset 1 and limit 1 and namespace my-custom-namespace' do
+        it 'should return the first job' do
+          jobs = Sidekiq::Cron::Job.all('my-custom-namespace', offset: 0, limit: 1)
+          assert_equal 1,
+                       jobs.size,
+                       'all(offset: 1, limit: 1) should return exactly 1 job'
+          assert_equal 'my-custom-namespace',
+                       jobs.first.namespace,
+                       'The job should belong to the "default" namespace'
+        end
+      end
+
+      describe 'when passing offset 2 and limit 1 and namespace my-custom-namespace' do
+        it 'should return no jobs' do
+          jobs = Sidekiq::Cron::Job.all('my-custom-namespace', offset: 10, limit: 1)
+          assert_equal 0,
+                       jobs.size,
+                       "all('my-custom-namespace', offset: 10, limit: 1) should return no jobs as offset exceeds the count"
+        end
+      end
+
+      describe 'when limit exceeds total jobs' do
+        it 'should return all jobs if limit is higher than total job count' do
+          jobs = Sidekiq::Cron::Job.all(offset: 0, limit: 10)
+          assert_equal 2,
+                       jobs.size,
+                       'all(offset: 0, limit: 10) should return all available jobs when limit exceeds the count'
+        end
+      end
+
+      describe 'when offset exceeds total job count' do
+        it 'should return no jobs' do
+          jobs = Sidekiq::Cron::Job.all(offset: 10, limit: 1)
+          assert_equal 0,
+                       jobs.size,
+                       'all(offset: 10, limit: 1) should return no jobs as offset exceeds the count'
         end
       end
     end
@@ -1301,8 +1376,9 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args.merge(name: "Test2"))
       Sidekiq::Cron::Job.create(@args.merge(name: "Test3"))
 
+      time = Time.now.utc
       Sidekiq.redis do |conn|
-        conn.sadd Sidekiq::Cron::Job.jobs_key, ["some_other_key"]
+        conn.zadd Sidekiq::Cron::Job.jobs_key, time.to_f.to_s, ["some_other_key"]
       end
 
       assert_equal Sidekiq::Cron::Job.all.size, 3, "All have to return only valid 3 jobs"

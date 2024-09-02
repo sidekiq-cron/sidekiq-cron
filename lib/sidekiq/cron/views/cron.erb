@@ -111,7 +111,34 @@
       <% end %>
     </tbody>
   </table>
+
+  <!-- Pagination -->
+  <% if @total_size > @per_page && @current_namespace != '*' %>
+    <div>
+      <ul class="pagination flip pull-right">
+        <li class="<%= 'disabled' if @page == 1 %>">
+          <a href="?page=1">&laquo;</a>
+        </li>
+        <% if @page > 1 %>
+          <li>
+            <a href="?page=<%= @page - 1 %>"><%= @page - 1 %></a>
+          </li>
+        <% end %>
+        <li class="disabled">
+          <a href="?page=<%= @page %>"><%= @page %></a>
+        </li>
+        <% if @total_size > @page * @per_page %>
+          <li>
+            <a href="?page=<%= @page + 1 %>"><%= @page + 1 %></a>
+          </li>
+        <% end %>
+        <li class="<%= 'disabled' if @total_size <= @page * @per_page %>">
+          <a href="?page=<%= (@total_size.to_f / @per_page).ceil %>">&raquo;</a>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+  <!-- Pagination -->
 <% else %>
   <div class='alert alert-success'><%= t('NoCronJobsWereFound') %></div>
 <% end %>
-

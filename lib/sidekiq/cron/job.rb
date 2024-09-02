@@ -287,10 +287,10 @@ module Sidekiq
       end
 
       # Get all cron jobs.
-      def self.all(namespace = Sidekiq::Cron.configuration.default_namespace)
+      def self.all(namespace = Sidekiq::Cron.configuration.default_namespace, offset: 0, limit: -1)
         job_hashes = nil
         Sidekiq.redis do |conn|
-          job_keys = job_keys_from_namespace(namespace)
+          job_keys = job_keys_from_namespace(namespace, offset: offset, limit: limit)
 
           job_hashes = conn.pipelined do |pipeline|
             job_keys.each do |job_key|
@@ -310,7 +310,7 @@ module Sidekiq
             memo + namespace_count[:count]
           end
         else
-          Sidekiq.redis { |conn| conn.scard(jobs_key(namespace)) }
+          Sidekiq.redis { |conn| conn.zcard(jobs_key(namespace)) }
         end
       end
 
@@ -478,14 +478,15 @@ module Sidekiq
         return false unless valid?
 
         Sidekiq.redis do |conn|
+          time = Time.now.utc
+
           # Add to set of all jobs
-          conn.sadd self.class.jobs_key(@namespace), [redis_key]
+          conn.zadd self.class.jobs_key(@namespace), time.to_f.to_s, [redis_key]
 
           # Add information for this job!
           conn.hset redis_key, to_hash.transform_values! { |v| v || '' }
 
           # Add information about last time! - don't enque right after scheduler poller starts!
-          time = Time.now.utc
           exists = conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
           conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s) unless exists == true || exists == 1
         end
@@ -517,7 +518,7 @@ module Sidekiq
       def destroy
         Sidekiq.redis do |conn|
           # Delete from set.
-          conn.srem self.class.jobs_key(@namespace), [redis_key]
+          conn.zrem self.class.jobs_key(@namespace), [redis_key]
 
           # Delete ran timestamps.
           conn.del job_enqueued_key
@@ -680,25 +681,30 @@ module Sidekiq
         end
       end
 
-      def self.job_keys_from_namespace(namespace = Sidekiq::Cron.configuration.default_namespace)
+      def self.job_keys_from_namespace(namespace = Sidekiq::Cron.configuration.default_namespace, offset: 0, limit: -1)
+        return [] if limit.zero?
+
         Sidekiq.redis do |conn|
+          # TODO: Manage pagination if namespace is *
           if namespace == '*'
             namespaces = conn.keys(jobs_key(namespace))
-            namespaces.flat_map { |name| conn.smembers(name) }
+            namespaces.flat_map { |name| conn.zrange(name, 0, -1) }
           else
-            conn.smembers(jobs_key(namespace))
+            start = offset
+            stop = limit.positive? ? (start + limit - 1) : limit
+            conn.zrange(jobs_key(namespace), start, stop)
           end
         end
       end
 
       def self.migrate_old_jobs_if_needed!
         Sidekiq.redis do |conn|
-          old_job_keys = conn.smembers('cron_jobs')
+          old_job_keys = conn.zrange('cron_jobs', 0, -1)
           old_job_keys.each do |old_job|
             old_job_hash = conn.hgetall(old_job)
             old_job_hash[:namespace] = Sidekiq::Cron.configuration.default_namespace
             create(old_job_hash)
-            conn.srem('cron_jobs', old_job)
+            conn.zrem('cron_jobs', old_job)
           end
         end
       end

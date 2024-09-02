@@ -36,7 +36,7 @@ module Sidekiq
       def self.count(name = Sidekiq::Cron.configuration.default_namespace)
         out = 0
         Sidekiq.redis do |conn|
-          out = conn.scard("cron_jobs:#{name}")
+          out = conn.zcard("cron_jobs:#{name}")
         end
         out
       end

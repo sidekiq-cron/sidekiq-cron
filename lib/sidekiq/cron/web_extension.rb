@@ -8,12 +8,21 @@ module Sidekiq
         app.get '/cron' do
           view_path = File.join(File.expand_path("..", __FILE__), "views")
 
+          @page = params[:page].to_i
+          @page = 1 if @page < 1
+
+          @per_page = params[:per_page].to_i
+          @per_page = 25 if @per_page < 1
+
+          offset = (@page - 1) * @per_page
+
           @current_namespace = 'default'
+          @total_size = Sidekiq::Cron::Job.count(@current_namespace)
 
           @namespaces = Sidekiq::Cron::Namespace.all_with_count
 
           # Not passing namespace takes all the jobs from the default one.
-          @cron_jobs = Sidekiq::Cron::Job.all
+          @cron_jobs = Sidekiq::Cron::Job.all(@current_namespace, offset: offset, limit: @per_page)
 
           render(:erb, File.read(File.join(view_path, "cron.erb")))
         end
@@ -21,11 +30,20 @@ module Sidekiq
         app.get '/cron/namespaces/:name' do
           view_path = File.join(File.expand_path("..", __FILE__), "views")
 
+          @page = params[:page].to_i
+          @page = 1 if @page < 1
+
+          @per_page = params[:per_page].to_i
+          @per_page = 25 if @per_page < 1
+
+          offset = (@page - 1) * @per_page
+
           @current_namespace = route_params[:name]
+          @total_size = Sidekiq::Cron::Job.count(@current_namespace)
 
           @namespaces = Sidekiq::Cron::Namespace.all_with_count
 
-          @cron_jobs = Sidekiq::Cron::Job.all(@current_namespace)
+          @cron_jobs = Sidekiq::Cron::Job.all(@current_namespace, offset: offset, limit: @per_page)
 
           render(:erb, File.read(File.join(view_path, "cron.erb")))
         end
