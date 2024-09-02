@@ -115,25 +115,31 @@
   <!-- Pagination -->
   <% if @total_size > @per_page && @current_namespace != '*' %>
     <div>
-      <ul class="pagination flip pull-right">
-        <li class="<%= 'disabled' if @page == 1 %>">
-          <a href="?page=1">&laquo;</a>
+      <p class="pull-left">
+        <span>Show per page:&nbsp;</span>
+        <% [25, 50, 100].each do |page| %>
+          <a href="?per_page=<%= page %>"><%= page %></a>&nbsp;
+        <% end %>
+      </p>
+      <ul class="pagination pull-right flip chart">
+        <li class="<%= 'disabled' if @current_page == 1 %>">
+          <a href="?<%= qparams(page: 1) %>">&laquo;</a>
         </li>
-        <% if @page > 1 %>
+        <% if @current_page > 1 %>
           <li>
-            <a href="?page=<%= @page - 1 %>"><%= @page - 1 %></a>
+            <a href="?<%= qparams(page: @current_page - 1) %>"><%= @current_page - 1 %></a>
           </li>
         <% end %>
         <li class="disabled">
-          <a href="?page=<%= @page %>"><%= @page %></a>
+          <a href="?<%= qparams(page: @current_page) %>"><%= @current_page %></a>
         </li>
-        <% if @total_size > @page * @per_page %>
+        <% if @total_size > @current_page * @per_page %>
           <li>
-            <a href="?page=<%= @page + 1 %>"><%= @page + 1 %></a>
+            <a href="?<%= qparams(page: @current_page + 1) %>"><%= @current_page + 1 %></a>
           </li>
         <% end %>
-        <li class="<%= 'disabled' if @total_size <= @page * @per_page %>">
-          <a href="?page=<%= (@total_size.to_f / @per_page).ceil %>">&raquo;</a>
+        <li class="<%= 'disabled' if @total_size <= @current_page * @per_page %>">
+          <a href="?<%= qparams(page: (@total_size.to_f / @per_page).ceil) %>">&raquo;</a>
         </li>
       </ul>
     </div>

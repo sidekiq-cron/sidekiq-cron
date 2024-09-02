@@ -8,13 +8,13 @@ module Sidekiq
         app.get '/cron' do
           view_path = File.join(File.expand_path("..", __FILE__), "views")
 
-          @page = params[:page].to_i
-          @page = 1 if @page < 1
+          @current_page = params[:page].to_i
+          @current_page = 1 if @current_page < 1
 
           @per_page = params[:per_page].to_i
           @per_page = 25 if @per_page < 1
 
-          offset = (@page - 1) * @per_page
+          offset = (@current_page - 1) * @per_page
 
           @current_namespace = 'default'
           @total_size = Sidekiq::Cron::Job.count(@current_namespace)
@@ -30,13 +30,13 @@ module Sidekiq
         app.get '/cron/namespaces/:name' do
           view_path = File.join(File.expand_path("..", __FILE__), "views")
 
-          @page = params[:page].to_i
-          @page = 1 if @page < 1
+          @current_page = params[:page].to_i
+          @current_page = 1 if @current_page < 1
 
           @per_page = params[:per_page].to_i
           @per_page = 25 if @per_page < 1
 
-          offset = (@page - 1) * @per_page
+          offset = (@current_page - 1) * @per_page
 
           @current_namespace = route_params[:name]
           @total_size = Sidekiq::Cron::Job.count(@current_namespace)
