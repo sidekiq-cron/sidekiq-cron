@@ -482,7 +482,7 @@ module Sidekiq
           conn.sadd self.class.jobs_key(@namespace), [redis_key]
 
           # Add information for this job!
-          conn.hset redis_key, to_hash.transform_values { |v| v || '' }.flatten
+          conn.hset redis_key, to_hash.transform_values! { |v| v || '' }.flatten
 
           # Add information about last time! - don't enque right after scheduler poller starts!
           time = Time.now.utc
