@@ -31,7 +31,7 @@
 <div class='row'>
   <div class="col-sm-12 summary_bar">
     <ul class="list-unstyled summary row">
-      <% @namespaces.sort_by { |namespace| namespace[:name] } .each do |namespace| %>
+      <% @namespaces.sort_by { |namespace| namespace[:name] }.each do |namespace| %>
         <li class="col-sm-1">
           <a href="<%= root_path %>cron/namespaces/<%= namespace[:name] %>">
             <span class="count"><%= namespace[:count] %></span>
@@ -47,16 +47,18 @@
 <% if @cron_jobs.size > 0 %>
   <table class="table table-hover table-bordered table-striped table-white">
     <thead>
+    <tr>
       <th><%= t('Status') %></th>
-      <th><%= t('Name') %></th>
+      <th width="50%"><%= t('Name') %></th>
       <th><%= t('Cron string') %></th>
       <th><%= t('Last enqueued') %></th>
-      <th width="180"><%= t('Actions')%></th>
+      <th width="180"><%= t('Actions') %></th>
+    </tr>
     </thead>
 
     <tbody>
-      <% @cron_jobs.sort{|a,b| a.sort_name <=> b.sort_name }.each_with_index do |job, index| %>
-        <% klass = "#{job.status == 'disabled' ? "bg-danger text-muted": ""}" %>
+      <% @cron_jobs.sort{ |a,b| a.sort_name <=> b.sort_name }.each do |job| %>
+        <% klass = (job.status == 'disabled') ? 'bg-danger text-muted' : '' %>
         <tr>
           <td class="<%= klass %>"><%= t job.status %></td>
           <td class="<%= klass %>">
@@ -64,21 +66,14 @@
               <b class="<%= klass %>"><%= job.name %></b>
             </a>
             <br/>
-            <small>
             <% if job.message and job.message.to_s.size > 100 %>
-              <% if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("6.3.0") %>
-                <button data-toggle="job_<%= index %>" class="btn btn-warn btn-xs"><%= t('ShowAll')%></button>
-                <div class="toggle" id="job_<%= index %>" style="display: inline;"><%= job.message[0..100] + "... " %></div>
-                <div class="toggle" id="job_<%= index %>_full" style="display: none;"><%= job.message %></div>
-              <% else %>
-                <button data-toggle="collapse" data-target=".worker_<%= index %>" class="btn btn-warn btn-xs"><%= t('ShowAll')%></button>
-                <div class="toggle worker_<%= index %>" style="display: inline;"><%= job.message[0..100] + "... " %></div>
-                <div class="toggle worker_<%= index %>" style="display: none;"><%= job.message %></div>
-              <% end %>
+              <details>
+                <summary class="btn btn-warn btn-xs">Show message</summary>
+                <p><small><%= job.message %></small></p>
+              </details>
             <% else %>
-              <%= job.message %>
+              <small><%= job.message %></small>
             <% end %>
-            </small>
           </td>
           <td class="<%= klass %>"><b><%= job.human_cron %><br/><small><%= job.cron.gsub(" ", "&nbsp;") %></small></b></td>
           <td class="<%= klass %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>
