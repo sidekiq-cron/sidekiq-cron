@@ -6,7 +6,7 @@ if defined?(Sidekiq::Web)
     Sidekiq::Web.register(
       Sidekiq::Cron::WebExtension, # Class which contains the HTTP actions, required
       name: "cron", # the name of the extension, used to namespace assets
-      tab: "Cron Jobs", # labels(s) of the UI tabs
+      tab: "Cron", # labels(s) of the UI tabs
       index: "cron", # index route(s) for each tab
     )
   else
