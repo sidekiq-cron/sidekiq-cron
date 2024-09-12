@@ -484,13 +484,18 @@ module Sidekiq
           conn.zadd self.class.jobs_key(@namespace), time.to_f.to_s, [redis_key]
 
           # Add information for this job!
-          conn.hset redis_key, to_hash.transform_values! { |v| v || '' }
+          conn.hset redis_key, to_hash.transform_values! { |v| v || '' }.flatten
 
           # Add information about last time! - don't enque right after scheduler poller starts!
           exists = conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
-          conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s) unless exists == true || exists == 1
+
+          unless exists == true || exists == 1
+            conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s)
+            Sidekiq.logger.info { "Cron Jobs - added job with name #{@name} in the namespace #{@namespace}" }
+          end
         end
-        Sidekiq.logger.info { "Cron Jobs - added job with name #{@name} in the namespace #{@namespace}" }
+
+        true
       end
 
       def save_last_enqueue_time
