@@ -105,6 +105,13 @@ describe "Cron Job" do
       assert @job.errors.any?{|e| e.include?("cron")}, "Should have error for cron"
     end
 
+    it "return false for valid? when namespace is '*'" do
+      @job.namespace = "*"
+      refute @job.valid?
+      assert @job.errors.is_a?(Array)
+      assert @job.errors.any?{|e| e.include?("namespace")}, "Should have error for namespace"
+    end
+
     it "is invalid when parsing multiple cron lines in strict mode" do
       @job.cron = "every Wednesday at 5:30 and 6:45"
       @job.name = "example job"
