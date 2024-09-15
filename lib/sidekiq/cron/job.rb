@@ -432,6 +432,12 @@ module Sidekiq
 
         if date_as_argument?
           hash.merge!(date_as_argument: "1")
+        else
+          # Ensure that the `date_as_argument` field is removed from Redis when `date_as_argument` is false.
+          # This prevents stale values from persisting and ensures that changes to the config are correctly applied.
+          Sidekiq.redis do |conn|
+            conn.hdel(redis_key, 'date_as_argument')
+          end
         end
 
         hash
