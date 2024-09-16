@@ -447,6 +447,7 @@ module Sidekiq
 
         errors << "'name' must be set" if @name.nil? || @name.size == 0
         errors << "'namespace' must be set" if @namespace.nil? || @namespace.size == 0
+        errors << "'namespace' cannot be '*'" if @namespace == "*"
 
         if @cron.nil? || @cron.size == 0
           errors << "'cron' must be set"
