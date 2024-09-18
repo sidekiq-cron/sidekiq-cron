@@ -354,6 +354,39 @@ describe "Cron Job" do
     end
   end
 
+  describe 'Handling date_as_argument persistence in Redis' do
+    before do
+      @args = {
+        name: 'Test',
+        cron: '* * * * *',
+        queue: 'default',
+        klass: 'CronTestClass'
+      }
+    end
+
+    it 'stores date_as_argument in Redis when true' do
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal true, stored_job.date_as_argument?
+    end
+
+    it 'does not store date_as_argument in Redis when false' do
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal false, stored_job.date_as_argument?
+    end
+
+    it 'correctly updates Redis when changing date_as_argument from true to false' do
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal true, stored_job.date_as_argument?
+
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal false, stored_job.date_as_argument?
+    end
+  end
+
   describe '#sidekiq_worker_message' do
     before do
       @args = {
