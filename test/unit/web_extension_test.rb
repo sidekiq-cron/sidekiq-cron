@@ -1,4 +1,7 @@
-require './test/test_helper'
+require './test/test_helper_without_require_sidekiq_cron'
+
+require 'sidekiq/web'
+require 'sidekiq/cron/web'
 
 describe 'Cron web' do
   include Rack::Test::Methods

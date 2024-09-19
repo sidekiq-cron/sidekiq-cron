@@ -93,7 +93,9 @@ There are multiple modes that determine how natural-language cron strings will b
 1. `:single` (default)
 
 ```ruby
-Sidekiq::Cron.configure do |config|
+require "sidekiq/cron/config"
+
+Sidekiq::Cron::Config.configure do |config|
   # Note: This doesn't need to be specified since it's the default.
   config.natural_cron_parsing_mode = :single
 end
@@ -109,7 +111,9 @@ Ex. `every day at 3:15 and 4:30`
 2. `:strict`
 
 ```ruby
-Sidekiq::Cron.configure do |config|
+require "sidekiq/cron/config"
+
+Sidekiq::Cron::Config.configure do |config|
   config.natural_cron_parsing_mode = :strict
 end
 ```
@@ -147,7 +151,9 @@ In the case you'd like to change this value, create a new initializer like so:
 `config/initializers/sidekiq-cron.rb`:
 
 ```ruby
-Sidekiq::Cron.configure do |config|
+require "sidekiq/cron/config"
+
+Sidekiq::Cron::Config.configure do |config|
   config.default_namespace = 'statics'
 end
 ```
@@ -456,7 +462,9 @@ When sidekiq (and sidekiq-cron) is not used in zero-downtime deployments, after 
 ```ruby
 # config/initializers/sidekiq-cron.rb
 
-Sidekiq::Cron.configure do |config|
+require "sidekiq/cron/config"
+
+Sidekiq::Cron::Config.configure do |config|
   config.reschedule_grace_period = 600 # 10 minutes in seconds
 end
 ```

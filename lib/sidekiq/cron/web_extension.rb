@@ -1,3 +1,6 @@
+require 'sidekiq/cron/namespace'
+require 'sidekiq/cron/job'
+
 module Sidekiq
   module Cron
     module WebExtension

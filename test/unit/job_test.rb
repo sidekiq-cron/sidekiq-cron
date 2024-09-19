@@ -118,13 +118,17 @@ describe "Cron Job" do
       @job.klass = "ExampleJob"
       assert @job.valid?
 
-      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :strict
+      Sidekiq::Cron::Config.configure do |config|
+        config.natural_cron_parsing_mode = :strict
+      end
 
       refute @job.valid?
       assert @job.errors.is_a?(Array)
       assert @job.errors.any?{|e| e.include?("cron")}, "Should have error for cron"
     ensure
-      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :single
+      Sidekiq::Cron::Config.configure do |config|
+        config.natural_cron_parsing_mode = :single
+      end
     end
 
     it "return false on save" do
@@ -170,25 +174,33 @@ describe "Cron Job" do
     end
 
     it "should suppport cron format in strict mode" do
-      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :strict
+      Sidekiq::Cron::Config.configure do |config|
+        config.natural_cron_parsing_mode = :strict
+      end
 
       @args[:cron] = "55 * * * *"
       @job = Sidekiq::Cron::Job.new(@args)
       assert @job.valid?
       assert_equal Fugit::Cron.new("55 * * * *"), @job.send(:parsed_cron)
     ensure
-      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :single
+      Sidekiq::Cron::Config.configure do |config|
+        config.natural_cron_parsing_mode = :single
+      end
     end
 
     it "should suppport natural language format in strict mode" do
-      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :strict
+      Sidekiq::Cron::Config.configure do |config|
+        config.natural_cron_parsing_mode = :strict
+      end
 
       @args[:cron] = "every 3 hours"
       @job = Sidekiq::Cron::Job.new(@args)
       assert @job.valid?
       assert_equal Fugit::Cron.new("0 */3 * * *"), @job.send(:parsed_cron)
     ensure
-      Sidekiq::Cron.configuration.natural_cron_parsing_mode = :single
+      Sidekiq::Cron::Config.configure do |config|
+        config.natural_cron_parsing_mode = :single
+      end
     end
   end
 
@@ -1442,7 +1454,7 @@ describe "Cron Job" do
       time = Time.new(2024, 4, 21, 12, 30, 0, "UTC")
       refute Sidekiq::Cron::Job.new(@args.merge(cron: "10 * * * *")).should_enque? time
 
-      Sidekiq::Cron.configuration.stub(:reschedule_grace_period, 60 * 60) do
+      Sidekiq::Cron::Config.stub(:reschedule_grace_period, 60 * 60) do
         assert Sidekiq::Cron::Job.new(@args.merge(cron: "10 * * * *")).should_enque? time
       end
     end

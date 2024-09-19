@@ -1,5 +1,4 @@
 require "sidekiq/cron/web_extension"
-require "sidekiq/cron/job"
 
 if defined?(Sidekiq::Web)
   if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('7.3.0')

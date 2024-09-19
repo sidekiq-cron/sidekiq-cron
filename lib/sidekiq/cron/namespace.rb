@@ -1,4 +1,4 @@
-require 'sidekiq'
+require 'sidekiq/cron/config'
 
 module Sidekiq
   module Cron
@@ -14,11 +14,11 @@ module Sidekiq
 
         # Adds the default namespace if not present
         has_default = namespaces.detect do |name|
-          name == Sidekiq::Cron.configuration.default_namespace
+          name == Sidekiq::Cron::Config.default_namespace
         end
 
         unless has_default
-          namespaces << Sidekiq::Cron.configuration.default_namespace
+          namespaces << Sidekiq::Cron::Config.default_namespace
         end
 
         namespaces
@@ -33,7 +33,7 @@ module Sidekiq
         end
       end
 
-      def self.count(name = Sidekiq::Cron.configuration.default_namespace)
+      def self.count(name = Sidekiq::Cron::Config.default_namespace)
         out = 0
         Sidekiq.redis do |conn|
           out = conn.scard("cron_jobs:#{name}")
