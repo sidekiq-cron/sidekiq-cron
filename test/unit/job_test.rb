@@ -370,7 +370,7 @@ describe "Cron Job" do
       assert_equal true, stored_job.date_as_argument?
     end
 
-    it 'does not store date_as_argument in Redis when false' do
+    it 'stores date_as_argument in Redis when false' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
       assert_equal false, stored_job.date_as_argument?
