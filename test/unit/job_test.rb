@@ -354,7 +354,7 @@ describe "Cron Job" do
     end
   end
 
-  describe 'Handling date_as_argument in Sidekiq Cron Job' do
+  describe 'handling date_as_argument' do
     before do
       @args = {
         name: 'Test',
@@ -364,19 +364,19 @@ describe "Cron Job" do
       }
     end
 
-    it 'sets date_as_argument to true in the Sidekiq Cron Job' do
+    it 'sets date_as_argument to true' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
       assert_equal true, stored_job.date_as_argument?
     end
 
-    it 'sets date_as_argument to false in the Sidekiq Cron Job' do
+    it 'sets date_as_argument to false' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
       assert_equal false, stored_job.date_as_argument?
     end
 
-    it 'updates date_as_argument from true to false in the Sidekiq Cron Job' do
+    it 'updates date_as_argument from true to false' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
       assert_equal true, stored_job.date_as_argument?
@@ -386,7 +386,7 @@ describe "Cron Job" do
       assert_equal false, stored_job.date_as_argument?
     end
 
-    it 'updates date_as_argument from false to true in the Sidekiq Cron Job' do
+    it 'updates date_as_argument from false to true' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
       assert_equal false, stored_job.date_as_argument?
@@ -1451,7 +1451,7 @@ describe "Cron Job" do
       Sidekiq.redis do |conn|
         assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 1, "Should have one enqueued job"
       end
-      assert_equal Sidekiq::Queue.all.first&.size, 1, "Sidekiq queue 1 job in queue"
+      assert_equal Sidekiq::Queue.all.first.size, 1, "Sidekiq queue 1 job in queue"
 
       # 20 hours after.
       assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time! @time + 1 * 60 * 60
@@ -1460,7 +1460,7 @@ describe "Cron Job" do
       Sidekiq.redis do |conn|
         assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 2, "Should have two enqueued job"
       end
-      assert_equal Sidekiq::Queue.all.first&.size, 2, "Sidekiq queue 2 jobs in queue"
+      assert_equal Sidekiq::Queue.all.first.size, 2, "Sidekiq queue 2 jobs in queue"
 
       # 26 hour after.
       assert Sidekiq::Cron::Job.new(@args).test_and_enque_for_time! @time + 26 * 60 * 60
@@ -1469,7 +1469,7 @@ describe "Cron Job" do
       Sidekiq.redis do |conn|
         assert_equal conn.zcard(Sidekiq::Cron::Job.new(@args).send(:job_enqueued_key)), 1, "Should have one enqueued job - old jobs should be deleted"
       end
-      assert_equal Sidekiq::Queue.all.first&.size, 3, "Sidekiq queue 3 jobs in queue"
+      assert_equal Sidekiq::Queue.all.first.size, 3, "Sidekiq queue 3 jobs in queue"
     end
   end
 
