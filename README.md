@@ -8,7 +8,7 @@
 
 🎬 [Introduction video about Sidekiq-Cron by Drifting Ruby](https://www.driftingruby.com/episodes/periodic-tasks-with-sidekiq-cron)
 
-Sidekiq-Cron runs a thread alongside Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` parsed by [Fugit](https://github.com/floraison/fugit)).
+Sidekiq-Cron runs a thread alongside Sidekiq workers to schedule jobs at specified times (using cron notation `* * * * *` or natural language, powered by [Fugit](https://github.com/floraison/fugit)).
 
 Checks for new jobs to schedule every 30 seconds and doesn't schedule the same job multiple times when more than one Sidekiq process is running.
 
@@ -56,9 +56,9 @@ gem "sidekiq-cron"
   'queue' => 'name of queue',
   'args' => '[Array or Hash] of arguments which will be passed to perform method',
   'date_as_argument' => true, # add the time of execution as last argument of the perform method
-  'active_job' => true,  # enqueue job through Rails 4.2+ Active Job interface
-  'queue_name_prefix' => 'prefix', # Rails 4.2+ Active Job queue with prefix
-  'queue_name_delimiter' => '.', # Rails 4.2+ Active Job queue with custom delimiter (default: '_')
+  'active_job' => true,  # enqueue job through Active Job interface
+  'queue_name_prefix' => 'prefix', # Active Job queue with prefix
+  'queue_name_delimiter' => '.', # Active Job queue with custom delimiter (default: '_')
   'description' => 'A sentence describing what work this job performs'
   'status' => 'disabled' # default: enabled
 }
@@ -79,7 +79,7 @@ like this `'0 22 * * 1-5 America/Chicago'`.
 
 #### Natural-language formats
 
-Since sidekiq-cron `v1.7.0`, you can use the natural-language formats supported by Fugit, such as:
+Since Sidekiq-Cron `v1.7.0`, you can use the natural-language formats supported by Fugit, such as:
 
 ```rb
 "every day at five" # => '0 5 * * *'
@@ -122,7 +122,7 @@ Ex. `every day at 3:15 and 4:30`
 
 #### Second-precision (sub-minute) cronlines
 
-In addition to the standard 5-parameter cronline format, sidekiq-cron supports scheduling jobs with second-precision using a modified 6-parameter cronline format:
+In addition to the standard 5-parameter cronline format, Sidekiq-Cron supports scheduling jobs with second-precision using a modified 6-parameter cronline format:
 
 `Seconds Minutes Hours Days Months DayOfWeek`
 
@@ -225,7 +225,7 @@ class ExampleJob < ActiveJob::Base
 end
 ```
 
-For Active jobs you can use `symbolize_args: true` in `Sidekiq::Cron::Job.create` or in Hash configuration,
+For Active Job you can use `symbolize_args: true` in `Sidekiq::Cron::Job.create` or in Hash configuration,
 which will ensure that arguments you are passing to it will be symbolized when passed back to `perform` method in worker.
 
 ### Adding Cron jobs
@@ -454,7 +454,7 @@ Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can chang
 Sidekiq::Options[:cron_poll_interval] = 10
 ```
 
-When sidekiq (and sidekiq-cron) is not used in zero-downtime deployments, after the deployment is done sidekiq-cron starts to catch up. It will consider older jobs that missed their schedules during that time. By default, only jobs that should have started less than 1 minute ago are considered. This is problematic for some jobs, e.g., jobs that run once a day. If on average sidekiq is shut down for 10 minutes during deployments, you can configure sidekiq-cron to consider jobs that were about to be scheduled during that time:
+When Sidekiq (and Sidekiq-Cron) is not used in zero-downtime deployments, after the deployment is done Sidekiq-Cron starts to catch up. It will consider older jobs that missed their schedules during that time. By default, only jobs that should have started less than 1 minute ago are considered. This is problematic for some jobs, e.g., jobs that run once a day. If on average Sidekiq is shut down for 10 minutes during deployments, you can configure Sidekiq-Cron to consider jobs that were about to be scheduled during that time:
 
 ```ruby
 # config/initializers/sidekiq-cron.rb
@@ -490,18 +490,18 @@ $ bundle exec rake test
 
 ### Using Docker
 
-[Docker](https://www.docker.com) allows you to run things in containers easing the development process.
-
 This project uses [Docker Compose](https://docs.docker.com/compose/) in order to orchestrate containers and get the test suite running on you local machine, and here you find the commands to run in order to get a complete environment to build and test this gem:
 
 1. Build the Docker image (only the first time):
 ```
 docker compose -f docker/docker-compose.yml build
 ```
+
 2. Run the test suite:
 ```
 docker compose -f docker/docker-compose.yml run --rm tests
 ```
+
 _This command will download the first time the project's dependencies (Redis so far), create the containers and run the default command to run the tests._
 
 #### Running other commands

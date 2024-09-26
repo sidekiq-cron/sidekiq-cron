@@ -105,6 +105,13 @@ describe "Cron Job" do
       assert @job.errors.any?{|e| e.include?("cron")}, "Should have error for cron"
     end
 
+    it "return false for valid? when namespace is '*'" do
+      @job.namespace = "*"
+      refute @job.valid?
+      assert @job.errors.is_a?(Array)
+      assert @job.errors.any?{|e| e.include?("namespace")}, "Should have error for namespace"
+    end
+
     it "is invalid when parsing multiple cron lines in strict mode" do
       @job.cron = "every Wednesday at 5:30 and 6:45"
       @job.name = "example job"
@@ -351,6 +358,49 @@ describe "Cron Job" do
         yesterday = time - 1.day
         assert_equal @job.last_time(time).strftime("%Y-%m-%d-%H-%M-%S"), yesterday.strftime("%Y-%m-%d-02-01-00")
       end
+    end
+  end
+
+  describe 'handling date_as_argument' do
+    before do
+      @args = {
+        name: 'Test',
+        cron: '* * * * *',
+        queue: 'default',
+        klass: 'CronTestClass'
+      }
+    end
+
+    it 'sets date_as_argument to true' do
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal true, stored_job.date_as_argument?
+    end
+
+    it 'sets date_as_argument to false' do
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal false, stored_job.date_as_argument?
+    end
+
+    it 'updates date_as_argument from true to false' do
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal true, stored_job.date_as_argument?
+
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal false, stored_job.date_as_argument?
+    end
+
+    it 'updates date_as_argument from false to true' do
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal false, stored_job.date_as_argument?
+
+      Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
+      stored_job = Sidekiq::Cron::Job.find(@args[:name])
+      assert_equal true, stored_job.date_as_argument?
     end
   end
 
@@ -864,58 +914,6 @@ describe "Cron Job" do
         @job.expects(:sidekiq_worker_message)
             .returns('class' => 'UnknownClass', 'args' => [], 'queue' => 'another')
         @job.enque!
-      end
-    end
-  end
-
-  # @note sidekiq-cron 1.6.0 cannot process options correctly if any date_as_argument evaluates to true.
-  # This has been tested to resolve issues in environments where multiple sidekiq-cron versions are running when updating from 1.6.0
-  # See https://github.com/sidekiq-cron/sidekiq-cron/issues/350#issuecomment-1409798837 for more information.
-  describe "compat with sidekiq cron 1.6.0" do
-    describe "#to_hash with date_as_argument false" do
-      before do
-        @args = {
-          name: "Test",
-          cron: "* * * * *",
-          klass: "CronTestClass",
-          date_as_argument: false,
-        }
-        @job = Sidekiq::Cron::Job.new(@args)
-      end
-
-      it "should not have date_as_argument property" do
-        assert !@job.to_hash.key?(:date_as_argument)
-      end
-    end
-
-    describe "#to_hash with no date_as_argument option" do
-      before do
-        @args = {
-          name: "Test",
-          cron: "* * * * *",
-          klass: "CronTestClass",
-        }
-        @job = Sidekiq::Cron::Job.new(@args)
-      end
-
-      it "should not have date_as_argument property" do
-        assert !@job.to_hash.key?(:date_as_argument)
-      end
-    end
-
-    describe "#to_hash with date_as_argument" do
-      before do
-        @args = {
-          name: "Test",
-          cron: "* * * * *",
-          klass: "CronTestClass",
-          date_as_argument: true,
-        }
-        @job = Sidekiq::Cron::Job.new(@args)
-      end
-
-      it "should have date_as_argument property with value '1'" do
-        assert_equal @job.to_hash[:date_as_argument], '1'
       end
     end
   end

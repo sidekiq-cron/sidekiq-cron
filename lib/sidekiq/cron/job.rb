@@ -16,9 +16,6 @@ module Sidekiq
       # Time format for enqueued jobs.
       LAST_ENQUEUE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
-      # Use the exists? method if we're on a newer version of Redis.
-      REDIS_EXISTS_METHOD = Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("7.0.0") || Gem.loaded_specs['redis'].version < Gem::Version.new('4.2') ? :exists : :exists?
-
       # Use serialize/deserialize key of GlobalID.
       GLOBALID_KEY = "_sc_globalid"
 
@@ -413,7 +410,7 @@ module Sidekiq
 
       # Export job data to hash.
       def to_hash
-        hash = {
+        {
           name: @name,
           namespace: @namespace,
           klass: @klass.to_s,
@@ -421,6 +418,7 @@ module Sidekiq
           description: @description,
           source: @source,
           args: @args.is_a?(String) ? @args : Sidekiq.dump_json(@args || []),
+          date_as_argument: date_as_argument? ? "1" : "0",
           message: @message.is_a?(String) ? @message : Sidekiq.dump_json(@message || {}),
           status: @status,
           active_job: @active_job ? "1" : "0",
@@ -429,12 +427,6 @@ module Sidekiq
           last_enqueue_time: serialized_last_enqueue_time,
           symbolize_args: symbolize_args? ? "1" : "0",
         }
-
-        if date_as_argument?
-          hash.merge!(date_as_argument: "1")
-        end
-
-        hash
       end
 
       def errors
@@ -447,6 +439,7 @@ module Sidekiq
 
         errors << "'name' must be set" if @name.nil? || @name.size == 0
         errors << "'namespace' must be set" if @namespace.nil? || @namespace.size == 0
+        errors << "'namespace' cannot be '*'" if @namespace == "*"
 
         if @cron.nil? || @cron.size == 0
           errors << "'cron' must be set"
@@ -487,7 +480,8 @@ module Sidekiq
           conn.hset redis_key, to_hash.transform_values! { |v| v || '' }.flatten
 
           # Add information about last time! - don't enque right after scheduler poller starts!
-          exists = conn.public_send(REDIS_EXISTS_METHOD, job_enqueued_key)
+          time = Time.now.utc
+          exists = conn.exists(job_enqueued_key)
 
           unless exists == true || exists == 1
             conn.zadd(job_enqueued_key, time.to_f.to_s, formatted_last_time(time).to_s)
@@ -578,7 +572,7 @@ module Sidekiq
 
       def self.exists?(name, namespace = Sidekiq::Cron.configuration.default_namespace)
         out = Sidekiq.redis do |conn|
-          conn.public_send(REDIS_EXISTS_METHOD, redis_key(name, namespace))
+          conn.exists(redis_key(name, namespace))
         end
 
         [true, 1].include?(out)
