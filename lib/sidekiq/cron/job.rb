@@ -687,7 +687,11 @@ module Sidekiq
             namespaces = conn.keys(jobs_key(namespace))
             namespaces.flat_map { |name| conn.smembers(name) }
           else
-            conn.sort(jobs_key(namespace), 'LIMIT', offset, limit, 'ALPHA')
+            if Gem::Version.new(Sidekiq::VERSION) < Gem::Version.new('7.0.0')
+              conn.sort(jobs_key(namespace), order: "ALPHA", limit: [offset, limit])
+            else
+              conn.sort(jobs_key(namespace), 'LIMIT', offset, limit, 'ALPHA')
+            end
           end
         end
       end
