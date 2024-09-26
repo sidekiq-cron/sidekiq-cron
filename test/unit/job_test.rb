@@ -1118,11 +1118,10 @@ describe "Cron Job" do
     end
 
     before do
-      time = Time.now.utc
       # A job created without a namespace, like it would have been prior to
       # namespaces implementation.
       Sidekiq.redis do |conn|
-        conn.zadd 'cron_jobs', time.to_f.to_s, 'cron_job:no-namespace-job'
+        conn.sadd 'cron_jobs', 'cron_job:no-namespace-job'
         conn.hset 'cron_job:no-namespace-job',
                   (no_namespace_to_hash.transform_values! { |v| v || '' })
       end
@@ -1374,9 +1373,8 @@ describe "Cron Job" do
       Sidekiq::Cron::Job.create(@args.merge(name: "Test2"))
       Sidekiq::Cron::Job.create(@args.merge(name: "Test3"))
 
-      time = Time.now.utc
       Sidekiq.redis do |conn|
-        conn.zadd Sidekiq::Cron::Job.jobs_key, time.to_f.to_s, ["some_other_key"]
+        conn.sadd Sidekiq::Cron::Job.jobs_key, ["some_other_key"]
       end
 
       assert_equal Sidekiq::Cron::Job.all.size, 3, "All have to return only valid 3 jobs"

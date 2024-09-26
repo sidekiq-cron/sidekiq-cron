@@ -307,7 +307,7 @@ module Sidekiq
             memo + namespace_count[:count]
           end
         else
-          Sidekiq.redis { |conn| conn.zcard(jobs_key(namespace)) }
+          Sidekiq.redis { |conn| conn.scard(jobs_key(namespace)) }
         end
       end
 
@@ -471,10 +471,8 @@ module Sidekiq
         return false unless valid?
 
         Sidekiq.redis do |conn|
-          time = Time.now.utc
-
           # Add to set of all jobs
-          conn.zadd self.class.jobs_key(@namespace), time.to_f.to_s, [redis_key]
+          conn.sadd self.class.jobs_key(@namespace), [redis_key]
 
           # Add information for this job!
           conn.hset redis_key, to_hash.transform_values! { |v| v || '' }.flatten
@@ -517,7 +515,7 @@ module Sidekiq
       def destroy
         Sidekiq.redis do |conn|
           # Delete from set.
-          conn.zrem self.class.jobs_key(@namespace), [redis_key]
+          conn.srem self.class.jobs_key(@namespace), [redis_key]
 
           # Delete ran timestamps.
           conn.del job_enqueued_key
@@ -687,23 +685,21 @@ module Sidekiq
           # TODO: Manage pagination if namespace is *
           if namespace == '*'
             namespaces = conn.keys(jobs_key(namespace))
-            namespaces.flat_map { |name| conn.zrange(name, 0, -1) }
+            namespaces.flat_map { |name| conn.smembers(name) }
           else
-            start = offset
-            stop = limit.positive? ? (start + limit - 1) : limit
-            conn.zrange(jobs_key(namespace), start, stop)
+            conn.sort(jobs_key(namespace), 'LIMIT', offset, limit, 'ALPHA')
           end
         end
       end
 
       def self.migrate_old_jobs_if_needed!
         Sidekiq.redis do |conn|
-          old_job_keys = conn.zrange('cron_jobs', 0, -1)
+          old_job_keys = conn.smembers('cron_jobs')
           old_job_keys.each do |old_job|
             old_job_hash = conn.hgetall(old_job)
             old_job_hash[:namespace] = Sidekiq::Cron.configuration.default_namespace
             create(old_job_hash)
-            conn.zrem('cron_jobs', old_job)
+            conn.srem('cron_jobs', old_job)
           end
         end
       end

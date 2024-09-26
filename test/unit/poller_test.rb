@@ -51,11 +51,10 @@ describe 'Cron Poller' do
 
   describe 'on startup' do
     before do
-      time = Time.now.utc
       # A job created without a namespace, like it would have been prior to
       # namespaces implementation.
       Sidekiq.redis do |conn|
-        conn.zadd 'cron_jobs', time.to_f.to_s, 'cron_job:no-namespace-job'
+        conn.sadd 'cron_jobs', 'cron_job:no-namespace-job'
         conn.hset 'cron_job:no-namespace-job',
                   (no_namespace_to_hash.transform_values! { |v| v || '' })
       end
@@ -64,10 +63,10 @@ describe 'Cron Poller' do
     describe 'before the migration code runs' do
       it 'should have one job out of any namespaces' do
         assert_equal 1,
-                     Sidekiq.redis { |conn| conn.zrange('cron_jobs', 0, -1) }.size,
+                     Sidekiq.redis { |conn| conn.smembers('cron_jobs') }.size,
                      'Should have 1 old job'
         assert_equal 0,
-                     Sidekiq.redis { |conn| conn.zrange('cron_jobs:default', 0, -1) }.size,
+                     Sidekiq.redis { |conn| conn.smembers('cron_jobs:default') }.size,
                      'Should have 0 jobs in the default namespace'
       end
     end
@@ -77,10 +76,10 @@ describe 'Cron Poller' do
 
       it 'should not have any job out of any namespaces' do
         assert_equal 0,
-                     Sidekiq.redis { |conn| conn.zrange('cron_jobs', 0, -1) }.size,
+                     Sidekiq.redis { |conn| conn.smembers('cron_jobs') }.size,
                      'Should have 0 old jobs'
         assert_equal 1,
-                     Sidekiq.redis { |conn| conn.zrange('cron_jobs:default', 0, -1) }.size,
+                     Sidekiq.redis { |conn| conn.smembers('cron_jobs:default') }.size,
                      'Should have 1 job in the default namespace'
       end
     end
