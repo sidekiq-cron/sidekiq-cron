@@ -33,10 +33,15 @@ module Sidekiq
       # jobs that missed their schedules during the deployment. E.g., jobs that run once a day.
       attr_accessor :reschedule_grace_period
 
+      # The maximum number of recent cron job execution histories to retain.
+      # This value controls how many past job executions are stored.
+      attr_accessor :cron_history_size
+
       def initialize
         @default_namespace = 'default'
         @natural_cron_parsing_mode = :single
         @reschedule_grace_period = 60
+        @cron_history_size = 10
       end
 
       def natural_cron_parsing_mode=(mode)
