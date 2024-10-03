@@ -4,6 +4,13 @@ module Sidekiq
       def self.registered(app)
         app.settings.locales << File.join(File.expand_path("..", __FILE__), "locales")
 
+        app.helpers do
+          # This method constructs the URL for the cron jobs page within the specified namespace.
+          def namespace_redirect_path
+            "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          end
+        end
+
         # Index page of cron jobs.
         app.get '/cron' do
           view_path = File.join(File.expand_path("..", __FILE__), "views")
@@ -44,14 +51,14 @@ module Sidekiq
           if @job
             render(:erb, File.read(File.join(view_path, "cron_show.erb")))
           else
-            redirect "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+            redirect namespace_redirect_path
           end
         end
 
         # Enque all cron jobs.
         app.post '/cron/namespaces/:namespace/all/enque' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:enque!)
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
 
         # Enqueue cron job.
@@ -59,13 +66,13 @@ module Sidekiq
           if job = Sidekiq::Cron::Job.find(route_params[:name], route_params[:namespace])
             job.enque!
           end
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
 
         # Delete all schedules.
         app.post '/cron/namespaces/:namespace/all/delete' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:destroy)
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
 
         # Delete schedule.
@@ -73,13 +80,13 @@ module Sidekiq
           if job = Sidekiq::Cron::Job.find(route_params[:name], route_params[:namespace])
             job.destroy
           end
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
 
         # Enable all jobs.
         app.post '/cron/namespaces/:namespace/all/enable' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:enable!)
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
 
         # Enable job.
@@ -87,13 +94,13 @@ module Sidekiq
           if job = Sidekiq::Cron::Job.find(route_params[:name], route_params[:namespace])
             job.enable!
           end
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
 
         # Disable all jobs.
         app.post '/cron/namespaces/:namespace/all/disable' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:disable!)
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
 
         # Disable job.
@@ -101,7 +108,7 @@ module Sidekiq
           if job = Sidekiq::Cron::Job.find(route_params[:name], route_params[:namespace])
             job.disable!
           end
-          redirect params['redirect'] || "#{root_path}cron/namespaces/#{route_params[:namespace]}"
+          redirect params['redirect'] || namespace_redirect_path
         end
       end
     end
