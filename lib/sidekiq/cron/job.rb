@@ -4,8 +4,8 @@ require 'fugit'
 require 'cronex'
 require 'globalid'
 require 'sidekiq'
+require 'sidekiq/cron'
 require 'sidekiq/cron/support'
-require 'sidekiq/options'
 
 module Sidekiq
   module Cron

@@ -2,7 +2,6 @@ require "sidekiq/cron/job"
 require "sidekiq/cron/namespace"
 require "sidekiq/cron/poller"
 require "sidekiq/cron/launcher"
-require "sidekiq/cron/schedule_loader"
 
 module Sidekiq
   module Cron
@@ -37,11 +36,16 @@ module Sidekiq
       # This value controls how many past job executions are stored.
       attr_accessor :cron_history_size
 
+      # The path to a YAML file containing multiple cron job schedules.
+      # This file should use the same format as Resque-scheduler for job definitions.
+      attr_accessor :cron_schedule_file
+
       def initialize
         @default_namespace = 'default'
         @natural_cron_parsing_mode = :single
         @reschedule_grace_period = 60
         @cron_history_size = 10
+        @cron_schedule_file = 'config/schedule.yml'
       end
 
       def natural_cron_parsing_mode=(mode)
