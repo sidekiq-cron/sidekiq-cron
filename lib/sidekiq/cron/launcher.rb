@@ -8,14 +8,13 @@ require 'sidekiq/cron/poller'
 module Sidekiq
   module Cron
     module Launcher
-      DEFAULT_POLL_INTERVAL = 30
 
       # Add cron poller to launcher.
       attr_reader :cron_poller
 
       # Add cron poller and execute normal initialize of Sidekiq launcher.
       def initialize(config, **kwargs)
-        config[:cron_poll_interval] = DEFAULT_POLL_INTERVAL if config[:cron_poll_interval].nil?
+        config[:cron_poll_interval] = Sidekiq::Cron.configuration.cron_poll_interval.to_i
 
         @cron_poller = Sidekiq::Cron::Poller.new(config) if config[:cron_poll_interval] > 0
         super
