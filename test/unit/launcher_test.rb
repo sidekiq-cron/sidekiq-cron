@@ -2,6 +2,10 @@ require './test/test_helper'
 
 describe 'Cron launcher' do
   describe 'initialization' do
+    before do
+      Sidekiq::Cron.configuration.cron_poll_interval = 30
+    end
+
     it 'initializes poller with default poll interval when not configured' do
       Sidekiq::Cron::Poller.expects(:new).with do |options|
         assert_equal 30, options[:cron_poll_interval]
