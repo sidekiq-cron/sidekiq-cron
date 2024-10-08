@@ -7,7 +7,7 @@ describe 'ScheduleLoader' do
 
   describe 'Schedule is defined in hash' do
     before do
-      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_hash.yml'
+      Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_hash.yml'
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
@@ -19,7 +19,7 @@ describe 'ScheduleLoader' do
 
   describe 'Schedule is defined in array' do
     before do
-      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_array.yml'
+      Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_array.yml'
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
@@ -31,7 +31,7 @@ describe 'ScheduleLoader' do
 
   describe 'Schedule is not defined in hash nor array' do
     before do
-      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_string.yml'
+      Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_string.yml'
       load 'sidekiq/cron/schedule_loader.rb'
     end
 
@@ -45,7 +45,7 @@ describe 'ScheduleLoader' do
 
   describe 'Schedule is defined using ERB' do
     it 'properly parses the schedule file' do
-      Sidekiq::Options[:cron_schedule_file] = 'test/unit/fixtures/schedule_erb.yml'
+      Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_erb.yml'
       load 'sidekiq/cron/schedule_loader.rb'
 
       Sidekiq::Options[:lifecycle_events][:startup].first.call

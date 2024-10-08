@@ -1,9 +1,3 @@
-require "sidekiq/cron/job"
-require "sidekiq/cron/namespace"
-require "sidekiq/cron/poller"
-require "sidekiq/cron/launcher"
-require "sidekiq/cron/schedule_loader"
-
 module Sidekiq
   module Cron
     class << self
@@ -33,10 +27,25 @@ module Sidekiq
       # jobs that missed their schedules during the deployment. E.g., jobs that run once a day.
       attr_accessor :reschedule_grace_period
 
+      # The maximum number of recent cron job execution histories to retain.
+      # This value controls how many past job executions are stored.
+      attr_accessor :cron_history_size
+
+      # The interval, in seconds, at which to poll for scheduled cron jobs.
+      # This determines how frequently the scheduler checks for jobs to enqueue.
+      attr_accessor :cron_poll_interval
+
+      # The path to a YAML file containing multiple cron job schedules.
+      # This file should use the same format as Resque-scheduler for job definitions.
+      attr_accessor :cron_schedule_file
+
       def initialize
         @default_namespace = 'default'
         @natural_cron_parsing_mode = :single
         @reschedule_grace_period = 60
+        @cron_history_size = 10
+        @cron_poll_interval = 30
+        @cron_schedule_file = 'config/schedule.yml'
       end
 
       def natural_cron_parsing_mode=(mode)

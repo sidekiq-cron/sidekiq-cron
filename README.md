@@ -131,7 +131,9 @@ For example: `"*/30 * * * * *"` would schedule a job to run every 30 seconds.
 Note that if you plan to schedule jobs with second precision you may need to override the default schedule poll interval so it is lower than the interval of your jobs:
 
 ```ruby
-Sidekiq::Options[:cron_poll_interval] = 10
+Sidekiq::Cron.configure do |config|
+  config.cron_poll_interval = 10
+end
 ```
 
 The default value at time of writing is 30 seconds. See [under the hood](#under-the-hood) for more details.
@@ -346,24 +348,31 @@ second_job:
 There are multiple ways to load the jobs from a YAML file
 
 1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file (it supports ERB)
-2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration, i.e. `cron_schedule_file: "config/users_schedule.yml"`
+2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration as follows:
+
+    ```ruby
+    Sidekiq::Cron.configure do |config|
+      config.cron_schedule_file = "config/users_schedule.yml"
+    end
+    ```
+
 3. Load the file manually as follows:
 
-```ruby
-# config/initializers/sidekiq.rb
+    ```ruby
+    # config/initializers/sidekiq.rb
 
-Sidekiq.configure_server do |config|
-  config.on(:startup) do
-    schedule_file = "config/users_schedule.yml"
+    Sidekiq.configure_server do |config|
+      config.on(:startup) do
+        schedule_file = "config/users_schedule.yml"
 
-    if File.exist?(schedule_file)
-      schedule = YAML.load_file(schedule_file)
+        if File.exist?(schedule_file)
+          schedule = YAML.load_file(schedule_file)
 
-      Sidekiq::Cron::Job.load_from_hash!(schedule, source: "schedule")
+          Sidekiq::Cron::Job.load_from_hash!(schedule, source: "schedule")
+        end
+      end
     end
-  end
-end
-```
+    ```
 
 ### Finding jobs
 
@@ -448,7 +457,9 @@ Sidekiq-Cron adds itself into this start procedure and starts another thread wit
 Sidekiq-Cron is checking jobs to be enqueued every 30s by default, you can change it by setting:
 
 ```ruby
-Sidekiq::Options[:cron_poll_interval] = 10
+Sidekiq::Cron.configure do |config|
+  config.cron_poll_interval = 10
+end
 ```
 
 When Sidekiq (and Sidekiq-Cron) is not used in zero-downtime deployments, after the deployment is done Sidekiq-Cron starts to catch up. It will consider older jobs that missed their schedules during that time. By default, only jobs that should have started less than 1 minute ago are considered. This is problematic for some jobs, e.g., jobs that run once a day. If on average Sidekiq is shut down for 10 minutes during deployments, you can configure Sidekiq-Cron to consider jobs that were about to be scheduled during that time:
@@ -463,7 +474,13 @@ end
 
 Sidekiq-Cron is safe to use with multiple Sidekiq processes or nodes. It uses a Redis sorted set to determine that only the first process who asks can enqueue scheduled jobs into the queue.
 
-When running with many Sidekiq processes, the polling can add significant load to Redis. You can disable polling on some processes by setting `Sidekiq::Options[:cron_poll_interval] = 0` on these processes.
+When running with many Sidekiq processes, the polling can add significant load to Redis. You can disable polling on some processes by setting:
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.cron_poll_interval = 0
+end
+```
 
 ## Contributing
 
