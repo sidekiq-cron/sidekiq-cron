@@ -40,7 +40,7 @@ module Sidekiq
       private
 
       def enqueue_job(job, time = Time.now.utc)
-        job.test_and_enque_for_time! time if job && job.valid?
+        job.test_and_enqueue_for_time! time if job && job.valid?
       rescue => ex
         # Problem somewhere in one job.
         Sidekiq.logger.error "CRON JOB: #{ex.message}"

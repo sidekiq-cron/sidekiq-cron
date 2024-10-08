@@ -71,7 +71,7 @@ describe 'Cron web' do
     end
 
     it 'shows history of a cron job' do
-      @job.enque!
+      @job.enqueue!
       get "/cron/namespaces/default/jobs/#{job_name}"
 
       jid =

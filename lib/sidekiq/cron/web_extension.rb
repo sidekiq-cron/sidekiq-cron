@@ -55,16 +55,16 @@ module Sidekiq
           end
         end
 
-        # Enque all cron jobs.
+        # Enqueue all cron jobs.
         app.post '/cron/namespaces/:namespace/all/enque' do
-          Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:enque!)
+          Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:enqueue!)
           redirect params['redirect'] || namespace_redirect_path
         end
 
         # Enqueue cron job.
         app.post '/cron/namespaces/:namespace/jobs/:name/enque' do
           if job = Sidekiq::Cron::Job.find(route_params[:name], route_params[:namespace])
-            job.enque!
+            job.enqueue!
           end
           redirect params['redirect'] || namespace_redirect_path
         end
