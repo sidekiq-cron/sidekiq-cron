@@ -418,7 +418,7 @@ job.status
 # => enabled/disabled
 
 # enqueue job right now!
-job.enque!
+job.enqueue!
 ```
 
 ### Schedule vs Dynamic jobs

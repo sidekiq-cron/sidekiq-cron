@@ -89,7 +89,7 @@ module Sidekiq
       end
 
       # Crucial part of whole enqueuing job.
-      def should_enque? time
+      def should_enqueue? time
         return false unless status == "enabled"
         return false if past_scheduled_time?(time)
         return false if enqueued_after?(time)
@@ -102,23 +102,23 @@ module Sidekiq
 
       # Remove previous information about run times,
       # this will clear Redis and make sure that Redis will not overflow with memory.
-      def remove_previous_enques time
+      def remove_previous_enqueues time
         Sidekiq.redis do |conn|
           conn.zremrangebyscore(job_enqueued_key, 0, "(#{(time.to_f - REMEMBER_THRESHOLD).to_s}")
         end
       end
 
       # Test if job should be enqueued.
-      def test_and_enque_for_time! time
-        if should_enque?(time)
-          enque!
+      def test_and_enqueue_for_time! time
+        if should_enqueue?(time)
+          enqueue!
 
-          remove_previous_enques(time)
+          remove_previous_enqueues(time)
         end
       end
 
       # Enqueue cron job to queue.
-      def enque! time = Time.now.utc
+      def enqueue! time = Time.now.utc
         @last_enqueue_time = time
 
         klass_const =
@@ -477,7 +477,7 @@ module Sidekiq
           # Add information for this job!
           conn.hset redis_key, to_hash.transform_values! { |v| v || '' }.flatten
 
-          # Add information about last time! - don't enque right after scheduler poller starts!
+          # Add information about last time! - don't enqueue right after scheduler poller starts!
           time = Time.now.utc
           exists = conn.exists(job_enqueued_key)
 
