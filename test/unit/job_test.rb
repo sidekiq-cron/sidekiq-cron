@@ -5,6 +5,8 @@ require "./test/models/person"
 
 describe "Cron Job" do
   before do
+    Sidekiq::Cron.reset!
+
     # Clear all previous saved data from Redis.
     Sidekiq.redis do |conn|
       conn.keys("cron_job*").each do |key|

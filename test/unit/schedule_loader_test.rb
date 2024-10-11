@@ -2,6 +2,7 @@ require './test/test_helper'
 
 describe 'ScheduleLoader' do
   before do
+    Sidekiq::Cron.reset!
     Sidekiq::Options[:lifecycle_events][:startup].clear
   end
 

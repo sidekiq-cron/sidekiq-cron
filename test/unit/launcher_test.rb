@@ -3,7 +3,7 @@ require './test/test_helper'
 describe 'Cron launcher' do
   describe 'initialization' do
     before do
-      Sidekiq::Cron.configure
+      Sidekiq::Cron.reset!
     end
 
     it 'initializes poller with default poll interval when not configured' do

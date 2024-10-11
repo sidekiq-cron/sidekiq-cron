@@ -9,6 +9,10 @@ module Sidekiq
       yield(configuration) if block_given?
     end
 
+    def self.reset!
+      self.configuration = Configuration.new
+    end
+
     class Configuration
       # The default namespace is used when no namespace is specified.
       attr_accessor :default_namespace
