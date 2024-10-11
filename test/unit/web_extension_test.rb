@@ -12,7 +12,6 @@ describe 'Cron web' do
   before do
     env 'rack.session', { csrf: TOKEN }
     env 'HTTP_X_CSRF_TOKEN', TOKEN
-    Sidekiq::Cron.reset!
     Sidekiq.redis { |c| c.flushdb }
   end
 
