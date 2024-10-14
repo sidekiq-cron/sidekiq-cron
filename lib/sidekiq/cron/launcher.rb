@@ -1,5 +1,3 @@
-require 'sidekiq/cron/poller'
-
 # For Cron we need to add some methods to Launcher
 # so look at the code below.
 #

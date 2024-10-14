@@ -1,7 +1,3 @@
-require 'sidekiq'
-require 'sidekiq/cron'
-require 'sidekiq/cron/job'
-
 Sidekiq.configure_server do |config|
   schedule_file = Sidekiq::Cron.configuration.cron_schedule_file
 
