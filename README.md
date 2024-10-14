@@ -348,7 +348,15 @@ second_job:
 There are multiple ways to load the jobs from a YAML file
 
 1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file (it supports ERB)
-2. Load the file manually as follows:
+2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration as follows:
+
+    ```ruby
+    Sidekiq::Cron.configure do |config|
+      config.cron_schedule_file = "config/users_schedule.yml"
+    end
+    ```
+
+3. Load the file manually as follows:
 
     ```ruby
     # config/initializers/sidekiq.rb
