@@ -3,7 +3,7 @@ require 'benchmark'
 
 describe 'Performance Poller' do
   JOBS_NUMBER = 10_000
-  MAX_SECONDS = 60
+  MAX_SECONDS = 40
 
   before do
     # Clear all previous saved data from Redis.
