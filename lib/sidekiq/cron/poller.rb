@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'sidekiq'
-require 'sidekiq/cron'
 require 'sidekiq/scheduled'
 require 'sidekiq/options'
 

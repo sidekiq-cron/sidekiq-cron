@@ -14,7 +14,10 @@ end
 
 describe 'Cron Poller' do
   # Clear all previous saved data from Redis.
-  before { Sidekiq.redis(&:flushdb) }
+  before do
+    Sidekiq::Cron.reset!
+    Sidekiq.redis(&:flushdb)
+  end
 
   let(:args) do
     {
