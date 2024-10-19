@@ -40,7 +40,6 @@ module Sidekiq
       attr_accessor :cron_poll_interval
 
       # The path to a YAML file containing multiple cron job schedules.
-      # This file should use the same format as Resque-scheduler for job definitions.
       attr_accessor :cron_schedule_file
 
       def initialize

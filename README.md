@@ -16,10 +16,6 @@ Scheduling jobs are added only when at least one Sidekiq process is running, but
 
 If you want to know how scheduling work, check out [under the hood](#under-the-hood).
 
-Works with ActiveJob (Rails 4.2+).
-
-You don't need Sidekiq PRO, you can use this gem with plain Sidekiq.
-
 ## Changelog
 
 Before upgrading to a new version, please read our [Changelog](CHANGELOG.md).
@@ -66,6 +62,23 @@ gem "sidekiq-cron"
 
 **NOTE** The `status` of a job does not get changed in Redis when a job gets reloaded unless the `status` property is explicitly set.
 
+### Configuration
+
+All configuration options:
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.cron_poll_interval = 10
+  config.cron_schedule_file = 'config/my_schedule.yml'
+  config.default_namespace = 'statistics'
+  config.natural_cron_parsing_mode = :single
+  config.reschedule_grace_period = 100
+  config.cron_history_size = 50
+end
+```
+
+If you are using Rails, add them inside an initializer (`config/initializers/sidekiq-cron.rb`).
+
 ### Time, cron and Sidekiq-Cron
 
 For testing your cron notation you can use [crontab.guru](https://crontab.guru).
@@ -81,7 +94,7 @@ like this `'0 22 * * 1-5 America/Chicago'`.
 
 Since Sidekiq-Cron `v1.7.0`, you can use the natural-language formats supported by Fugit, such as:
 
-```rb
+```ruby
 "every day at five" # => '0 5 * * *'
 "every 3 hours"     # => '0 */3 * * *'
 ```
@@ -144,9 +157,7 @@ The default value at time of writing is 30 seconds. See [under the hood](#under-
 
 When not giving a namespace, the `default` one will be used.
 
-In the case you'd like to change this value, create a new initializer like so:
-
-`config/initializers/sidekiq-cron.rb`:
+In the case you'd like to change this value, you can change it via the following configuration flag:
 
 ```ruby
 Sidekiq::Cron.configure do |config|
@@ -263,7 +274,7 @@ end
 
 Use ActiveRecord models as arguments:
 
-```rb
+```ruby
 class Person < ApplicationRecord
 end
 
@@ -327,7 +338,7 @@ Sidekiq::Cron::Job.load_from_array! array
 
 ### Loading jobs from schedule file
 
-You can also load multiple jobs from a YAML (same notation as `Resque-scheduler`) file:
+You can also load multiple jobs from a YAML file:
 
 ```yaml
 # config/schedule.yml
@@ -348,7 +359,7 @@ second_job:
 There are multiple ways to load the jobs from a YAML file
 
 1. The gem will automatically load the jobs mentioned in `config/schedule.yml` file (it supports ERB)
-2. When you want to load jobs from a different filename, mention the filename in sidekiq configuration as follows:
+2. When you want to load jobs from a different filename, mention the filename in Sidekiq configuration as follows:
 
     ```ruby
     Sidekiq::Cron.configure do |config|
@@ -465,8 +476,6 @@ end
 When Sidekiq (and Sidekiq-Cron) is not used in zero-downtime deployments, after the deployment is done Sidekiq-Cron starts to catch up. It will consider older jobs that missed their schedules during that time. By default, only jobs that should have started less than 1 minute ago are considered. This is problematic for some jobs, e.g., jobs that run once a day. If on average Sidekiq is shut down for 10 minutes during deployments, you can configure Sidekiq-Cron to consider jobs that were about to be scheduled during that time:
 
 ```ruby
-# config/initializers/sidekiq-cron.rb
-
 Sidekiq::Cron.configure do |config|
   config.reschedule_grace_period = 600 # 10 minutes in seconds
 end
@@ -518,7 +527,7 @@ docker compose -f docker/docker-compose.yml run --rm tests
 
 _This command will download the first time the project's dependencies (Redis so far), create the containers and run the default command to run the tests._
 
-#### Running other commands
+**Running other commands**
 
 In the case you need to run a command in the gem's container, you would do it like so:
 
@@ -527,7 +536,7 @@ docker compose -f docker/docker-compose.yml run --rm tests <HERE IS YOUR COMMAND
 ```
 _Note that `tests` is the Docker Compose service name defined in the `docker/docker-compose.yml` file._
 
-#### Running a single test file
+**Running a single test file**
 
 Given you only want to run the tests from the `test/unit/web_extension_test.rb` file, you need to pass its path with the `TEST` env variable, so here is the command:
 
