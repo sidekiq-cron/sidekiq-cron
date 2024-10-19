@@ -1,18 +1,12 @@
 # frozen_string_literal: true
 
 require 'sidekiq/scheduled'
-require 'sidekiq/options'
 
 module Sidekiq
   module Cron
     # The Poller checks Redis every N seconds for scheduled cron jobs.
     class Poller < Sidekiq::Scheduled::Poller
       def initialize(config = nil)
-        if Gem::Version.new(Sidekiq::VERSION) < Gem::Version.new('6.5.0')
-          # Old version of Sidekiq does not accept a config argument.
-          @config = config
-        end
-
         super
       end
 

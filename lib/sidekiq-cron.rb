@@ -1,5 +1,6 @@
 require "sidekiq"
 require "sidekiq/cron"
+require "sidekiq/options"
 require "sidekiq/cron/job"
 require "sidekiq/cron/namespace"
 require "sidekiq/cron/poller"
