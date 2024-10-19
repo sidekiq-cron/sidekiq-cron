@@ -1,8 +1,7 @@
-# https://github.com/rails/rails/blob/352865d0f835c24daa9a2e9863dcc9dde9e5371a/activesupport/lib/active_support/inflector/methods.rb#L270
-
 module Sidekiq
   module Cron
     module Support
+      # Inspired by Active Support Inflector
       def self.constantize(camel_cased_word)
         names = camel_cased_word.split("::".freeze)
 
