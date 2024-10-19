@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0.rc2
+
+- Remove support for Sidekiq < 6.5 (https://github.com/sidekiq-cron/sidekiq-cron/pull/480)
+- Require at least Fugit >= 1.11.1 (https://github.com/sidekiq-cron/sidekiq-cron/pull/475)
+- Update how Redis values are stored on save (https://github.com/sidekiq-cron/sidekiq-cron/pull/479)
+- Web extension: Add compatibility with Sidekiq 7.3+ and remove inline styles (https://github.com/sidekiq-cron/sidekiq-cron/pull/480)
+- Remove support for old Redis (< 4.2) (https://github.com/sidekiq-cron/sidekiq-cron/pull/490)
+- Ensure date_as_argument option can be set from true to false in Sidekiq Cron jobs (https://github.com/sidekiq-cron/sidekiq-cron/pull/485)
+- Rename `enque!` to `enqueue! (https://github.com/sidekiq-cron/sidekiq-cron/pull/494)
+- Refactor gem configuration module (https://github.com/sidekiq-cron/sidekiq-cron/pull/495)
+
 ## 2.0.0.rc1
 
 - Introduce `Namespacing` (https://github.com/sidekiq-cron/sidekiq-cron/pull/268)
