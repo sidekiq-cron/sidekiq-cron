@@ -2,7 +2,6 @@
 
 require './test/test_helper'
 
-#
 # Prevents Sidekiq::Scheduler to run the safe_thread helper method
 module Sidekiq
   module Scheduled
@@ -13,7 +12,6 @@ module Sidekiq
 end
 
 describe 'Cron Poller' do
-  # Clear all previous saved data from Redis.
   before do
     Sidekiq::Cron.reset!
     Sidekiq.redis(&:flushdb)
