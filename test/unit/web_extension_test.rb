@@ -111,7 +111,7 @@ describe 'Cron web' do
         assert_equal 0, conn.llen("queue:default"), "Queue should have no jobs"
       end
 
-      post "/cron/namespaces/default/all/enque"
+      post "/cron/namespaces/default/all/enqueue"
 
       Sidekiq.redis do |conn|
         assert_equal 1, conn.llen("queue:default"), "Queue should have 1 job in default"
@@ -124,21 +124,21 @@ describe 'Cron web' do
         assert_equal 0, conn.llen("queue:default"), "Queue should have no jobs"
       end
 
-      post "/cron/namespaces/default/jobs/#{job_name}/enque"
+      post "/cron/namespaces/default/jobs/#{job_name}/enqueue"
 
       Sidekiq.redis do |conn|
         assert_equal 1, conn.llen("queue:default"), "Queue should have 1 job"
       end
 
       # Should enqueue more times.
-      post "/cron/namespaces/default/jobs/#{job_name}/enque"
+      post "/cron/namespaces/default/jobs/#{job_name}/enqueue"
 
       Sidekiq.redis do |conn|
         assert_equal 2, conn.llen("queue:default"), "Queue should have 2 job"
       end
 
       # Should enqueue to cron job queue.
-      post "/cron/namespaces/default/jobs/#{cron_job_name}/enque"
+      post "/cron/namespaces/default/jobs/#{cron_job_name}/enqueue"
 
       Sidekiq.redis do |conn|
         assert_equal 1, conn.llen("queue:cron"), "Queue should have 1 cron job"
@@ -217,7 +217,7 @@ describe 'Cron web' do
           assert_equal 0, conn.llen('queue:default'), 'Queue should have no jobs'
         end
 
-        post "/cron/namespaces/#{namespace}/all/enque"
+        post "/cron/namespaces/#{namespace}/all/enqueue"
 
         Sidekiq.redis do |conn|
           # The job from the 'default' namespace shouldn't be queued
