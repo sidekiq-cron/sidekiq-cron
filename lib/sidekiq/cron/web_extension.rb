@@ -14,6 +14,10 @@ module Sidekiq
             views_path = File.join(File.expand_path("..", __FILE__), "views")
             erb(File.read(File.join(views_path, "#{view}.erb")))
           end
+
+          def redirect_to_previous_or_default
+            redirect params['redirect'] || namespace_redirect_path
+          end
         end
 
         # Index page of cron jobs.
@@ -52,7 +56,7 @@ module Sidekiq
         app.post '/cron/namespaces/:namespace/all/enqueue' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:enqueue!)
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
 
         # Enqueue cron job.
@@ -61,14 +65,14 @@ module Sidekiq
             job.enqueue!
           end
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
 
         # Delete all schedules.
         app.post '/cron/namespaces/:namespace/all/delete' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:destroy)
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
 
         # Delete schedule.
@@ -77,14 +81,14 @@ module Sidekiq
             job.destroy
           end
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
 
         # Enable all jobs.
         app.post '/cron/namespaces/:namespace/all/enable' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:enable!)
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
 
         # Enable job.
@@ -93,14 +97,14 @@ module Sidekiq
             job.enable!
           end
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
 
         # Disable all jobs.
         app.post '/cron/namespaces/:namespace/all/disable' do
           Sidekiq::Cron::Job.all(route_params[:namespace]).each(&:disable!)
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
 
         # Disable job.
@@ -109,7 +113,7 @@ module Sidekiq
             job.disable!
           end
 
-          redirect params['redirect'] || namespace_redirect_path
+          redirect_to_previous_or_default
         end
       end
     end
