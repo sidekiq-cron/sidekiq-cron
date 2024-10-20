@@ -1389,7 +1389,7 @@ describe "Cron Job" do
     end
   end
 
-  describe "test of enque" do
+  describe "test of enqueue" do
     before do
       @args = {
         name: "Test",

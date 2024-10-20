@@ -9,7 +9,7 @@
     <% cron_job_path = "#{root_path}cron/namespaces/#{@current_namespace}/jobs/#{CGI.escape(@job.name).gsub('+', '%20')}" %>
     <form action="<%= cron_job_path %>/enqueue?redirect=<%= cron_job_path %>" class="pull-right" method="post">
       <%= csrf_tag %>
-      <input class="btn btn-warn pull-left" name="enque" type="submit" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => @job.name) %>" />
+      <input class="btn btn-warn pull-left" name="enqueue" type="submit" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => @job.name) %>" />
     </form>
     <% if @job.status == 'enabled' %>
       <form action="<%= cron_job_path %>/disable?redirect=<%= cron_job_path %>" class="pull-right" method="post">
