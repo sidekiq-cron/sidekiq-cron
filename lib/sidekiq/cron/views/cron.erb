@@ -13,15 +13,15 @@
       </form>
       <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/disable" method="post" class="pull-right">
         <%= csrf_tag %>
-        <input class="btn btn-warn" type="submit" name="enque" value="<%= t('DisableAll') %>" />
+        <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('DisableAll') %>" />
       </form>
       <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enable" method="post" class="pull-right">
         <%= csrf_tag %>
-        <input class="btn btn-warn" type="submit" name="enque" value="<%= t('EnableAll') %>" />
+        <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('EnableAll') %>" />
       </form>
       <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enqueue" method="post" class="pull-right">
         <%= csrf_tag %>
-        <input class="btn btn-warn" type="submit" name="enque" value="<%= t('EnqueueAll') %>" data-confirm="<%= t('AreYouSureEnqueueCronJobs') %>" />
+        <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('EnqueueAll') %>" data-confirm="<%= t('AreYouSureEnqueueCronJobs') %>" />
       </form>
     <% end %>
   </div>
@@ -82,7 +82,7 @@
             <% if job.status == 'enabled' %>
               <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/enqueue" method="post">
                 <%= csrf_tag %>
-                <input class='btn btn-warn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => job.name) %>"/>
+                <input class='btn btn-warn btn-xs pull-left' type="submit" name="enqueue" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => job.name) %>"/>
               </form>
               <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/disable" method="post">
                 <%= csrf_tag %>
@@ -91,7 +91,7 @@
             <% else %>
               <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/enqueue" method="post">
                 <%= csrf_tag %>
-                <input class='btn btn-warn btn-xs pull-left' type="submit" name="enque" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => job.name) %>"/>
+                <input class='btn btn-warn btn-xs pull-left' type="submit" name="enqueue" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => job.name) %>"/>
               </form>
               <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/enable" method="post">
                 <%= csrf_tag %>
