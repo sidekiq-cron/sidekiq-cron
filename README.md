@@ -68,16 +68,16 @@ All configuration options:
 
 ```ruby
 Sidekiq::Cron.configure do |config|
-  config.cron_poll_interval = 10
-  config.cron_schedule_file = 'config/my_schedule.yml'
-  config.default_namespace = 'statistics'
-  config.natural_cron_parsing_mode = :single
-  config.reschedule_grace_period = 100
-  config.cron_history_size = 50
+  config.cron_poll_interval = 10 # Default is 30
+  config.cron_schedule_file = 'config/my_schedule.yml' # Default is 'config/schedule.yml'
+  config.cron_history_size = 20 # Default is 10
+  config.default_namespace = 'statistics' # Default is 'default'
+  config.natural_cron_parsing_mode = :strict # Default is :single
+  config.reschedule_grace_period = 300 # Default is 60
 end
 ```
 
-If you are using Rails, add them inside an initializer (`config/initializers/sidekiq-cron.rb`).
+If you are using Rails, you should add the above block inside an initializer (`config/initializers/sidekiq-cron.rb`).
 
 ### Time, cron and Sidekiq-Cron
 

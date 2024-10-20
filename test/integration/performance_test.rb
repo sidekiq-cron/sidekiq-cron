@@ -6,10 +6,7 @@ describe 'Performance Poller' do
   MAX_SECONDS = 40
 
   before do
-    # Clear all previous saved data from Redis.
-    Sidekiq.redis do |conn|
-      conn.flushdb
-    end
+    Sidekiq.redis(&:flushdb)
 
     args = {
       queue: "default",

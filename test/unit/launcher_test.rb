@@ -8,7 +8,7 @@ describe 'Cron launcher' do
 
     it 'initializes poller with default poll interval when not configured' do
       Sidekiq::Cron::Poller.expects(:new).with do |options|
-        assert_equal Sidekiq::Cron.configuration.cron_poll_interval, options[:cron_poll_interval]
+        assert_equal 30, options[:cron_poll_interval]
       end
 
       Sidekiq::Launcher.new(Sidekiq::Options.config)
@@ -16,7 +16,7 @@ describe 'Cron launcher' do
 
     it 'initializes poller with the configured poll interval' do
       Sidekiq::Cron::Poller.expects(:new).with do |options|
-        assert_equal Sidekiq::Cron.configuration.cron_poll_interval, options[:cron_poll_interval]
+        assert_equal 99, options[:cron_poll_interval]
       end
 
       Sidekiq::Cron.configuration.cron_poll_interval = 99
