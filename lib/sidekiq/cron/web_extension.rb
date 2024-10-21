@@ -10,29 +10,27 @@ module Sidekiq
             "#{root_path}cron/namespaces/#{route_params[:namespace]}"
           end
 
+          def redirect_to_previous_or_default
+            redirect params['redirect'] || namespace_redirect_path
+          end
+
           def render_erb(view)
             views_path = File.join(File.expand_path("..", __FILE__), "views")
             erb(File.read(File.join(views_path, "#{view}.erb")))
           end
-
-          def redirect_to_previous_or_default
-            redirect params['redirect'] || namespace_redirect_path
-          end
         end
 
-        # Index page of cron jobs.
+        # Index page.
         app.get '/cron' do
           @current_namespace = 'default'
-          @namespaces = Sidekiq::Cron::Namespace.all_with_count
-          @cron_jobs = Sidekiq::Cron::Job.all # Not passing namespace takes all the jobs from the default one.
+          @cron_jobs = Sidekiq::Cron::Job.all(@current_namespace)
 
           render_erb(:cron)
         end
 
-        # Index for a specific namespace
+        # Detail page for a specific namespace.
         app.get '/cron/namespaces/:name' do
           @current_namespace = route_params[:name]
-          @namespaces = Sidekiq::Cron::Namespace.all_with_count
           @cron_jobs = Sidekiq::Cron::Job.all(@current_namespace)
 
           render_erb(:cron)
@@ -41,9 +39,7 @@ module Sidekiq
         # Display job detail + jid history.
         app.get '/cron/namespaces/:namespace/jobs/:name' do
           @current_namespace = route_params[:namespace]
-          @job_name = route_params[:name]
-          @namespaces = Sidekiq::Cron::Namespace.all_with_count
-          @job = Sidekiq::Cron::Job.find(@job_name, @current_namespace)
+          @job = Sidekiq::Cron::Job.find(route_params[:name], @current_namespace)
 
           if @job
             render_erb(:cron_show)
