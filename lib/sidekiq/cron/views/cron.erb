@@ -31,7 +31,7 @@
 <div class='row'>
   <div class="col-sm-12 summary_bar">
     <ul class="list-unstyled summary row">
-      <% @namespaces.sort_by { |namespace| namespace[:name] }.each do |namespace| %>
+      <% Sidekiq::Cron::Namespace.all_with_count.sort_by { |namespace| namespace[:name] }.each do |namespace| %>
         <li class="col-sm-1">
           <a href="<%= root_path %>cron/namespaces/<%= namespace[:name] %>">
             <span class="count"><%= namespace[:count] %></span>
