@@ -1,10 +1,10 @@
 de:
-  AreYouSureDeleteCronJob: Sind Sie sicher, dass Sie den %{job} Cron-Job löschen möchten?
+  AreYouSureDeleteCronJob: Sind Sie sicher, dass sie den Cronjob %{job} löschen wollen?
   AreYouSureDeleteCronJobs: Sind Sie sicher, dass Sie ALLE Cron-Jobs löschen möchten?
   AreYouSureEnqueueCronJob: Sind Sie sicher, dass Sie den %{job} Cron-Job einreihen möchten?
   AreYouSureEnqueueCronJobs: Sind Sie sicher, dass Sie ALLE Cron-Jobs einreihen möchten?
   Cron: Cron
-  CronJobs: Cron-Jobs
+  CronJobs: Cronjobs
   CronString: Cron
   DeleteAll: Alle löschen
   Description: Beschreibung
@@ -13,10 +13,10 @@ de:
   Enable: Aktivieren
   EnableAll: Alle aktivieren
   EnqueueAll: Alle einreihen
-  EnqueueNow: Jetzt einreihen
+  EnqueueNow: In Warteschlange
   Job: Job
-  LastEnqueued: Zuletzt eingereiht
-  NoCronJobsWereFound: Keine Cron-Jobs gefunden
+  LastEnqueued: Eingereiht
+  NoCronJobsWereFound: Keine Cronjobs gefunden
   NoHistoryWereFound: Keine Historie gefunden
   disabled: deaktiviert
   enabled: aktiviert
