@@ -1,22 +1,22 @@
 pt:
-  Job: Tarefa
+  AreYouSureDeleteCronJob: Tem certeza de que deseja excluir o cron job %{job}?
+  AreYouSureDeleteCronJobs: Tem certeza de que deseja excluir TODOS os cron jobs?
+  AreYouSureEnqueueCronJob: Tem certeza de que deseja enfileirar o cron job %{job}?
+  AreYouSureEnqueueCronJobs: Tem certeza de que deseja enfileirar TODOS os cron jobs?
   Cron: Cron
-  CronJobs: Tarefas do Cron
-  EnqueueNow: Enfileirar agora
-  EnableAll: Habilitar todos
-  DisableAll: Desabilitar todos
-  EnqueueAll: Enfileirar todos
-  DeleteAll: Excluir todos
-  'Cron string': Cron
-  AreYouSureEnqueueCronJobs: Tem certeza de que deseja enfileirar TODOS as tarefas?
-  AreYouSureEnqueueCronJob: Tem certeza de que deseja enfileirar a tarefa %{job}?
-  AreYouSureDeleteCronJobs: Tem certeza de que deseja excluir TODOS as tarefas?
-  AreYouSureDeleteCronJob: Tem certeza de que deseja excluir a tarefa %{job}?
-  NoCronJobsWereFound: Nenhuma tarefa foi encontrada
-  Enable: Habilitar
-  Disable: Desabilitar
-  'Last enqueued': Último enfileirado
-  disabled: desabilitado
-  enabled: habilitado
-  NoHistoryWereFound: Nenhum histórico foi encontrado
+  CronJobs: Cron Jobs
+  CronString: Cron
+  DeleteAll: Excluir Todos
   Description: Descrição
+  Disable: Desativar
+  DisableAll: Desativar Todos
+  Enable: Ativar
+  EnableAll: Ativar Todos
+  EnqueueAll: Enfileirar Todos
+  EnqueueNow: Enfileirar Agora
+  Job: Trabalho
+  LastEnqueued: Último enfileirado
+  NoCronJobsWereFound: Nenhum cron job foi encontrado
+  NoHistoryWereFound: Nenhum histórico foi encontrado
+  disabled: desativado
+  enabled: ativado

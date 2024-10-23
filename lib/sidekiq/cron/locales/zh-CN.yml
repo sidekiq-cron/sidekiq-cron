@@ -1,19 +1,22 @@
 zh-CN:
-  Job: 任务
+  AreYouSureDeleteCronJob: 您确定要删除 %{job} 的 定时任务 任务吗？
+  AreYouSureDeleteCronJobs: 您确定要删除所有 定时任务 任务吗？
+  AreYouSureEnqueueCronJob: 您确定要将 %{job} 的 定时任务 任务加入队列吗？
+  AreYouSureEnqueueCronJobs: 您确定要将所有 定时任务 任务加入队列吗？
   Cron: 定时任务
   CronJobs: 定时任务列表
-  EnqueueNow: 立刻执行
-  EnableAll: 启用所有
-  DisableAll: 禁用所有
-  EnqueueAll: 执行所有
+  CronString: 定时策略
   DeleteAll: 删除所有
-  'Cron string': 定时策略
-  AreYouSureDeleteCronJobs: 你确定删除所有的定时任务吗？
-  AreYouSureDeleteCronJob: 你确定删除定时任务（%{job}）吗？
-  NoCronJobsWereFound: 没有定时任务
-  Enable: 启用
+  Description: 描述
   Disable: 禁用
-  'Last enqueued': 放入队列时间
+  DisableAll: 禁用所有
+  Enable: 启用
+  EnableAll: 启用所有
+  EnqueueAll: 排队所有
+  EnqueueNow: 立即排队
+  Job: 任务
+  LastEnqueued: 最后排队
+  NoCronJobsWereFound: 未找到 定时任务 任务
+  NoHistoryWereFound: 未找到历史记录
   disabled: 已禁用
   enabled: 已启用
-

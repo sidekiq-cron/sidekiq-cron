@@ -1,22 +1,22 @@
 id:
-  Job: Job
-  Cron: Cron
-  CronJobs: Cron Job
-  EnqueueNow: Tambahkan ke Antrian Sekarang
-  EnableAll: Aktifkan Semua
-  DisableAll: Nonaktifkan Semua
-  EnqueueAll: Tambahkan Semua ke Antrian
-  DeleteAll: Hapus Semua
-  'Cron string': Cron string
-  AreYouSureEnqueueCronJobs: Apakah Anda yakin ingin menambahkan SEMUA cron job ke antrian?
-  AreYouSureEnqueueCronJob: Apakah Anda yakin ingin menambahkan cron job %{job} ke antrian?
-  AreYouSureDeleteCronJobs: Apakah Anda yakin ingin menghapus SEMUA cron job?
   AreYouSureDeleteCronJob: Apakah Anda yakin ingin menghapus cron job %{job}?
-  NoCronJobsWereFound: Tidak ada cron job
-  Enable: Aktifkan
+  AreYouSureDeleteCronJobs: Apakah Anda yakin ingin menghapus SEMUA cron job?
+  AreYouSureEnqueueCronJob: Apakah Anda yakin ingin menempatkan cron job %{job}?
+  AreYouSureEnqueueCronJobs: Apakah Anda yakin ingin menempatkan SEMUA cron job?
+  Cron: Cron
+  CronJobs: Cron Jobs
+  CronString: Cron
+  DeleteAll: Hapus Semua
+  Description: Deskripsi
   Disable: Nonaktifkan
-  'Last enqueued': Terakhir kali ditambahkan ke antrian
+  DisableAll: Nonaktifkan Semua
+  Enable: Aktifkan
+  EnableAll: Aktifkan Semua
+  EnqueueAll: Antri Semua
+  EnqueueNow: Antri Sekarang
+  Job: Pekerjaan
+  LastEnqueued: Terakhir Diantri
+  NoCronJobsWereFound: Tidak ada cron job yang ditemukan
+  NoHistoryWereFound: Tidak ada riwayat yang ditemukan
   disabled: dinonaktifkan
   enabled: diaktifkan
-  NoHistoryWereFound: Tidak ada riwayat
-  Description: Deskripsi
