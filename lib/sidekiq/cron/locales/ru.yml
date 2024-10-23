@@ -1,14 +1,22 @@
 ru:
-  Job: Задача
+  AreYouSureDeleteCronJob: Вы действительно хотите удалить задачу «%{job}»?
+  AreYouSureDeleteCronJobs: Вы уверены, что хотите удалить ВСЕ cron-задачи?
+  AreYouSureEnqueueCronJob: Вы уверены, что хотите добавить в очередь cron-задачу %{job}?
+  AreYouSureEnqueueCronJobs: Вы уверены, что хотите добавить в очередь ВСЕ cron-задачи?
   Cron: Cron
   CronJobs: Периодические задачи
-  Name: Название
-  'Cron string': Периодичность (синтаксис Cron)
-  EnqueueNow: Запустить
-  AreYouSureDeleteCronJob: Вы действительно хотите удалить задачу «%{job}»?
-  NoCronJobsWereFound: Не найдено периодических задач
-  Enable: Включить
+  CronString: Периодичность (синтаксис Cron)
+  DeleteAll: Удалить все
+  Description: Описание
   Disable: Отключить
-  'Last enqueued': Последний запуск
+  DisableAll: Отключить все
+  Enable: Включить
+  EnableAll: Включить все
+  EnqueueAll: Добавить все в очередь
+  EnqueueNow: Запустить
+  Job: Задача
+  LastEnqueued: Последний запуск
+  NoCronJobsWereFound: Не найдено периодических задач
+  NoHistoryWereFound: История не найдена
   disabled: отключено
   enabled: включено

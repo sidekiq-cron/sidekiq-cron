@@ -1,18 +1,22 @@
 ja:
-  Job: ジョブ
+  AreYouSureDeleteCronJob: 本当に%{job}のcronジョブを削除しますか？
+  AreYouSureDeleteCronJobs: 本当にすべてのcronジョブを削除しますか？
+  AreYouSureEnqueueCronJob: %{job} の クロン ジョブをキューに入れてもよろしいですか？
+  AreYouSureEnqueueCronJobs: すべての クロン ジョブをキューに入れてもよろしいですか？
   Cron: Cron
   CronJobs: Cronジョブ
-  EnqueueNow: すぐにキューに入れる
-  EnableAll: すべて有効にする
-  DisableAll: すべて無効にする
-  EnqueueAll: すべてキューに入れる
+  CronString: Cron
   DeleteAll: すべて削除
-  'Cron string': Cron
-  AreYouSureDeleteCronJobs: 本当にすべてのcronジョブを削除しますか？
-  AreYouSureDeleteCronJob: 本当に%{job}のcronジョブを削除しますか？
-  NoCronJobsWereFound: Cronジョブが見つかりませんでした
-  Enable: 有効にする
+  Description: 説明
   Disable: 無効にする
-  'Last enqueued': 最後のキュー
+  DisableAll: すべて無効にする
+  Enable: 有効にする
+  EnableAll: すべて有効にする
+  EnqueueAll: すべてキューに入れる
+  EnqueueNow: すぐにキューに入れる
+  Job: ジョブ
+  LastEnqueued: 最後のキュー
+  NoCronJobsWereFound: Cronジョブが見つかりませんでした
+  NoHistoryWereFound: 履歴が見つかりませんでした
   disabled: 無効
   enabled: 有効
