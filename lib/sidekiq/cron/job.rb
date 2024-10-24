@@ -61,6 +61,7 @@ module Sidekiq
           @message = args["message"]
           message_data = Sidekiq.load_json(@message) || {}
           @queue = message_data['queue'] || "default"
+          @retry = message_data['retry']
         elsif @klass
           message_data = {
             "class" => @klass.to_s,
@@ -72,12 +73,18 @@ module Sidekiq
           klass_data = get_job_class_options(@klass)
           message_data = klass_data.merge(message_data)
 
-          # Override queue if set in config,
+          # Override queue and retry if set in config,
           # only if message is hash - can be string (dumped JSON).
           if args['queue']
             @queue = message_data['queue'] = args['queue']
           else
             @queue = message_data['queue'] || "default"
+          end
+
+          if args['retry'] != nil
+            @retry = message_data['retry'] = args['retry']
+          else
+            @retry = message_data['retry']
           end
 
           @message = message_data
@@ -166,7 +173,7 @@ module Sidekiq
       end
 
       def enqueue_sidekiq_worker(klass_const)
-        klass_const.set(queue: queue_name_with_prefix).perform_async(*enqueue_args)
+        klass_const.set(queue: queue_name_with_prefix, retry: @retry).perform_async(*enqueue_args)
       end
 
       # Sidekiq worker message.
@@ -422,6 +429,7 @@ module Sidekiq
           active_job: @active_job ? "1" : "0",
           queue_name_prefix: @active_job_queue_name_prefix,
           queue_name_delimiter: @active_job_queue_name_delimiter,
+          retry: @retry.nil? || @retry.is_a?(Numeric) ? @retry : @retry.to_s,
           last_enqueue_time: serialized_last_enqueue_time,
           symbolize_args: symbolize_args? ? "1" : "0",
         }

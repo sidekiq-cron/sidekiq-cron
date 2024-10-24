@@ -50,6 +50,7 @@ gem "sidekiq-cron"
   'namespace' => 'YourNamespace', # groups jobs together in a namespace (Default value is 'default'),
   'source' => 'dynamic', # source of the job, `schedule`/`dynamic` (default: `dynamic`)
   'queue' => 'name of queue',
+  'retry' => '5', # Sidekiq (not supported by ActiveJob) number of retries, or false to discard on first failure
   'args' => '[Array or Hash] of arguments which will be passed to perform method',
   'date_as_argument' => true, # add the time of execution as last argument of the perform method
   'active_job' => true,  # enqueue job through Active Job interface
