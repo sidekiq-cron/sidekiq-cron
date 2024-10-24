@@ -510,7 +510,7 @@ describe "Cron Job" do
   describe '#active_job_message' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
-      ActiveJob::Base.queue_name_prefix = ''
+      ::ActiveJob::Base.queue_name_prefix = ''
 
       @args = {
         name:  'Test',
@@ -559,7 +559,7 @@ describe "Cron Job" do
   describe '#active_job_message - unknown Active Job Worker class' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
-      ActiveJob::Base.queue_name_prefix = ''
+      ::ActiveJob::Base.queue_name_prefix = ''
 
       @args = {
         name:  'Test',
@@ -593,7 +593,7 @@ describe "Cron Job" do
   describe '#active_job_message with symbolize_args (hash)' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
-      ActiveJob::Base.queue_name_prefix = ''
+      ::ActiveJob::Base.queue_name_prefix = ''
 
       @args = {
         name:  'Test',
@@ -627,7 +627,7 @@ describe "Cron Job" do
   describe '#active_job_message with symbolize_args (array)' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
-      ActiveJob::Base.queue_name_prefix = ''
+      ::ActiveJob::Base.queue_name_prefix = ''
 
       @args = {
         name:  'Test',
@@ -661,7 +661,7 @@ describe "Cron Job" do
   describe '#active_job_message with queue_name_prefix' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
-      ActiveJob::Base.queue_name_prefix = "prefix"
+      ::ActiveJob::Base.queue_name_prefix = "prefix"
 
       @args = {
         name:  'Test',
