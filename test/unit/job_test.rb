@@ -287,6 +287,23 @@ describe "Cron Job" do
                                  "args"=>[]}
     end
 
+    it "be initialized with 'class' and overwrite retry by settings" do
+      job = Sidekiq::Cron::Job.new('class' => CronTestClassWithQueue, retry: 5)
+
+      assert_equal job.message, {"retry"=>5,
+                                 "queue"=>:super,
+                                 "backtrace"=>true,
+                                 "class"=>"CronTestClassWithQueue",
+                                 "args"=>[]}
+
+      job = Sidekiq::Cron::Job.new('class' => CronTestClass, retry: false)
+
+      assert_equal job.message, {"retry"=>false,
+                                 "queue"=>"default",
+                                 "class"=>"CronTestClass",
+                                 "args"=>[]}
+    end
+
     it "be initialized with 'class' and date_as_argument" do
       job = Sidekiq::Cron::Job.new('class' => 'CronTestClassWithQueue', "date_as_argument" => true)
 
@@ -500,6 +517,30 @@ describe "Cron Job" do
         "retry" => false,
         "backtrace"=>true,
         "queue" => "super_queue",
+        "class" => "CronTestClassWithQueue",
+        "args"  => [{:foo=>"bar"}]
+      }
+      assert_equal @job.sidekiq_worker_message, payload
+    end
+  end
+
+  describe '#sidekiq_worker_message settings overwrite retry name' do
+    before do
+      @args = {
+        name:  'Test',
+        cron:  '* * * * *',
+        retry: 5,
+        klass: 'CronTestClassWithQueue',
+        args:  { foo: 'bar' }
+      }
+      @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    it 'should return valid payload for Sidekiq::Client with overwrite retry' do
+      payload = {
+        "retry" => 5,
+        "backtrace" => true,
+        "queue" => :super,
         "class" => "CronTestClassWithQueue",
         "args"  => [{:foo=>"bar"}]
       }
