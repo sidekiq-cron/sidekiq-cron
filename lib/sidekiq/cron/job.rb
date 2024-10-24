@@ -147,7 +147,7 @@ module Sidekiq
       end
 
       def is_active_job?(klass = nil)
-        @active_job || defined?(ActiveJob::Base) && (klass || Sidekiq::Cron::Support.constantize(@klass.to_s)) < ActiveJob::Base
+        @active_job || defined?(::ActiveJob::Base) && (klass || Sidekiq::Cron::Support.constantize(@klass.to_s)) < ::ActiveJob::Base
       rescue NameError
         false
       end
@@ -181,16 +181,16 @@ module Sidekiq
 
         if !"#{@active_job_queue_name_delimiter}".empty?
           queue_name_delimiter = @active_job_queue_name_delimiter
-        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_delimiter) && !ActiveJob::Base.queue_name_delimiter.empty?
-          queue_name_delimiter = ActiveJob::Base.queue_name_delimiter
+        elsif defined?(::ActiveJob::Base) && defined?(::ActiveJob::Base.queue_name_delimiter) && !::ActiveJob::Base.queue_name_delimiter.empty?
+          queue_name_delimiter = ::ActiveJob::Base.queue_name_delimiter
         else
           queue_name_delimiter = '_'
         end
 
         if !"#{@active_job_queue_name_prefix}".empty?
           queue_name = "#{@active_job_queue_name_prefix}#{queue_name_delimiter}#{@queue}"
-        elsif defined?(ActiveJob::Base) && defined?(ActiveJob::Base.queue_name_prefix) && !"#{ActiveJob::Base.queue_name_prefix}".empty?
-          queue_name = "#{ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
+        elsif defined?(::ActiveJob::Base) && defined?(::ActiveJob::Base.queue_name_prefix) && !"#{::ActiveJob::Base.queue_name_prefix}".empty?
+          queue_name = "#{::ActiveJob::Base.queue_name_prefix}#{queue_name_delimiter}#{@queue}"
         else
           queue_name = @queue
         end
