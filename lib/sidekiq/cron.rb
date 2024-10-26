@@ -44,7 +44,6 @@ module Sidekiq
 
       def initialize
         @cron_poll_interval = 30
-        @cron_schedule_file = 'config/schedule.yml'
         @cron_history_size = 10
         @default_namespace = 'default'
         @natural_cron_parsing_mode = :single
@@ -57,6 +56,12 @@ module Sidekiq
         end
 
         @natural_cron_parsing_mode = mode
+      end
+
+      def cron_schedule_file=(file)
+        @cron_schedule_file = file
+
+        ScheduleLoader.load_schedules(file)
       end
     end
   end

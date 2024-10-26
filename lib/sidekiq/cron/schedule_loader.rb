@@ -1,16 +1,19 @@
-Sidekiq.configure_server do |config|
-  schedule_file = Sidekiq::Cron.configuration.cron_schedule_file
+module ScheduleLoader
+  DEFAULT_SCHEDULE_FILE = 'config/schedule.yml'
 
-  if File.exist?(schedule_file)
-    config.on(:startup) do
-      schedule = Sidekiq::Cron::Support.load_yaml(ERB.new(IO.read(schedule_file)).result)
-      if schedule.kind_of?(Hash)
-        Sidekiq::Cron::Job.load_from_hash!(schedule, source: "schedule")
-      elsif schedule.kind_of?(Array)
-        Sidekiq::Cron::Job.load_from_array!(schedule, source: "schedule")
-      else
-        raise "Not supported schedule format. Confirm your #{schedule_file}"
-      end
+  def self.load_schedules(schedule_file = DEFAULT_SCHEDULE_FILE)
+    return unless File.exist?(schedule_file)
+
+    schedule = Sidekiq::Cron::Support.load_yaml(ERB.new(IO.read(schedule_file)).result)
+    case schedule
+    when Hash
+      Sidekiq::Cron::Job.load_from_hash!(schedule, source: "schedule")
+    when Array
+      Sidekiq::Cron::Job.load_from_array!(schedule, source: "schedule")
+    else
+      raise "Unsupported schedule format in #{schedule_file}"
     end
   end
 end
+
+ScheduleLoader.load_schedules
