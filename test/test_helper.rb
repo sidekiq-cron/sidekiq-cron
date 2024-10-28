@@ -27,6 +27,23 @@ Sidekiq.configure_client do |config|
   config.redis = { url: ENV['REDIS_URL'] || 'redis://0.0.0.0:6379' }
 end
 
+# Workaround: We need to define this class, so the actual adapter can remove the constant
+# See: https://github.com/sidekiq/sidekiq/pull/6474
+module ActiveJob
+  module QueueAdapters
+    class SidekiqAdapter; end
+  end
+end
+
+# In https://github.com/sidekiq/sidekiq/commit/7e27a3fbfd3163fd58a17fef8ad6594b92bb3a6c
+# (released in Sidekiq v7.3.3+) Sidekiq introduced the module `Sidekiq::ActiveJob`.
+# Any reference to `ActiveJob` within `Sidekiq::Cron` therefore does not
+# get resolved to `::ActiveJob`, but to `::Sidekiq::ActiveJob`.
+#
+# By loading the adapter code here, we ensure that tests break unless `::ActiveJob`
+# is used explicitly.
+require 'active_job/queue_adapters/sidekiq_adapter' if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("7.3.3")
+
 # For testing symbolize args
 class Hash
   def symbolize_keys
@@ -97,9 +114,9 @@ module ActiveJob
   end
 end
 
-class ActiveJobCronTestClass < ActiveJob::Base
+class ActiveJobCronTestClass < ::ActiveJob::Base
 end
 
-class ActiveJobCronTestClassWithQueue < ActiveJob::Base
+class ActiveJobCronTestClassWithQueue < ::ActiveJob::Base
   queue_as :super
 end
