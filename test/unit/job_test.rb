@@ -345,7 +345,7 @@ describe "Cron Job" do
 
       it "be initialized with class specified attributes" do
         job = Sidekiq::Cron::Job.new('class' => 'ActiveJobCronTestClassWithQueue')
-        assert_equal job.message, {"queue"=>:super, "class"=>"ActiveJobCronTestClassWithQueue", "args"=>[]}
+        assert_equal job.message, {"queue"=>"super", "class"=>"ActiveJobCronTestClassWithQueue", "args"=>[]}
       end
     end
   end
@@ -702,6 +702,7 @@ describe "Cron Job" do
   describe '#active_job_message with queue_name_prefix' do
     before do
       SecureRandom.stubs(:uuid).returns('XYZ')
+      @original_queue_name_prefix = ::ActiveJob::Base.queue_name_prefix
       ::ActiveJob::Base.queue_name_prefix = "prefix"
 
       @args = {
@@ -713,6 +714,10 @@ describe "Cron Job" do
         args:  { foo: 'bar' }
       }
       @job = Sidekiq::Cron::Job.new(@args)
+    end
+
+    after do
+      ::ActiveJob::Base.queue_name_prefix = @original_queue_name_prefix
     end
 
     it 'should return valid payload for Sidekiq::Client' do
@@ -756,12 +761,21 @@ describe "Cron Job" do
         end
 
         it 'should add timestamp to args' do
-          ActiveJobCronTestClass.expects(:perform_later)
-                                .returns(ActiveJobCronTestClass.new)
-                                .with { |*args|
-                                  assert args[-1].is_a?(Float)
-                                  assert args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+          job = ActiveJobCronTestClass.new
+
+          ActiveJobCronTestClass.expects(:set)
+                                .returns(job)
+                                .with { |**args|
+                                  assert_equal 'default', args[:queue]
                                 }
+
+          job.expects(:perform_later)
+             .returns(job)
+             .with { |*args|
+               assert args[-1].is_a?(Float)
+               assert args[-1].between?(Time.now.to_f - 1, Time.now.to_f)
+             }
+
           @job.enqueue!
         end
       end
