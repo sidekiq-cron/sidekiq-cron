@@ -70,7 +70,7 @@ module Sidekiq
 
           # Get right data for message,
           # only if message wasn't specified before.
-          klass_data = get_job_class_options(@klass)
+          klass_data = get_job_options(@klass, @args)
           message_data = klass_data.merge(message_data)
 
           # Override queue and retry if set in config,
@@ -793,7 +793,7 @@ module Sidekiq
         end
       end
 
-      def get_job_class_options(klass)
+      def get_job_options(klass, args)
         klass = klass.is_a?(Class) ? klass : begin
           Sidekiq::Cron::Support.constantize(klass)
         rescue NameError
@@ -804,7 +804,9 @@ module Sidekiq
           # Unknown class
           {"queue"=>"default"}
         elsif is_active_job?(klass)
-          {"queue"=>klass.queue_name}
+          job = klass.new(args)
+
+          {"queue"=>job.queue_name}
         else
           klass.get_sidekiq_options
         end
