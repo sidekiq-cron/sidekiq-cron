@@ -3,7 +3,7 @@ require 'benchmark'
 
 describe 'Performance Poller' do
   JOBS_NUMBER = 10_000
-  MAX_SECONDS = 40
+  MAX_SECONDS = 30
 
   before do
     Sidekiq.redis(&:flushdb)

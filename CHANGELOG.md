@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1
+
+- Fix usage of ActiveJob::Base.queue_name (https://github.com/sidekiq-cron/sidekiq-cron/pull/517)
+- Fix: Add quotes to Japanese translations containing multi-byte symbols (https://github.com/sidekiq-cron/sidekiq-cron/pull/515)
+
 ## 2.0.0
 
 Sidekiq-Cron v2 is here! In this release we refactored some internals, plus:
