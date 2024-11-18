@@ -16,11 +16,14 @@ end
 require "minitest/autorun"
 require "rack/test"
 require 'mocha/minitest'
+require 'active_job'
 require 'sidekiq'
 require 'sidekiq/web'
 require "sidekiq/cli"
 require 'sidekiq-cron'
 require 'sidekiq/cron/web'
+
+ActiveJob::Base.queue_adapter = :sidekiq
 
 Sidekiq.logger.level = Logger::ERROR
 Sidekiq.configure_client do |config|
@@ -52,54 +55,16 @@ class CronTestClassWithQueue
   end
 end
 
-module ActiveJob
-  class Base
-    attr_accessor *%i[job_class provider_job_id arguments]
-
-    def initialize
-      yield self if block_given?
-      self.provider_job_id ||= SecureRandom.hex(12)
-    end
-
-    def self.queue_name
-      @queue_name || "default"
-    end
-
-    def self.queue_as(name)
-      @queue_name = name
-    end
-
-    def self.queue_name_prefix
-      @queue_name_prefix
-    end
-
-    def self.queue_name_prefix=(queue_name_prefix)
-      @queue_name_prefix = queue_name_prefix
-    end
-
-    def self.set(options)
-      @queue_name = options['queue'] || queue_name
-
-      self
-    end
-
-    def try(method, *args, &block)
-      send method, *args, &block if respond_to? method
-    end
-
-    def self.perform_later(*args)
-      new do |instance|
-        instance.job_class = self.class.name
-        instance.queue_name = self.class.queue_name
-        instance.arguments = [*args]
-      end
-    end
+class ActiveJobCronTestClass < ::ActiveJob::Base
+  def perform(*)
+    nil
   end
 end
 
-class ActiveJobCronTestClass < ActiveJob::Base
-end
-
-class ActiveJobCronTestClassWithQueue < ActiveJob::Base
+class ActiveJobCronTestClassWithQueue < ::ActiveJob::Base
   queue_as :super
+
+  def perform(*)
+    nil
+  end
 end

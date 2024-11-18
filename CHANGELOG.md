@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1
+
+- Fix usage of ActiveJob::Base.queue_name (https://github.com/sidekiq-cron/sidekiq-cron/pull/517)
+- Fix: Add quotes to Japanese translations containing multi-byte symbols (https://github.com/sidekiq-cron/sidekiq-cron/pull/515)
+
+## 2.0.0
+
+Sidekiq-Cron v2 is here! In this release we refactored some internals, plus:
+
+- Review web UI translations for all available locales (https://github.com/sidekiq-cron/sidekiq-cron/pull/506)
+- Fix detection of ActiveJob in Sidekiq v7.3.3+ (https://github.com/sidekiq-cron/sidekiq-cron/pull/510)
+- Add retry job configuration option to set Sidekiq retry job option (https://github.com/sidekiq-cron/sidekiq-cron/pull/509)
+
+Please take a look to the RC1 and RC2 changes too if you are coming from the v1.X series.
+
 ## 2.0.0.rc2
 
 - Remove support for Sidekiq < 6.5 (https://github.com/sidekiq-cron/sidekiq-cron/pull/480)
