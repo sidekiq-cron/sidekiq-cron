@@ -1,8 +1,8 @@
 ja:
   AreYouSureDeleteCronJob: "本当に%{job}のcronジョブを削除しますか？"
   AreYouSureDeleteCronJobs: "本当にすべてのcronジョブを削除しますか？"
-  AreYouSureEnqueueCronJob: "%{job} の クロン ジョブをキューに入れてもよろしいですか？"
-  AreYouSureEnqueueCronJobs: "すべての クロン ジョブをキューに入れてもよろしいですか？"
+  AreYouSureEnqueueCronJob: "%{job} の cronジョブをキューに入れてもよろしいですか？"
+  AreYouSureEnqueueCronJobs: "すべての cronジョブをキューに入れてもよろしいですか？"
   Cron: Cron
   CronJobs: Cronジョブ
   CronString: Cron
