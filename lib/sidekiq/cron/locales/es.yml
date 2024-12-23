@@ -1,0 +1,22 @@
+es:
+  AreYouSureDeleteCronJob: ¿Estás seguro de que quieres borrar el trabajo cron %{job}?
+  AreYouSureDeleteCronJobs: ¿Estás seguro de que quieres borrar TODOS los trabajos cron?
+  AreYouSureEnqueueCronJob: ¿Estás seguro de que quieres poner en cola el trabajo cron %{job}?
+  AreYouSureEnqueueCronJobs: ¿Estás seguro de que quieres poner en cola TODOS los trabajos cron?
+  Cron: Cron
+  CronJobs: Trabajos cron programados
+  CronString: Cron
+  DeleteAll: Borrar todo
+  Description: Descripción
+  Disable: Desactivar
+  DisableAll: Desactivar todos
+  Enable: Activar
+  EnableAll: Activar todos
+  EnqueueAll: Poner todos en cola
+  EnqueueNow: Poner en cola ahora
+  Job: Trabajo
+  LastEnqueued: Último trabajo en cola
+  NoCronJobsWereFound: No se encontraron trabajos
+  NoHistoryWereFound: No se encontró histórico de trabajos
+  disabled: activo
+  enabled: inactivo
