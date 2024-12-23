@@ -166,6 +166,16 @@ Sidekiq::Cron.configure do |config|
 end
 ```
 
+#### Renaming namespace
+
+If you rename the namespace of a job that is already running, the gem will not automatically delete the cron job associated with the old namespace. This means you could end up with two cron jobs running simultaneously.
+
+To avoid this, it is recommended to delete all existing cron jobs associated with the old namespace before making the change. You can achieve this with the following code:
+
+```ruby
+Sidekiq::Cron::Job.all('YOUR_OLD_NAMESPACE_NAME').each { |job| job.destroy }
+```
+
 #### Usage
 
 When creating a new job, you can optionally give a `namespace` attribute, and then you can pass it too in the `find` or `destroy` methods.
