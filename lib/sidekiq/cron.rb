@@ -42,6 +42,17 @@ module Sidekiq
       # jobs that missed their schedules during the deployment. E.g., jobs that run once a day.
       attr_accessor :reschedule_grace_period
 
+      # List of available namespaces
+      #
+      # If not set, Sidekiq Cron will dynamically fetch available namespaces
+      # by retrieving existing jobs from Redis.
+      #
+      # This dynamic fetching can negatively impact performance in certain cases.
+      # To mitigate this, you can provide the list of namespaces explicitly.
+      # If a job specifies a namespace that is not included in the provided list,
+      # a warning will be logged, and the job will be assigned to the default namespace.
+      attr_accessor :available_namespaces
+
       def initialize
         @cron_poll_interval = 30
         @cron_schedule_file = 'config/schedule.yml'
@@ -49,6 +60,7 @@ module Sidekiq
         @default_namespace = 'default'
         @natural_cron_parsing_mode = :single
         @reschedule_grace_period = 60
+        @available_namespaces = nil
       end
 
       def natural_cron_parsing_mode=(mode)

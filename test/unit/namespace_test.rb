@@ -37,6 +37,17 @@ describe 'Namespaces' do
 
       assert_equal Sidekiq::Cron::Namespace.all.sort, expected
     end
+
+    it 'uses provided namespaces list if available' do
+      Sidekiq::Cron.configuration.available_namespaces = %w[namespace1 namespace2]
+
+      Sidekiq::Cron::Job.create(args.merge(namespace: 'implicit-namespace1'))
+      Sidekiq::Cron::Job.create(args.merge(namespace: 'implicit-namespace2'))
+
+      expected = %w[namespace1 namespace2]
+
+      assert_equal Sidekiq::Cron::Namespace.all.sort, expected
+    end
   end
 
   describe 'count' do

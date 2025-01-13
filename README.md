@@ -75,6 +75,7 @@ Sidekiq::Cron.configure do |config|
   config.default_namespace = 'statistics' # Default is 'default'
   config.natural_cron_parsing_mode = :strict # Default is :single
   config.reschedule_grace_period = 300 # Default is 60
+  config.available_namespaces = %w[maintenance billing] # Default is `nil`
 end
 ```
 
@@ -175,6 +176,14 @@ To avoid this, it is recommended to delete all existing cron jobs associated wit
 ```ruby
 Sidekiq::Cron::Job.all('YOUR_OLD_NAMESPACE_NAME').each { |job| job.destroy }
 ```
+
+#### Available namespaces
+
+By default, Sidekiq Cron retrieves all existing jobs from Redis to determine the namespaces your application uses. However, this approach may not be suitable for large Redis installations. To address this, you can explicitly specify the list of available namespaces using the `available_namespaces` configuration option.
+
+If `available_namespaces` is set and a job is created with an unexpected namespace, a warning will be printed, and the job will be assigned to the default namespace.
+
+For more details and discussion, see [this issue](https://github.com/sidekiq-cron/sidekiq-cron/issues/516).
 
 #### Usage
 
