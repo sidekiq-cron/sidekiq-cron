@@ -26,10 +26,16 @@ module Sidekiq
         @fetch_missing_args = true if @fetch_missing_args.nil?
 
         @name = args["name"]
-        @namespace = args["namespace"] || Sidekiq::Cron.configuration.default_namespace
         @cron = args["cron"]
         @description = args["description"] if args["description"]
         @source = args["source"] == "schedule" ? "schedule" : "dynamic"
+
+        default_namespace = Sidekiq::Cron.configuration.default_namespace
+        @namespace = args["namespace"] || default_namespace
+        if Sidekiq::Cron::Namespace.available_namespaces_provided? && !Sidekiq::Cron::Namespace.all.include?(@namespace) && @namespace != default_namespace
+          Sidekiq.logger.warn { "Cron Jobs - unexpected namespace #{@namespace} encountered. Assigning to default namespace." }
+          @namespace = default_namespace
+        end
 
         # Get class from klass or class.
         @klass = args["klass"] || args["class"]
@@ -687,7 +693,7 @@ module Sidekiq
       def self.job_keys_from_namespace(namespace = Sidekiq::Cron.configuration.default_namespace)
         Sidekiq.redis do |conn|
           if namespace == '*'
-            namespaces = conn.keys(jobs_key(namespace))
+            namespaces = Sidekiq::Cron.configuration.available_namespaces&.map { jobs_key(_1) } || conn.keys(jobs_key(namespace))
             namespaces.flat_map { |name| conn.smembers(name) }
           else
             conn.smembers(jobs_key(namespace))

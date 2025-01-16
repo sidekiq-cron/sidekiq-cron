@@ -154,6 +154,29 @@ describe "Cron Job" do
         assert @job.to_hash.has_key?(key), "to_hash must have key: #{key}"
       end
     end
+
+    it "warns about unexpected namespace and fallbacks to default one" do
+      Sidekiq::Cron.configuration.available_namespaces = %w[namespace1 namespace2]
+
+      output = capture_logging(level: Logger::Severity::WARN) do
+        @job = Sidekiq::Cron::Job.new(@args.merge(namespace: "namespace"))
+      end
+
+      assert_equal "default", @job.namespace
+      assert_match(/WARN -- : Cron Jobs - unexpected namespace namespace encountered. Assigning to default namespace./, output)
+    end
+
+    it "does not warn on assigning default namespace which is not listed in `available_namespaces`" do
+      Sidekiq::Cron.configuration.available_namespaces = %w[namespace1 namespace2]
+
+      output = capture_logging(level: Logger::Severity::WARN) do
+        @job = Sidekiq::Cron::Job.new(@args.merge(namespace: "default"))
+      end
+
+      assert_equal "default", @job.namespace
+
+      assert_equal "", output
+    end
   end
 
   describe 'cron formats' do
@@ -1257,6 +1280,16 @@ describe "Cron Job" do
       describe 'when passing an asterisk' do
         it 'should return all the existing jobs from all namespaces and out of a namespace' do
           assert_equal Sidekiq::Cron::Job.all('*').size, 3, 'Should have 3 jobs'
+        end
+      end
+
+      describe 'with explicitly provided available namespaces' do
+        it 'should return all the jobs only from available namespaces' do
+          Sidekiq::Cron.configuration.available_namespaces = %w[default]
+          assert_equal 2, Sidekiq::Cron::Job.all('*').size, 'Should have 2 jobs'
+
+          Sidekiq::Cron.configuration.available_namespaces = [custom_namespace]
+          assert_equal 1, Sidekiq::Cron::Job.all('*').size, 'Should have 1 job'
         end
       end
     end
