@@ -9,19 +9,21 @@ if ENV['CI']
 end
 
 SimpleCov.start do
-  add_filter "test/"
+  add_filter 'test/'
   add_group 'Sidekiq-Cron', 'lib/'
 end
 
-require "minitest/autorun"
-require "rack/test"
+require 'minitest/autorun'
+require 'rack/test'
 require 'mocha/minitest'
 require 'active_job'
 require 'sidekiq'
 require 'sidekiq/web'
-require "sidekiq/cli"
+require 'sidekiq/cli'
 require 'sidekiq-cron'
 require 'sidekiq/cron/web'
+require './test/support/classes'
+require './test/support/helpers'
 
 ActiveJob::Base.queue_adapter = :sidekiq
 
@@ -34,55 +36,5 @@ end
 class Hash
   def symbolize_keys
     transform_keys { |key| key.to_sym rescue key }
-  end
-end
-
-class CronTestClass
-  include Sidekiq::Worker
-  sidekiq_options retry: true
-
-  def perform args = {}
-    puts "super croned job #{args}"
-  end
-end
-
-class CronTestClassWithQueue
-  include Sidekiq::Worker
-  sidekiq_options queue: :super, retry: false, backtrace: true
-
-  def perform args = {}
-    puts "super croned job #{args}"
-  end
-end
-
-class ActiveJobCronTestClass < ::ActiveJob::Base
-  def perform(*)
-    nil
-  end
-end
-
-class ActiveJobCronTestClassWithQueue < ::ActiveJob::Base
-  queue_as :super
-
-  def perform(*)
-    nil
-  end
-end
-
-def capture_logging(level:)
-  original_logger = Sidekiq.logger
-
-  logdev = StringIO.new
-  logger = ::Logger.new(logdev)
-  logger.level = level
-
-  Sidekiq.configure_server { |c| c.logger = logger }
-
-  yield
-
-  logdev.string
-ensure
-  Sidekiq.configure_server do |c|
-    c.logger = original_logger
   end
 end
