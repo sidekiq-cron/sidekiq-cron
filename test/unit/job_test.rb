@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require './test/test_helper'
-require "./test/models/person"
 
 describe "Cron Job" do
   before do

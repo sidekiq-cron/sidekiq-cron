@@ -13,9 +13,8 @@ describe 'Cron web' do
     env 'rack.session', { csrf: TOKEN }
     env 'HTTP_X_CSRF_TOKEN', TOKEN
 
-    Sidekiq.redis(&:flushdb)
-
     Sidekiq::Cron.reset!
+    Sidekiq.redis(&:flushdb)
   end
 
   let(:job_name) { "TestNameOfCronJob" }
