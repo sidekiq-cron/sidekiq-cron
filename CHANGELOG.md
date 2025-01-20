@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.1.0
+
+- Add `available_namespaces` configuration option (https://github.com/sidekiq-cron/sidekiq-cron/pull/524)
+- I18n fixes and enhancements (https://github.com/sidekiq-cron/sidekiq-cron/pull/520, https://github.com/sidekiq-cron/sidekiq-cron/pull/522)
+
 ## 2.0.1
 
 - Fix usage of ActiveJob::Base.queue_name (https://github.com/sidekiq-cron/sidekiq-cron/pull/517)

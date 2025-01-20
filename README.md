@@ -1,7 +1,7 @@
 ![Sidekiq-Cron](logos/cover.png)
 
 [![Gem Version](https://badge.fury.io/rb/sidekiq-cron.svg)](https://badge.fury.io/rb/sidekiq-cron)
-[![Build Status](https://github.com/sidekiq-cron/sidekiq-cron/workflows/CI/badge.svg?branch=master)](https://github.com/sidekiq-cron/sidekiq-cron/actions)
+[![CI](https://github.com/sidekiq-cron/sidekiq-cron/actions/workflows/ci.yml/badge.svg)](https://github.com/sidekiq-cron/sidekiq-cron/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/sidekiq-cron/sidekiq-cron/branch/master/graph/badge.svg?token=VK9IVLIaY8)](https://codecov.io/gh/sidekiq-cron/sidekiq-cron)
 
 > A scheduling add-on for [Sidekiq](https://sidekiq.org/)
