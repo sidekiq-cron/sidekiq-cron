@@ -73,9 +73,9 @@ Sidekiq::Cron.configure do |config|
   config.cron_schedule_file = 'config/my_schedule.yml' # Default is 'config/schedule.yml'
   config.cron_history_size = 20 # Default is 10
   config.default_namespace = 'statistics' # Default is 'default'
+  config.available_namespaces = %w[statistics maintenance billing] # Default is `nil`
   config.natural_cron_parsing_mode = :strict # Default is :single
   config.reschedule_grace_period = 300 # Default is 60
-  config.available_namespaces = %w[maintenance billing] # Default is `nil`
 end
 ```
 
