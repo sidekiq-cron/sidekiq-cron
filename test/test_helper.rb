@@ -25,6 +25,8 @@ require 'sidekiq/cron/web'
 require './test/support/classes'
 require './test/support/helpers'
 
+require "rails/engine/railties"
+require "sidekiq/rails"
 ActiveJob::Base.queue_adapter = :sidekiq
 
 Sidekiq.logger.level = Logger::ERROR
