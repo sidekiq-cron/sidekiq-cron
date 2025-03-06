@@ -17,16 +17,17 @@ require 'minitest/autorun'
 require 'rack/test'
 require 'mocha/minitest'
 require 'active_job'
+require 'rails/railtie'
+require 'rails/engine/railties'
 require 'sidekiq'
 require 'sidekiq/web'
 require 'sidekiq/cli'
 require 'sidekiq-cron'
 require 'sidekiq/cron/web'
+require 'sidekiq/rails'
 require './test/support/classes'
 require './test/support/helpers'
 
-require "rails/engine/railties"
-require "sidekiq/rails"
 ActiveJob::Base.queue_adapter = :sidekiq
 
 Sidekiq.logger.level = Logger::ERROR

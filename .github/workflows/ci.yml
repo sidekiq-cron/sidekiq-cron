@@ -13,7 +13,20 @@ jobs:
       fail-fast: false
       matrix:
         ruby: ["3.2", "3.3", "3.4", "ruby-head"]
-        sidekiq: ["~> 6", "~> 7"]
+        sidekiq: ["~> 6", "~> 7", "~> 8"]
+        include:
+          - ruby: "2.7"
+            sidekiq: "~> 6"
+          - ruby: "2.7"
+            sidekiq: "~> 7"
+          - ruby: "3.0"
+            sidekiq: "~> 6"
+          - ruby: "3.0"
+            sidekiq: "~> 7"
+          - ruby: "3.1"
+            sidekiq: "~> 6"
+          - ruby: "3.1"
+            sidekiq: "~> 7"
     services:
       redis:
         image: redis
