@@ -1,0 +1,12 @@
+---
+my_first_job:
+  cron: "*/5 * * * *"
+  class: "HardWorker"
+  queue: hard_worker
+
+second_job:
+  cron: "*/30 * * * *"
+  class: "HardWorker"
+  queue: hard_worker_long
+  args:
+    hard: "stuff"
