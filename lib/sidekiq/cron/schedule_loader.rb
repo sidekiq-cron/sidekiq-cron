@@ -1,6 +1,10 @@
 Sidekiq.configure_server do |config|
   schedule_file = Sidekiq::Cron.configuration.cron_schedule_file
 
+  unless File.exist?(schedule_file)
+    schedule_file.sub!(/\.yml$/, ".yaml")
+  end
+
   if File.exist?(schedule_file)
     config.on(:startup) do
       schedule = Sidekiq::Cron::Support.load_yaml(ERB.new(IO.read(schedule_file)).result)
