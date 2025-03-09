@@ -28,20 +28,33 @@
 </header>
 
 <!-- Namespaces -->
-<div class='row'>
-  <div class="col-sm-12 summary_bar">
-    <ul class="list-unstyled summary row">
-      <% Sidekiq::Cron::Namespace.all_with_count.sort_by { |namespace| namespace[:name] }.each do |namespace| %>
-        <li class="col-sm-1">
-          <a href="<%= root_path %>cron/namespaces/<%= namespace[:name] %>">
-            <span class="count"><%= namespace[:count] %></span>
-            <span class="desc"><%= namespace[:name] %></span>
-          </a>
-        </li>
-      <% end %>
-    </ul>
+<% if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("8.0.0") %>
+  <div class="cards-container">
+    <% Sidekiq::Cron::Namespace.all_with_count.sort_by { |namespace| namespace[:name] }.each do |namespace| %>
+      <article>
+        <a href="<%= root_path %>cron/namespaces/<%= namespace[:name] %>">
+          <span class="count"><%= namespace[:count] %></span>
+          <span class="desc"><%= namespace[:name] %></span>
+        </a>
+      </article>
+    <% end %>
   </div>
-</div>
+<% else %>
+  <div class='row'>
+    <div class="col-sm-12 summary_bar">
+      <ul class="list-unstyled summary row">
+        <% Sidekiq::Cron::Namespace.all_with_count.sort_by { |namespace| namespace[:name] }.each do |namespace| %>
+          <li class="col-sm-1">
+            <a href="<%= root_path %>cron/namespaces/<%= namespace[:name] %>">
+              <span class="count"><%= namespace[:count] %></span>
+              <span class="desc"><%= namespace[:name] %></span>
+            </a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>
 <!-- Namespaces -->
 
 <% if @cron_jobs.size > 0 %>
