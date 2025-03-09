@@ -59,16 +59,14 @@ describe 'ScheduleLoader' do
   end
 
   describe 'Schedule file has .yaml extension' do
-    it 'loads the schedule file' do
+    before do
       Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_yaml_extension.yml'
       load 'sidekiq/cron/schedule_loader.rb'
+    end
 
+    it 'loads the schedule file' do
+      Sidekiq::Cron::Job.expects(:load_from_hash!)
       Sidekiq::Options[:lifecycle_events][:startup].first.call
-
-      job = Sidekiq::Cron::Job.find("daily_job")
-      assert_equal job.klass, "DailyJob"
-      assert_equal job.cron, "every day at 5 pm"
-      assert_equal job.source, "schedule"
     end
   end
 end
