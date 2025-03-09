@@ -18,7 +18,7 @@ module Sidekiq
       GLOBALID_KEY = "_sc_globalid"
 
       attr_accessor :name, :namespace, :cron, :description, :klass, :args, :message
-      attr_reader   :last_enqueue_time, :fetch_missing_args, :source
+      attr_reader   :cron_expression_string, :last_enqueue_time, :fetch_missing_args, :source
 
       def initialize input_args = {}
         args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
@@ -598,6 +598,10 @@ module Sidekiq
 
       def args=(args)
         @args = parse_args(args)
+      end
+
+      def cron_expression_string
+        parsed_cron.to_cron_s
       end
 
       private

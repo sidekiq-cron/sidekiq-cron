@@ -89,7 +89,7 @@
               <small><%= job.message %></small>
             <% end %>
           </td>
-          <td class="<%= klass %>"><b><%= job.human_cron %><br/><small><%= job.cron.gsub(" ", "&nbsp;") %></small></b></td>
+          <td class="<%= klass %>"><b><%= job.human_cron %><br/><small><%= job.cron_expression_string.gsub(" ", "&nbsp;") %></small></b></td>
           <td class="<%= klass %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>
           <td class="<%= klass %>">
             <% if job.status == 'enabled' %>
