@@ -9,7 +9,7 @@ module Sidekiq
             route_params[key]
           end
         end
-        
+
         # This method constructs the URL for the cron jobs page within the specified namespace.
         def namespace_redirect_path
           "#{root_path}cron/namespaces/#{cron_route_params(:namespace)}"
@@ -21,6 +21,7 @@ module Sidekiq
 
         def render_erb(view)
           views_path = File.join(File.expand_path("..", __FILE__), "views")
+          views_path = File.join(File.expand_path("..", __FILE__), "views/v8") if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("8.0.0")
           erb(File.read(File.join(views_path, "#{view}.erb")))
         end
       end
