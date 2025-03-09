@@ -15,6 +15,14 @@ describe 'Cron web' do
 
     Sidekiq::Cron.reset!
     Sidekiq.redis(&:flushdb)
+
+    if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("8.0.0")
+      Sidekiq::Web.configure do |c|
+        # Remove CSRF protection
+        # See: https://github.com/sidekiq/sidekiq/blob/0a1bce30e562357e0bb60ce84d78fe5d8446bed9/test/webext_test.rb#L37
+        c.middlewares.clear
+      end
+    end
   end
 
   let(:job_name) { "TestNameOfCronJob" }
