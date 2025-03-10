@@ -1,0 +1,113 @@
+<header class='row'>
+  <div class='col-sm-5 pull-left'>
+    <h3>
+      <%= t('CronJobs') %>
+      <small><%= @current_namespace %></small>
+    </h3>
+  </div>
+  <div class='col-sm-7 pull-right h2'>
+    <% if @cron_jobs.size > 0 %>
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/delete" method="post" class="pull-right">
+        <%= csrf_tag %>
+        <input class="btn btn-danger" type="submit" name="delete" value="<%= t('DeleteAll') %>" data-confirm="<%= t('AreYouSureDeleteCronJobs') %>" />
+      </form>
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/disable" method="post" class="pull-right">
+        <%= csrf_tag %>
+        <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('DisableAll') %>" />
+      </form>
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enable" method="post" class="pull-right">
+        <%= csrf_tag %>
+        <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('EnableAll') %>" />
+      </form>
+      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enqueue" method="post" class="pull-right">
+        <%= csrf_tag %>
+        <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('EnqueueAll') %>" data-confirm="<%= t('AreYouSureEnqueueCronJobs') %>" />
+      </form>
+    <% end %>
+  </div>
+</header>
+
+<!-- Namespaces -->
+<div class='row'>
+  <div class="col-sm-12 summary_bar">
+    <ul class="list-unstyled summary row">
+      <% Sidekiq::Cron::Namespace.all_with_count.sort_by { |namespace| namespace[:name] }.each do |namespace| %>
+        <li class="col-sm-1">
+          <a href="<%= root_path %>cron/namespaces/<%= namespace[:name] %>">
+            <span class="count"><%= namespace[:count] %></span>
+            <span class="desc"><%= namespace[:name] %></span>
+          </a>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+<!-- Namespaces -->
+
+<% if @cron_jobs.size > 0 %>
+  <table class="table table-hover table-bordered table-striped table-white">
+    <thead>
+    <tr>
+      <th><%= t('Status') %></th>
+      <th width="50%"><%= t('Name') %></th>
+      <th><%= t('CronString') %></th>
+      <th><%= t('LastEnqueued') %></th>
+      <th width="180"><%= t('Actions') %></th>
+    </tr>
+    </thead>
+
+    <tbody>
+      <% @cron_jobs.sort{ |a,b| a.sort_name <=> b.sort_name }.each do |job| %>
+        <% klass = (job.status == 'disabled') ? 'bg-danger text-muted' : '' %>
+        <% escaped_job_name = CGI.escape(job.name).gsub('+', '%20') %>
+        <tr>
+          <td class="<%= klass %>"><%= t job.status %></td>
+          <td class="<%= klass %>">
+            <a href="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>" title="<%= job.description %>">
+              <b class="<%= klass %>"><%= job.name %></b>
+            </a>
+            <br/>
+            <% if job.message and job.message.to_s.size > 100 %>
+              <details>
+                <summary class="btn btn-warn btn-xs">Show message</summary>
+                <p><small><%= job.message %></small></p>
+              </details>
+            <% else %>
+              <small><%= job.message %></small>
+            <% end %>
+          </td>
+          <td class="<%= klass %>"><b><%= job.human_cron %><br/><small><%= job.cron_expression_string.gsub(" ", "&nbsp;") %></small></b></td>
+          <td class="<%= klass %>"><%= job.last_enqueue_time ? relative_time(job.last_enqueue_time) : "-" %></td>
+          <td class="<%= klass %>">
+            <% if job.status == 'enabled' %>
+              <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/enqueue" method="post">
+                <%= csrf_tag %>
+                <input class='btn btn-warn btn-xs pull-left' type="submit" name="enqueue" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => job.name) %>"/>
+              </form>
+              <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/disable" method="post">
+                <%= csrf_tag %>
+                <input class='btn btn-warn btn-xs pull-left' type="submit" name="disable" value="<%= t('Disable') %>"/>
+              </form>
+            <% else %>
+              <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/enqueue" method="post">
+                <%= csrf_tag %>
+                <input class='btn btn-warn btn-xs pull-left' type="submit" name="enqueue" value="<%= t('EnqueueNow') %>" data-confirm="<%= t('AreYouSureEnqueueCronJob', :job => job.name) %>"/>
+              </form>
+              <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/enable" method="post">
+                <%= csrf_tag %>
+                <input class='btn btn-warn btn-xs pull-left' type="submit" name="enable" value="<%= t('Enable') %>"/>
+              </form>
+              <form action="<%= root_path %>cron/namespaces/<%= job.namespace %>/jobs/<%= escaped_job_name %>/delete" method="post">
+                <%= csrf_tag %>
+                <input class='btn btn-xs btn-danger pull-left help-block' type="submit" name="delete" value="<%= t('Delete') %>" data-confirm="<%= t('AreYouSureDeleteCronJob', :job => job.name) %>"/>
+              </form>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class='alert alert-success'><%= t('NoCronJobsWereFound') %></div>
+<% end %>
+
