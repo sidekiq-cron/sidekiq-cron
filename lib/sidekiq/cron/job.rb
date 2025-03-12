@@ -132,12 +132,7 @@ module Sidekiq
       def enqueue! time = Time.now.utc
         @last_enqueue_time = time
 
-        klass_const =
-            begin
-              Sidekiq::Cron::Support.constantize(@klass.to_s)
-            rescue NameError
-              nil
-            end
+        klass_const = Sidekiq::Cron::Support.safe_constantize(@klass.to_s)
 
         jid =
           if klass_const
@@ -160,9 +155,10 @@ module Sidekiq
       end
 
       def is_active_job?(klass = nil)
-        @active_job || defined?(::ActiveJob::Base) && (klass || Sidekiq::Cron::Support.constantize(@klass.to_s)) < ::ActiveJob::Base
-      rescue NameError
-        false
+        @active_job || defined?(::ActiveJob::Base) && begin
+                                                        klass ||= Sidekiq::Cron::Support.safe_constantize(@klass.to_s)
+                                                        klass ? klass < ::ActiveJob::Base : false
+                                                      end
       end
 
       def date_as_argument?
@@ -804,11 +800,7 @@ module Sidekiq
       end
 
       def get_job_options(klass, args)
-        klass = klass.is_a?(Class) ? klass : begin
-          Sidekiq::Cron::Support.constantize(klass)
-        rescue NameError
-          # noop
-        end
+        klass = klass.is_a?(Class) ? klass : Sidekiq::Cron::Support.safe_constantize(klass)
 
         if klass.nil?
           # Unknown class
