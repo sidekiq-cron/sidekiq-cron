@@ -531,6 +531,43 @@ You can execute the test suite by running:
 $ bundle exec rake test
 ```
 
+You can test your own application's configuration by loading the schedule in your test suite. Below is an example using RSpec in a Rails project.
+
+```ruby
+# spec/cron_schedule_spec.rb
+require "rails_helper"
+
+RSpec.describe "Cron Schedule" do
+  let(:schedule_loader) { Sidekiq::Cron::ScheduleLoader.new }
+
+  # Confirms that `config.cron_schedule_file` points to a real file.
+  it "has a schedule file" do
+    expect(schedule_loader).to have_schedule_file
+  end
+
+  # Confirms that no jobs in the schedule have an invalid cron string.
+  it "does not return any errors" do
+    expect(schedule_loader.load).to be_empty
+  end
+
+  # May be subject to churn, but adds confidence.
+  it "adds the expected number of jobs" do
+    schedule_loader.load
+    jobs = Sidekiq::Cron::Job.all
+    expect(jobs.size).to eq 5
+  end
+
+  # Confirms that all job classes exist.
+  it "has a valid class for each added job" do
+    schedule_loader.load
+    # Shows that all classes exist (as we can constantize the names without raising).
+    job_classes = Sidekiq::Cron::Job.all.map { |job| job.klass.constantize }
+    # Naive check that classes are sidekiq jobs (as they all have `.perfrom_async`).
+    expect(job_classes).to all(respond_to(:perform_async))
+  end
+end
+```
+
 ### Using Docker
 
 This project uses [Docker Compose](https://docs.docker.com/compose/) in order to orchestrate containers and get the test suite running on you local machine, and here you find the commands to run in order to get a complete environment to build and test this gem:
