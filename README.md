@@ -511,6 +511,45 @@ Sidekiq::Cron.configure do |config|
 end
 ```
 
+## Testing your configuration
+
+You can test your application's configuration by loading the schedule in your test suite. Below is an example using RSpec in a Rails project:
+
+```ruby
+# spec/cron_schedule_spec.rb
+require "rails_helper"
+
+RSpec.describe "Cron Schedule" do
+  let(:schedule_loader) { Sidekiq::Cron::ScheduleLoader.new }
+  let(:all_jobs) { Sidekiq::Cron::Job.all }
+
+  # Confirms that `config.cron_schedule_file` points to a real file.
+  it "has a schedule file" do
+    expect(schedule_loader).to have_schedule_file
+  end
+
+  # Confirms that no jobs in the schedule have an invalid cron string.
+  it "does not return any errors" do
+    expect(schedule_loader.load).to be_empty
+  end
+
+  # May be subject to churn, but adds confidence.
+  it "adds the expected number of jobs" do
+    schedule_loader.load
+    expect(all_jobs.size).to eq 5
+  end
+
+  # Confirms that all job classes exist.
+  it "has a valid class for each added job" do
+    schedule_loader.load
+    # Shows that all classes exist (as we can constantize the names without raising).
+    job_classes = all_jobs.map { |job| job.klass.constantize }
+    # Naive check that classes are sidekiq jobs (as they all have `.perfrom_async`).
+    expect(job_classes).to all(respond_to(:perform_async))
+  end
+end
+```
+
 ## Contributing
 
 **Thanks to all [contributors](https://github.com/sidekiq-cron/sidekiq-cron/graphs/contributors), you’re awesome and this wouldn’t be possible without you!**
