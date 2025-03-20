@@ -16,7 +16,11 @@ module Sidekiq
         end
 
         def redirect_to_previous_or_default
-          redirect params['redirect'] || namespace_redirect_path
+          if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("8.0.0")
+            redirect url_params('redirect') || namespace_redirect_path
+          else
+            redirect params["redirect"] || namespace_redirect_path
+          end
         end
 
         def render_erb(view)
