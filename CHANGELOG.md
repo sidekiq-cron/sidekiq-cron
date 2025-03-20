@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.2.0
+
+- Add support for Sidekiq v8 (https://github.com/sidekiq-cron/sidekiq-cron/pull/531, https://github.com/sidekiq-cron/sidekiq-cron/pull/538)
+- Always show parsed cron expression in web UI (https://github.com/sidekiq-cron/sidekiq-cron/pull/535)
+- Add fallback to .yaml extension (https://github.com/sidekiq-cron/sidekiq-cron/pull/534)
+- Refactor constantize helper to use Object.const_get (https://github.com/sidekiq-cron/sidekiq-cron/pull/541)
+- Allow testing of schedule by library consumers (https://github.com/sidekiq-cron/sidekiq-cron/pull/543)
+
 ## 2.1.0
 
 - Add `available_namespaces` configuration option (https://github.com/sidekiq-cron/sidekiq-cron/pull/524)
