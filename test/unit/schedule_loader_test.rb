@@ -6,6 +6,24 @@ describe 'ScheduleLoader' do
     Sidekiq::Options[:lifecycle_events][:startup].clear
   end
 
+  describe 'Schedule file does not exist' do
+    before do
+      Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_does_not_exist.yml'
+      load 'sidekiq/cron/schedule_loader.rb'
+    end
+
+    it 'does not add a sidekiq lifecycle startup event' do
+      assert_nil Sidekiq::Options[:lifecycle_events][:startup].first
+    end
+
+    sidekiq_version_has_embedded = Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('7.0.0')
+    if sidekiq_version_has_embedded
+      it 'allows for sidekiq embedded configuration to be called without raising' do
+        Sidekiq.configure_embed {}
+      end
+    end
+  end
+
   describe 'Schedule is defined in hash' do
     before do
       Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_hash.yml'

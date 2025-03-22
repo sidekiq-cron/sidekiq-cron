@@ -50,7 +50,7 @@ end
 
 Sidekiq.configure_server do |config|
   schedule_loader = Sidekiq::Cron::ScheduleLoader.new
-  break unless schedule_loader.has_schedule_file?
+  next unless schedule_loader.has_schedule_file?
 
   config.on(:startup) { schedule_loader.load_schedule }
 end
