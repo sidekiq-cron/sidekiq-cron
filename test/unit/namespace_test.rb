@@ -33,9 +33,7 @@ describe 'Namespaces' do
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace1'))
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace2'))
 
-      expected = %w[default namespace1 namespace2]
-
-      assert_equal Sidekiq::Cron::Namespace.all.sort, expected
+      assert_equal %w[default namespace1 namespace2], Sidekiq::Cron::Namespace.all.sort
     end
 
     it 'uses provided namespaces list if available' do
@@ -44,9 +42,7 @@ describe 'Namespaces' do
       Sidekiq::Cron::Job.create(args.merge(namespace: 'implicit-namespace1'))
       Sidekiq::Cron::Job.create(args.merge(namespace: 'implicit-namespace2'))
 
-      expected = %w[namespace1 namespace2]
-
-      assert_equal Sidekiq::Cron::Namespace.all.sort, expected
+      assert_equal %w[default namespace1 namespace2], Sidekiq::Cron::Namespace.all.sort
     end
   end
 
