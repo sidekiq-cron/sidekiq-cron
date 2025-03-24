@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-- **WARNING** The default value for `available_namespaces` has changed from `nil` to `[default_namespace]`. Please refer to the [migration guude](#) for further details.
+- **WARNING** The default value for `available_namespaces` has changed from `nil` to `[default_namespace]`. Please refer to the [migration guide](https://github.com/sidekiq-cron/sidekiq-cron/blob/master/README.md#migrating-to-23) for further details.
 
 ## 2.2.0
 
