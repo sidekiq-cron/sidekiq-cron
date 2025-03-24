@@ -28,7 +28,17 @@ describe 'Namespaces' do
   end
 
   describe 'all' do
-    it 'returns all the existing namespaces' do
+    it 'returns all the existing namespaces if `available_namespaces` is set to `nil`' do
+      Sidekiq::Cron.configuration.available_namespaces = nil
+      # new jobs!
+      Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace1'))
+      Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace2'))
+
+      assert_equal %w[default], Sidekiq::Cron::Namespace.all
+    end
+
+    it 'returns all the existing namespaces if `available_namespaces` is set to `auto`' do
+      Sidekiq::Cron.configuration.available_namespaces = :auto
       # new jobs!
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace1'))
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace2'))
@@ -48,6 +58,8 @@ describe 'Namespaces' do
 
   describe 'count' do
     it 'returns the jobs count per namespaces' do
+      Sidekiq::Cron.configuration.available_namespaces = %w[namespace1 namespace2]
+
       # new jobs!
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace1'))
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace2'))
@@ -66,6 +78,7 @@ describe 'Namespaces' do
 
   describe 'all_with_count' do
     it 'returns an Array of Hashes with the jobs count per namespaces' do
+      Sidekiq::Cron.configuration.available_namespaces = %w[namespace1 namespace2]
       # new jobs!
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace1'))
       Sidekiq::Cron::Job.create(args.merge(namespace: 'namespace2'))
@@ -80,7 +93,7 @@ describe 'Namespaces' do
                   { name: 'namespace1', count: 1 },
                   { name: 'namespace2', count: 2 }]
 
-      assert_equal counts, expected
+      assert_equal expected, counts
     end
   end
 end

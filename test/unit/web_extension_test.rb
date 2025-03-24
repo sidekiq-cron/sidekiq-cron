@@ -16,6 +16,8 @@ describe 'Cron web' do
     Sidekiq::Cron.reset!
     Sidekiq.redis(&:flushdb)
 
+    Sidekiq::Cron.configuration.available_namespaces = :auto
+
     if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("8.0.0")
       Sidekiq::Web.configure do |c|
         # Remove CSRF protection
