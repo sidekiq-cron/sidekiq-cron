@@ -24,6 +24,8 @@ describe 'Performance Poller' do
     Time.stubs(:now).returns(enqueued_time)
   end
 
+  after { @poller.terminate }
+
   it "should enqueue #{JOBS_NUMBER} jobs in less than #{MAX_SECONDS}s" do
     Sidekiq.redis do |conn|
       assert_equal 0, conn.llen("queue:default"), 'Queue should be empty'

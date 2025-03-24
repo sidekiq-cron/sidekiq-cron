@@ -50,6 +50,8 @@ describe 'Cron Poller' do
     Sidekiq::Cron::Poller.new(Sidekiq.const_defined?(:Config) ? Sidekiq::Config.new : {})
   end
 
+  after { poller.terminate }
+
   describe 'on startup' do
     before do
       # A job created without a namespace, like it would have been prior to
