@@ -56,7 +56,7 @@ gem "sidekiq-cron"
   'active_job' => true,  # enqueue job through Active Job interface
   'queue_name_prefix' => 'prefix', # Active Job queue with prefix
   'queue_name_delimiter' => '.', # Active Job queue with custom delimiter (default: '_')
-  'description' => 'A sentence describing what work this job performs'
+  'description' => 'A sentence describing what work this job performs',
   'status' => 'disabled' # default: enabled
 }
 ```
