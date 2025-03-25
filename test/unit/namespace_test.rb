@@ -54,6 +54,14 @@ describe 'Namespaces' do
 
       assert_equal %w[default namespace1 namespace2], Sidekiq::Cron::Namespace.all.sort
     end
+
+    it 'raises `ArgumentError` if unexpected `available_namespaces` value was provided' do
+      Sidekiq::Cron.configuration.available_namespaces = 42
+
+      assert_raises(ArgumentError) do
+        Sidekiq::Cron::Namespace.all
+      end
+    end
   end
 
   describe 'count' do

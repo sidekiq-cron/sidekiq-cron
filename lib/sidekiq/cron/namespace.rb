@@ -5,12 +5,14 @@ module Sidekiq
         namespaces = case (available_namespaces = Sidekiq::Cron.configuration.available_namespaces)
           when NilClass then []
           when Array then available_namespaces
-          else
+          when :auto
             Sidekiq.redis do |conn|
               conn.keys('cron_jobs:*').collect do |key|
                 key.split(':').last
               end
             end
+          else
+            raise ArgumentError, "Unexpected value provided for `available_namespaces`: #{available_namespaces.inspect}"
           end
 
         namespaces | [Sidekiq::Cron.configuration.default_namespace]
