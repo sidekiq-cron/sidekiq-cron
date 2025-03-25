@@ -1,9 +1,9 @@
 require './test/test_helper'
 
+TOKEN = SecureRandom.base64(32).freeze
+
 describe 'Cron web' do
   include Rack::Test::Methods
-
-  TOKEN = SecureRandom.base64(32).freeze
 
   def app
     Sidekiq::Web
@@ -52,7 +52,7 @@ describe 'Cron web' do
 
   it 'display cron web with message - no cron jobs' do
     get '/cron'
-    assert last_response.body.include?('No cron jobs were found')
+    assert_includes last_response.body, 'No cron jobs were found'
   end
 
   it 'display cron web with cron jobs table' do
@@ -60,9 +60,9 @@ describe 'Cron web' do
 
     get '/cron'
     assert_equal 200, last_response.status
-    refute last_response.body.include?('No cron jobs were found')
-    assert last_response.body.include?('table')
-    assert last_response.body.include?("TestNameOfCronJob")
+    refute_includes last_response.body, 'No cron jobs were found'
+    assert_includes last_response.body, 'table'
+    assert_includes last_response.body, "TestNameOfCronJob"
   end
 
   describe "work with cron job" do
@@ -77,7 +77,7 @@ describe 'Cron web' do
     it 'shows namespaced jobs' do
       get '/cron/namespaces/default'
 
-      assert last_response.body.include?(job_name)
+      assert_includes last_response.body, job_name
     end
 
     it 'shows history of a cron job' do
@@ -91,7 +91,7 @@ describe 'Cron web' do
         end
 
       assert jid
-      assert last_response.body.include?(jid)
+      assert_includes last_response.body, jid
     end
 
     it 'redirects to cron path when name not found' do
@@ -187,13 +187,13 @@ describe 'Cron web' do
     it "doesn't show from the default namespace" do
       get '/cron/namespaces/default'
 
-      assert last_response.body.include?('No cron jobs were found')
+      assert_includes last_response.body, 'No cron jobs were found'
     end
 
     it 'shows namespaced jobs' do
       get "/cron/namespaces/#{namespace}"
 
-      assert last_response.body.include?(namespaced_job_name)
+      assert_includes last_response.body, namespaced_job_name
     end
 
     describe 'with a cron job in the default namespace' do
@@ -206,7 +206,7 @@ describe 'Cron web' do
       it 'shows namespaced jobs' do
         get '/cron/namespaces/default'
 
-        assert last_response.body.include?(job_name)
+        assert_includes last_response.body, job_name
       end
 
       it 'disable and enable all cron jobs from my custom namespace only' do

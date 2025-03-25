@@ -1,10 +1,10 @@
 require './test/test_helper'
 require 'benchmark'
 
-describe 'Performance Poller' do
-  JOBS_NUMBER = 10_000
-  MAX_SECONDS = 30
+JOBS_NUMBER = 10_000
+MAX_SECONDS = 30
 
+describe 'Performance Poller' do
   before do
     Sidekiq.redis(&:flushdb)
 
