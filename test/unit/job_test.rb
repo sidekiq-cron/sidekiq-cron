@@ -27,23 +27,23 @@ describe "Cron Job" do
 
   describe "class methods" do
     it "have create method" do
-      assert Sidekiq::Cron::Job.respond_to?(:create)
+      assert_respond_to Sidekiq::Cron::Job, :create
     end
 
     it "have destroy method" do
-      assert Sidekiq::Cron::Job.respond_to?(:destroy)
+      assert_respond_to Sidekiq::Cron::Job, :destroy
     end
 
     it "have count" do
-      assert Sidekiq::Cron::Job.respond_to?(:count)
+      assert_respond_to Sidekiq::Cron::Job, :count
     end
 
     it "have all" do
-      assert Sidekiq::Cron::Job.respond_to?(:all)
+      assert_respond_to Sidekiq::Cron::Job, :all
     end
 
     it "have find" do
-      assert Sidekiq::Cron::Job.respond_to?(:find)
+      assert_respond_to Sidekiq::Cron::Job, :find
     end
   end
 
@@ -53,23 +53,23 @@ describe "Cron Job" do
     end
 
     it "have save method" do
-      assert @job.respond_to?(:save)
+      assert_respond_to @job, :save
     end
 
     it "have valid? method" do
-      assert @job.respond_to?("valid?".to_sym)
+      assert_respond_to @job, "valid?".to_sym
     end
 
     it "have destroy method" do
-      assert @job.respond_to?(:destroy)
+      assert_respond_to @job, :destroy
     end
 
     it "have enabled? method" do
-      assert @job.respond_to?(:enabled?)
+      assert_respond_to @job, :enabled?
     end
 
     it "have disabled? method" do
-      assert @job.respond_to?(:disabled?)
+      assert_respond_to @job, :disabled?
     end
 
     it 'have sort_name - used for sorting enabled disabled jobs on frontend' do
@@ -335,7 +335,7 @@ describe "Cron Job" do
                                  "queue"=>:super,
                                  "backtrace"=>true,
                                  "class"=>"CronTestClassWithQueue"}
-      assert job_args.empty?
+      assert_empty job_args
 
       enqueue_args = job.enqueue_args
       assert enqueue_args[-1].is_a?(Float)
@@ -415,33 +415,33 @@ describe "Cron Job" do
     it 'sets date_as_argument to true' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
-      assert_equal true, stored_job.date_as_argument?
+      assert stored_job.date_as_argument?
     end
 
     it 'sets date_as_argument to false' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
-      assert_equal false, stored_job.date_as_argument?
+      refute stored_job.date_as_argument?
     end
 
     it 'updates date_as_argument from true to false' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
-      assert_equal true, stored_job.date_as_argument?
+      assert stored_job.date_as_argument?
 
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
-      assert_equal false, stored_job.date_as_argument?
+      refute stored_job.date_as_argument?
     end
 
     it 'updates date_as_argument from false to true' do
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: false))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
-      assert_equal false, stored_job.date_as_argument?
+      refute stored_job.date_as_argument?
 
       Sidekiq::Cron::Job.create(@args.merge(date_as_argument: true))
       stored_job = Sidekiq::Cron::Job.find(@args[:name])
-      assert_equal true, stored_job.date_as_argument?
+      assert stored_job.date_as_argument?
     end
   end
 
@@ -469,7 +469,7 @@ describe "Cron Job" do
 
     describe 'with date_as_argument' do
       before do
-        @args.merge!(date_as_argument: true)
+        @args[:date_as_argument] = true
         @job = Sidekiq::Cron::Job.new(@args)
       end
 
@@ -484,7 +484,7 @@ describe "Cron Job" do
 
     describe 'with GlobalID::Identification args' do
       before do
-        @args.merge!(args: Person.new(1))
+        @args[:args] = Person.new(1)
         @job = Sidekiq::Cron::Job.new(@args)
       end
 
@@ -497,7 +497,7 @@ describe "Cron Job" do
 
     describe 'with GlobalID::Identification args in Array' do
       before do
-        @args.merge!(args: [Person.new(1)])
+        @args[:args] = [Person.new(1)]
         @job = Sidekiq::Cron::Job.new(@args)
       end
 
@@ -510,7 +510,7 @@ describe "Cron Job" do
 
     describe 'with GlobalID::Identification args in Hash' do
       before do
-        @args.merge!(args: {person: Person.new(1)})
+        @args[:args] = {person: Person.new(1)}
         @job = Sidekiq::Cron::Job.new(@args)
       end
 
@@ -604,7 +604,7 @@ describe "Cron Job" do
 
     describe 'with date_as_argument' do
       before do
-        @args.merge!(date_as_argument: true)
+        @args[:date_as_argument] = true
         @job = Sidekiq::Cron::Job.new(@args)
       end
 
@@ -778,7 +778,7 @@ describe "Cron Job" do
 
       describe 'with date_as_argument' do
         before do
-          @args.merge!(date_as_argument: true)
+          @args[:date_as_argument] = true
           @job = Sidekiq::Cron::Job.new(@args)
         end
 
@@ -961,7 +961,7 @@ describe "Cron Job" do
 
       describe 'with date_as_argument' do
         before do
-          @args.merge!(date_as_argument: true)
+          @args[:date_as_argument] = true
           @job = Sidekiq::Cron::Job.new(@args)
         end
 
@@ -1019,7 +1019,7 @@ describe "Cron Job" do
 
   describe "nonexisting job" do
     it "not be found" do
-      assert Sidekiq::Cron::Job.find("nonexisting").nil?, "should return nil"
+      assert_nil Sidekiq::Cron::Job.find("nonexisting"), "should return nil"
     end
   end
 

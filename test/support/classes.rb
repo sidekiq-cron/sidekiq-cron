@@ -43,7 +43,7 @@ class Person
     @id = id
   end
 
-  def to_global_id(options = {})
+  def to_global_id(_options = {})
     super app: "app"
   end
 
