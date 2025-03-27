@@ -58,7 +58,7 @@ module Sidekiq
         @cron_schedule_file = 'config/schedule.yml'
         @cron_history_size = 10
         @default_namespace = 'default'
-        @available_namespaces = nil
+        @available_namespaces = [@default_namespace]
         @natural_cron_parsing_mode = :single
         @reschedule_grace_period = 60
       end

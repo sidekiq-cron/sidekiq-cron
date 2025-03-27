@@ -6,6 +6,8 @@ describe "Cron Job" do
   before do
     Sidekiq::Cron.reset!
 
+    Sidekiq::Cron.configuration.available_namespaces = :auto
+
     # Clear all previous saved data from Redis.
     Sidekiq.redis do |conn|
       conn.keys("cron_job*").each do |key|
@@ -1288,7 +1290,7 @@ describe "Cron Job" do
           assert_equal 2, Sidekiq::Cron::Job.all('*').size, 'Should have 2 jobs'
 
           Sidekiq::Cron.configuration.available_namespaces = [custom_namespace]
-          assert_equal 1, Sidekiq::Cron::Job.all('*').size, 'Should have 1 job'
+          assert_equal 3, Sidekiq::Cron::Job.all('*').size, 'Should have 3 job'
         end
       end
     end

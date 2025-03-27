@@ -73,7 +73,7 @@ Sidekiq::Cron.configure do |config|
   config.cron_schedule_file = 'config/my_schedule.yml' # Default is 'config/schedule.yml'
   config.cron_history_size = 20 # Default is 10
   config.default_namespace = 'statistics' # Default is 'default'
-  config.available_namespaces = %w[statistics maintenance billing] # Default is `nil`
+  config.available_namespaces = %w[statistics maintenance billing] # Default is `[config.default_namespace]`
   config.natural_cron_parsing_mode = :strict # Default is :single
   config.reschedule_grace_period = 300 # Default is 60
 end
@@ -163,7 +163,7 @@ In the case you'd like to change this value, you can change it via the following
 
 ```ruby
 Sidekiq::Cron.configure do |config|
-  config.default_namespace = 'statics'
+  config.default_namespace = 'statistics'
 end
 ```
 
@@ -179,11 +179,21 @@ Sidekiq::Cron::Job.all('YOUR_OLD_NAMESPACE_NAME').each { |job| job.destroy }
 
 #### Available namespaces
 
-By default, Sidekiq Cron retrieves all existing jobs from Redis to determine the namespaces your application uses. However, this approach may not be suitable for large Redis installations. To address this, you can explicitly specify the list of available namespaces using the `available_namespaces` configuration option.
+By default, Sidekiq Cron uses the available_namespaces configuration option to determine which namespaces your application utilizes. The default namespace (`"default"`, by default) is always included in the list of available namespaces.
 
-If `available_namespaces` is set and a job is created with an unexpected namespace, a warning will be printed, and the job will be assigned to the default namespace.
+If you want Sidekiq Cron to automatically detect existing namespaces from the Redis database, you can set `available_namespaces` to the special option `:auto`.
 
-For more details and discussion, see [this issue](https://github.com/sidekiq-cron/sidekiq-cron/issues/516).
+If available_namespaces is explicitly set and a job is created with an unexpected namespace, a warning will be printed, and the job will be assigned to the default namespace.
+
+#### Migrating to 2.3
+
+As discussed in [this issue](https://github.com/sidekiq-cron/sidekiq-cron/issues/516), the approach introduced in Sidekiq Cron 2.0 for determining available namespaces using the `KEYS` command is not acceptable. Therefore, starting from version 2.3, namespacing has been reworked:
+
+- If you were not using the namespacing feature, no action is required. You can even remove `available_namespaces = %w[default]`, as it is now the default.
+
+- If you were using the namespacing feature and explicitly specified available namespaces as a list, no changes are needed.
+
+- If you were using the namespacing feature and relied on automatic namespace inference, you should either specify all used namespaces explicitly or set `available_namespaces` to `:auto` to maintain automatic detection. However, note that this approach does not scale well (see the referenced issue for details).
 
 #### Usage
 
