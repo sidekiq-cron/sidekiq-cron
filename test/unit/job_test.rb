@@ -1102,7 +1102,7 @@ describe "Cron Job" do
   end
 
   describe "initialize args" do
-    it "from JSON" do
+    it "from JSON as array" do
       args = {
         name: "Test",
         cron: "* * * * *",
@@ -1111,6 +1111,19 @@ describe "Cron Job" do
       }
       Sidekiq::Cron::Job.new(args).tap do |job|
         assert_equal job.args, ["123"]
+        assert_equal job.name, "Test"
+      end
+    end
+
+    it "from JSON as hash" do
+      args = {
+        name: "Test",
+        cron: "* * * * *",
+        klass: "CronTestClass",
+        args: JSON.dump({ "abc" => "123" })
+      }
+      Sidekiq::Cron::Job.new(args).tap do |job|
+        assert_equal job.args, [{ "abc" => "123" }]
         assert_equal job.name, "Test"
       end
     end
@@ -1137,6 +1150,19 @@ describe "Cron Job" do
       }
       Sidekiq::Cron::Job.new(args).tap do |job|
         assert_equal job.args, ["This is array"]
+        assert_equal job.name, "Test"
+      end
+    end
+
+    it "from Hash" do
+      args = {
+        name: "Test",
+        cron: "* * * * *",
+        klass: "CronTestClass",
+        args: { "abc" => "123" }
+      }
+      Sidekiq::Cron::Job.new(args).tap do |job|
+        assert_equal job.args, [{ "abc" => "123" }]
         assert_equal job.name, "Test"
       end
     end

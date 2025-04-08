@@ -633,8 +633,7 @@ module Sidekiq
           [convert_to_global_id_hash(args)]
         when String
           begin
-            parsed_args = Sidekiq.load_json(args)
-            symbolize_args? ? symbolize_args(parsed_args) : parsed_args
+            parse_args(Sidekiq.load_json(args))
           rescue JSON::ParserError
             [*args]
           end
