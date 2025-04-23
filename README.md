@@ -540,18 +540,18 @@ RSpec.describe "Cron Schedule" do
 
   # Confirms that no jobs in the schedule have an invalid cron string.
   it "does not return any errors" do
-    expect(schedule_loader.load).to be_empty
+    expect(schedule_loader.load_schedule).to be_empty
   end
 
   # May be subject to churn, but adds confidence.
   it "adds the expected number of jobs" do
-    schedule_loader.load
+    schedule_loader.load_schedule
     expect(all_jobs.size).to eq 5
   end
 
   # Confirms that all job classes exist.
   it "has a valid class for each added job" do
-    schedule_loader.load
+    schedule_loader.load_schedule
     # Shows that all classes exist (as we can constantize the names without raising).
     job_classes = all_jobs.map { |job| job.klass.constantize }
     # Naive check that classes are sidekiq jobs (as they all have `.perfrom_async`).
