@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-- **WARNING** The default value for `available_namespaces` has changed from `nil` to `[default_namespace]`. Please refer to the [migration guide](https://github.com/sidekiq-cron/sidekiq-cron/blob/master/README.md#migrating-to-23) for further details.
+## 2.3.0
+
+- **WARNING** The default value for `available_namespaces` has changed from `nil` to `[default_namespace]`. Please refer to the [migration guide](https://github.com/sidekiq-cron/sidekiq-cron/blob/master/README.md#migrating-to-23) for further details (https://github.com/sidekiq-cron/sidekiq-cron/pull/552)
+- Fix deprecation warning for using raw params in WEB extension (https://github.com/sidekiq-cron/sidekiq-cron/pull/547)
+- Allow for sidekiq embedded configuration (https://github.com/sidekiq-cron/sidekiq-cron/pull/549)
+- Load schedule file within sidekiq callback (https://github.com/sidekiq-cron/sidekiq-cron/pull/550)
+- Fix missing default namespace if namespaces are explicitly provided (https://github.com/sidekiq-cron/sidekiq-cron/pull/551)
 
 ## 2.2.0
 
