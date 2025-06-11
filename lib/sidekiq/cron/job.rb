@@ -17,8 +17,8 @@ module Sidekiq
       # Use serialize/deserialize key of GlobalID.
       GLOBALID_KEY = "_sc_globalid"
 
-      attr_accessor :name, :namespace, :cron, :description, :klass, :args, :message
-      attr_reader   :cron_expression_string, :last_enqueue_time, :fetch_missing_args, :source
+      attr_accessor :name, :namespace, :cron, :description, :klass, :message
+      attr_reader   :last_enqueue_time, :fetch_missing_args, :source, :args
 
       def initialize input_args = {}
         args = Hash[input_args.map{ |k, v| [k.to_s, v] }]
@@ -379,7 +379,7 @@ module Sidekiq
 
       def human_cron
         Cronex::ExpressionDescriptor.new(cron).description
-      rescue => e
+      rescue
         cron
       end
 
