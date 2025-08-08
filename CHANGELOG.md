@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.3.1
+
+- Fix manually launch enqueue job not working from web UI (https://github.com/sidekiq-cron/sidekiq-cron/pull/564)
+
 ## 2.3.0
 
 - **WARNING** The default value for `available_namespaces` has changed from `nil` to `[default_namespace]`. Please refer to the [migration guide](https://github.com/sidekiq-cron/sidekiq-cron/blob/master/README.md#migrating-to-23) for further details (https://github.com/sidekiq-cron/sidekiq-cron/pull/552)
