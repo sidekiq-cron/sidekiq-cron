@@ -20,8 +20,16 @@ describe 'Cron web' do
 
     if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("8.0.0")
       Sidekiq::Web.configure do |c|
-        # Remove CSRF protection
-        # See: https://github.com/sidekiq/sidekiq/blob/0a1bce30e562357e0bb60ce84d78fe5d8446bed9/test/webext_test.rb#L37
+        # Disable CSRF protection in Sidekiq Web.
+        #
+        # - The `c[:csrf]` setting is supported starting from Sidekiq 8.0.5.
+        #   See: https://github.com/sidekiq/sidekiq/blob/01bc5c963d9927ff27c62b118196972486a8f9a4/lib/sidekiq/web.rb#L112
+        #
+        # - `c.middlewares.clear` was previously used to remove CSRF protection,
+        #   but as of Sidekiq 8.0.4, this approach is no longer effective.
+        #   See: https://github.com/sidekiq/sidekiq/commit/ff0a840f373cf545373a34cbeacb49bf5138a2f8
+        #
+        c[:csrf] = false
         c.middlewares.clear
       end
     end

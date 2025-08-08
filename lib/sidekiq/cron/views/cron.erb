@@ -5,7 +5,7 @@
       <small>(<%= @current_namespace %>)</small>
     </h2>
     <% if @cron_jobs.size > 0 %>
-      <form class="filter">
+      <div class="filter buttons-row">
         <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/delete" method="post">
           <%= csrf_tag %>
           <input class="btn btn-danger" type="submit" name="delete" value="<%= t('DeleteAll') %>" data-confirm="<%= t('AreYouSureDeleteCronJobs') %>" />
@@ -22,7 +22,7 @@
           <%= csrf_tag %>
           <input class="btn btn-primary" type="submit" name="enqueue" value="<%= t('EnqueueAll') %>" data-confirm="<%= t('AreYouSureEnqueueCronJobs') %>" />
         </form>
-      </form>
+      </div>
     <% end %>
   </header>
   <!-- Namespaces -->
