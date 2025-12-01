@@ -2,23 +2,24 @@
   <header>
     <h2>
       <%= t('CronJobs') %>
-      <small>(<%= @current_namespace %>)</small>
+      <small>(<%= CGI.escapeHTML(@current_namespace.to_s) %>)</small>
     </h2>
     <% if @cron_jobs.size > 0 %>
+      <% escaped_current_namespace = CGI.escape(@current_namespace) %>
       <div class="filter buttons-row">
-        <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/delete" method="post">
+        <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/delete" method="post">
           <%= csrf_tag %>
           <input class="btn btn-danger" type="submit" name="delete" value="<%= t('DeleteAll') %>" data-confirm="<%= t('AreYouSureDeleteCronJobs') %>" />
         </form>
-        <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/disable" method="post">
+        <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/disable" method="post">
           <%= csrf_tag %>
           <input class="btn btn-primary" type="submit" name="enqueue" value="<%= t('DisableAll') %>" />
         </form>
-        <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enable" method="post">
+        <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/enable" method="post">
           <%= csrf_tag %>
           <input class="btn btn-primary" type="submit" name="enqueue" value="<%= t('EnableAll') %>" />
         </form>
-        <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enqueue" method="post">
+        <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/enqueue" method="post">
           <%= csrf_tag %>
           <input class="btn btn-primary" type="submit" name="enqueue" value="<%= t('EnqueueAll') %>" data-confirm="<%= t('AreYouSureEnqueueCronJobs') %>" />
         </form>

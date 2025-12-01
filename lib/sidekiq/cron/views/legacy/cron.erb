@@ -2,24 +2,25 @@
   <div class='col-sm-5 pull-left'>
     <h3>
       <%= t('CronJobs') %>
-      <small><%= @current_namespace %></small>
+      <small><%= CGI.escapeHTML(@current_namespace.to_s) %></small>
     </h3>
   </div>
   <div class='col-sm-7 pull-right h2'>
     <% if @cron_jobs.size > 0 %>
-      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/delete" method="post" class="pull-right">
+      <% escaped_current_namespace = CGI.escape(@current_namespace) %>
+      <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/delete" method="post" class="pull-right">
         <%= csrf_tag %>
         <input class="btn btn-danger" type="submit" name="delete" value="<%= t('DeleteAll') %>" data-confirm="<%= t('AreYouSureDeleteCronJobs') %>" />
       </form>
-      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/disable" method="post" class="pull-right">
+      <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/disable" method="post" class="pull-right">
         <%= csrf_tag %>
         <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('DisableAll') %>" />
       </form>
-      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enable" method="post" class="pull-right">
+      <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/enable" method="post" class="pull-right">
         <%= csrf_tag %>
         <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('EnableAll') %>" />
       </form>
-      <form action="<%= root_path %>cron/namespaces/<%= @current_namespace %>/all/enqueue" method="post" class="pull-right">
+      <form action="<%= root_path %>cron/namespaces/<%= escaped_current_namespace %>/all/enqueue" method="post" class="pull-right">
         <%= csrf_tag %>
         <input class="btn btn-warn" type="submit" name="enqueue" value="<%= t('EnqueueAll') %>" data-confirm="<%= t('AreYouSureEnqueueCronJobs') %>" />
       </form>
