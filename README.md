@@ -521,6 +521,14 @@ Sidekiq::Cron.configure do |config|
 end
 ```
 
+Sidekiq will internally determine the process count by checking Redis but if polling has been disabled from some Sidekiq processes, as explained above, that count might be incorrect. In that case, it is possible to override the default process count for Sidekiq Cron. This affects the way the random poll interval is calculated internally.
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.cron_process_count_override = 2
+end
+```
+
 ## Testing your configuration
 
 You can test your application's configuration by loading the schedule in your test suite. Below is an example using RSpec in a Rails project:

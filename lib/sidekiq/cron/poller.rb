@@ -43,6 +43,10 @@ module Sidekiq
       def poll_interval_average(process_count = 1)
         @config[:cron_poll_interval]
       end
+
+      def process_count
+        @config[:cron_process_count_override] || super
+      end
     end
   end
 end
