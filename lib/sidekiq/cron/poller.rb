@@ -45,7 +45,7 @@ module Sidekiq
       end
 
       def process_count
-        @config[:cron_process_count_override] || super
+        @config[:cron_poll_process_count] || super
       end
     end
   end
