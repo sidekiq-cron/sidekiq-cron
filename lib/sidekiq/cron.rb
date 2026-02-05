@@ -25,6 +25,15 @@ module Sidekiq
       # This value controls how many past job executions are stored.
       attr_accessor :cron_history_size
 
+      # The number of polling processes for Sidekiq Cron.
+      #
+      # It is configurable to handle the case where only a subset of Sidekiq process
+      # are used for Sidekiq Cron polling where the default would be to poll from all processes.
+      #
+      # @note The process count is used internally to determine the random poll interval.
+      # @see https://github.com/sidekiq/sidekiq/blob/e03b317f2070655c51fad838b0ecfb99c6d6f853/lib/sidekiq/scheduled.rb#L129-L160
+      attr_reader :cron_poll_process_count
+
       # The default namespace is used when no namespace is specified.
       attr_accessor :default_namespace
 
@@ -69,6 +78,14 @@ module Sidekiq
         end
 
         @natural_cron_parsing_mode = mode
+      end
+
+      def cron_poll_process_count=(count)
+        unless count.is_a?(Integer) && count.positive?
+          raise ArgumentError, "invalid cron process count: #{count.inspect}"
+        end
+
+        @cron_poll_process_count = count
       end
     end
   end

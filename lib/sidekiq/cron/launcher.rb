@@ -13,6 +13,7 @@ module Sidekiq
       # Add cron poller and execute normal initialize of Sidekiq launcher.
       def initialize(config, **kwargs)
         config[:cron_poll_interval] = Sidekiq::Cron.configuration.cron_poll_interval.to_i
+        config[:cron_poll_process_count] = Sidekiq::Cron.configuration.cron_poll_process_count
 
         @cron_poller = Sidekiq::Cron::Poller.new(config) if config[:cron_poll_interval] > 0
         super
