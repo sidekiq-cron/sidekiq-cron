@@ -62,7 +62,12 @@ module Sidekiq
       # jobs that missed their schedules during the deployment. E.g., jobs that run once a day.
       attr_accessor :reschedule_grace_period
 
+      # Whether Sidekiq-Cron is enabled. When set to false, the schedule file will not be loaded
+      # on startup. Defaults to true.
+      attr_accessor :enabled
+
       def initialize
+        @enabled = true
         @cron_poll_interval = 30
         @cron_schedule_file = 'config/schedule.yml'
         @cron_history_size = 10
