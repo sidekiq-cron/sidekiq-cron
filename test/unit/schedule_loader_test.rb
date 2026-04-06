@@ -8,6 +8,19 @@ describe 'ScheduleLoader' do
     load 'sidekiq/cron/schedule_loader.rb'
   end
 
+  describe 'Sidekiq::Cron is disabled' do
+    before do
+      Sidekiq::Cron.configuration.enabled = false
+      Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_hash.yml'
+    end
+
+    it 'does not load the schedule file' do
+      Sidekiq::Cron::Job.expects(:load_from_hash!).never
+      Sidekiq::Cron::Job.expects(:load_from_array!).never
+      Sidekiq::Options[:lifecycle_events][:startup].first.call
+    end
+  end
+
   describe 'Schedule file does not exist' do
     before do
       Sidekiq::Cron.configuration.cron_schedule_file = 'test/unit/fixtures/schedule_does_not_exist.yml'
