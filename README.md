@@ -69,6 +69,7 @@ All configuration options:
 
 ```ruby
 Sidekiq::Cron.configure do |config|
+  config.enabled = false # Default is true
   config.cron_poll_interval = 10 # Default is 30
   config.cron_schedule_file = 'config/my_schedule.yml' # Default is 'config/schedule.yml'
   config.cron_history_size = 20 # Default is 10
@@ -78,6 +79,8 @@ Sidekiq::Cron.configure do |config|
   config.reschedule_grace_period = 300 # Default is 60
 end
 ```
+
+When `enabled` is set to `false`, Sidekiq-Cron will skip loading the schedule file on startup. This is useful for environments where you want Sidekiq running but don't need cron job scheduling (e.g., specific worker processes or staging environments).
 
 If you are using Rails, you should add the above block inside an initializer (`config/initializers/sidekiq-cron.rb`).
 
