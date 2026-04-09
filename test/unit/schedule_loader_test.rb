@@ -19,6 +19,16 @@ describe 'ScheduleLoader' do
       Sidekiq::Cron::Job.expects(:load_from_array!).never
       Sidekiq::Options[:lifecycle_events][:startup].first.call
     end
+
+    it 'logs that Sidekiq-Cron is disabled' do
+      logged_messages = []
+
+      Sidekiq.logger.stub(:info, proc { |msg, &block| logged_messages << (block ? block.call : msg) }) do
+        Sidekiq::Options[:lifecycle_events][:startup].first.call
+      end
+
+      assert_includes logged_messages, "Cron Jobs - skipping schedule loading, Sidekiq-Cron is disabled"
+    end
   end
 
   describe 'Schedule file does not exist' do

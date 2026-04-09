@@ -50,7 +50,10 @@ end
 
 Sidekiq.configure_server do |config|
   config.on(:startup) do
-    next unless Sidekiq::Cron.configuration.enabled
+    unless Sidekiq::Cron.configuration.enabled
+      Sidekiq.logger.info { "Cron Jobs - skipping schedule loading, Sidekiq-Cron is disabled" }
+      next
+    end
 
     schedule_loader = Sidekiq::Cron::ScheduleLoader.new
     next unless schedule_loader.has_schedule_file?
