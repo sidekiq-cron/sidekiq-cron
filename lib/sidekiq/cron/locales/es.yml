@@ -18,5 +18,5 @@ es:
   LastEnqueued: Último trabajo en cola
   NoCronJobsWereFound: No se encontraron trabajos
   NoHistoryWereFound: No se encontró histórico de trabajos
-  disabled: activo
-  enabled: inactivo
+  disabled: inactivo
+  enabled: activo
