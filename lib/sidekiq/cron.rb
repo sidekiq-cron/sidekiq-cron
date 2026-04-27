@@ -14,6 +14,10 @@ module Sidekiq
     end
 
     class Configuration
+      # Whether Sidekiq-Cron is enabled. When set to false, the schedule file will not be loaded
+      # on startup. Defaults to true.
+      attr_accessor :enabled
+
       # The interval, in seconds, at which to poll for scheduled cron jobs.
       # This determines how frequently the scheduler checks for jobs to enqueue.
       attr_accessor :cron_poll_interval
@@ -63,6 +67,7 @@ module Sidekiq
       attr_accessor :reschedule_grace_period
 
       def initialize
+        @enabled = true
         @cron_poll_interval = 30
         @cron_schedule_file = 'config/schedule.yml'
         @cron_history_size = 10

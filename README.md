@@ -69,6 +69,7 @@ All configuration options:
 
 ```ruby
 Sidekiq::Cron.configure do |config|
+  config.enabled = false # Default is true
   config.cron_poll_interval = 10 # Default is 30
   config.cron_schedule_file = 'config/my_schedule.yml' # Default is 'config/schedule.yml'
   config.cron_history_size = 20 # Default is 10
@@ -518,6 +519,14 @@ When running with many Sidekiq processes, the polling can add significant load t
 ```ruby
 Sidekiq::Cron.configure do |config|
   config.cron_poll_interval = 0
+end
+```
+
+You can also disable the entire engine by setting `enabled` to `false`. When disabled, Sidekiq-Cron will skip loading the schedule file on startup, which is useful for environments or specific Sidekiq processes where you don't need cron job scheduling at all:
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.enabled = false
 end
 ```
 
