@@ -80,8 +80,6 @@ Sidekiq::Cron.configure do |config|
 end
 ```
 
-When `enabled` is set to `false`, Sidekiq-Cron will skip loading the schedule file on startup. This is useful for environments where you want Sidekiq running but don't need cron job scheduling (e.g., specific worker processes or staging environments).
-
 If you are using Rails, you should add the above block inside an initializer (`config/initializers/sidekiq-cron.rb`).
 
 ### Time, cron and Sidekiq-Cron
