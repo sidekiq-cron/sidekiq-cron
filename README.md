@@ -524,6 +524,14 @@ Sidekiq::Cron.configure do |config|
 end
 ```
 
+You can also disable the entire engine by setting `enabled` to `false`. When disabled, Sidekiq-Cron will skip loading the schedule file on startup, which is useful for environments or specific Sidekiq processes where you don't need cron job scheduling at all:
+
+```ruby
+Sidekiq::Cron.configure do |config|
+  config.enabled = false
+end
+```
+
 Sidekiq will internally determine the process count by checking Redis but if polling has been disabled from some Sidekiq processes by setting the cron poll interval to zero, as explained above, that count might be incorrect. In that case, it is possible to override the default process count for Sidekiq Cron. This affects the way the random poll interval is calculated internally.
 
 ```ruby
