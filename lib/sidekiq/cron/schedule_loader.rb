@@ -12,6 +12,8 @@ module Sidekiq
       end
 
       def has_schedule_file?
+        return false if schedule_file_name.nil?
+
         File.exist?(schedule_file_name)
       end
 
@@ -30,6 +32,8 @@ module Sidekiq
       end
 
       def schedule_file_name
+        return if schedule_file_name_from_config.nil?
+
         @schedule_file_name ||= yml_to_yaml_unless_file_exists(schedule_file_name_from_config)
       end
 
