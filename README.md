@@ -71,7 +71,7 @@ All configuration options:
 Sidekiq::Cron.configure do |config|
   config.enabled = false # Default is true
   config.cron_poll_interval = 10 # Default is 30
-  config.cron_schedule_file = 'config/my_schedule.yml' # Default is 'config/schedule.yml'
+  config.cron_schedule_file = 'config/my_schedule.yml' # Default is 'config/schedule.yml'. Set to `nil` to disable automatic loading.
   config.cron_history_size = 20 # Default is 10
   config.default_namespace = 'statistics' # Default is 'default'
   config.available_namespaces = %w[statistics maintenance billing] # Default is `[config.default_namespace]`
@@ -404,6 +404,8 @@ There are multiple ways to load the jobs from a YAML file
     # config/initializers/sidekiq.rb
 
     Sidekiq.configure_server do |config|
+      config.cron_schedule_file = nil # disable automatically loading from default `config/schedule.yml` if available
+
       config.on(:startup) do
         schedule_file = "config/users_schedule.yml"
 
@@ -415,6 +417,9 @@ There are multiple ways to load the jobs from a YAML file
       end
     end
     ```
+
+    **Important**: When you manually load schedules, you need to set the `config.cron_schedule_file` to `nil` to prevent the gem from 
+    trying to load from `config/schedule.yml` and overriding your previously loaded content.
 
 ### Finding jobs
 
