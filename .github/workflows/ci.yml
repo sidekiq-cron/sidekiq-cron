@@ -50,3 +50,36 @@ jobs:
       run: bundle exec rake test
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
+
+  dragonfly:
+    runs-on: ubuntu-latest
+    services:
+      dragonfly:
+        image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.40.0
+        ports:
+          - 6379:6379
+    env:
+      REDIS_URL: redis://127.0.0.1:6379/0
+      SIDEKIQ_VERSION: "~> 8"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        ruby-version: "3.4"
+    - name: Wait for Dragonfly
+      run: |
+        bundle exec ruby -r redis -e '
+          30.times do
+            begin
+              Redis.new(url: ENV.fetch("REDIS_URL")).ping
+              exit 0
+            rescue Redis::BaseError, Errno::ECONNREFUSED
+              sleep 1
+            end
+          end
+          abort "Dragonfly did not become ready"
+        '
+    - name: Run tests against Dragonfly
+      run: bundle exec rake test
