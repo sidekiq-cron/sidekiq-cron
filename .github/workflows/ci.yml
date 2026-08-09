@@ -70,12 +70,15 @@ jobs:
         ruby-version: "3.4"
     - name: Wait for Dragonfly
       run: |
-        bundle exec ruby -r redis -e '
+        ruby -rsocket -e '
           30.times do
             begin
-              Redis.new(url: ENV.fetch("REDIS_URL")).ping
-              exit 0
-            rescue Redis::BaseError, Errno::ECONNREFUSED
+              socket = TCPSocket.new("127.0.0.1", 6379)
+              socket.write("*1\r\n$4\r\nPING\r\n")
+              reply = socket.gets
+              socket.close
+              exit 0 if reply&.start_with?("+PONG")
+            rescue Errno::ECONNREFUSED, IOError, SystemCallError
               sleep 1
             end
           end
