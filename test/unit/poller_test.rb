@@ -86,6 +86,30 @@ describe 'Cron Poller' do
     end
   end
 
+  it 'enqueues only jobs from cron_poll_namespace' do
+    Sidekiq::Cron.configure do |config|
+      config.cron_poll_namespace = 'domain_a'
+    end
+
+    job = mock('job')
+    job.expects(:valid?).returns(true)
+    job.expects(:test_and_enqueue_for_time!).once
+
+    Sidekiq::Cron::Job.expects(:all).with('domain_a').returns([job])
+
+    poller.enqueue
+  end
+
+  it 'polls all namespaces when cron_poll_namespace is nil' do
+    job = mock('job')
+    job.expects(:valid?).returns(true)
+    job.expects(:test_and_enqueue_for_time!).once
+
+    Sidekiq::Cron::Job.expects(:all).with('*').returns([job])
+
+    poller.enqueue
+  end
+
   it 'not enqueue any job - new jobs' do
     now = Time.now.utc + 3600
     enqueued_time = Time.new(now.year, now.month, now.day, now.hour, 5, 1)
