@@ -1688,7 +1688,7 @@ describe "Cron Job" do
 
       describe "with string keys" do
         it "create new jobs and update old one with same settings with load_from_array!" do
-          Sidekiq::Cron::Job.expects(:destroy_removed_jobs).with(job_names)
+          Sidekiq::Cron::Job.expects(:destroy_removed_jobs).with(job_names, namespace: nil)
 
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
           out = Sidekiq::Cron::Job.load_from_array! @jobs_array
@@ -1700,13 +1700,53 @@ describe "Cron Job" do
       describe "with symbol keys" do
         it "create new jobs and update old one with same settings with load_from_array!" do
           @jobs_array.map! { |job| job.transform_keys(&:to_sym) }
-          Sidekiq::Cron::Job.expects(:destroy_removed_jobs).with(job_names)
+          Sidekiq::Cron::Job.expects(:destroy_removed_jobs).with(job_names, namespace: nil)
 
           assert_equal Sidekiq::Cron::Job.all.size, 0, "Should have 0 jobs before load"
           out = Sidekiq::Cron::Job.load_from_array! @jobs_array
           assert_equal out.size, 0, "should have 0 error"
           assert_equal Sidekiq::Cron::Job.all.size, 2, "Should have 2 jobs after load"
         end
+      end
+    end
+
+    describe "from array with namespace in options" do
+      before do
+        Sidekiq::Cron.configuration.available_namespaces = %w[domain_a domain_b]
+      end
+
+      it "prunes and creates jobs in the same namespace from options" do
+        Sidekiq::Cron::Job.create(
+          name: 'domain_a_job',
+          cron: '* * * * *',
+          klass: 'CronTestClass',
+          namespace: 'domain_a',
+          source: 'schedule'
+        )
+        Sidekiq::Cron::Job.create(
+          name: 'stale_domain_a_job',
+          cron: '* * * * *',
+          klass: 'CronTestClass',
+          namespace: 'domain_a',
+          source: 'schedule'
+        )
+        Sidekiq::Cron::Job.create(
+          name: 'domain_b_job',
+          cron: '* * * * *',
+          klass: 'CronTestClass',
+          namespace: 'domain_b',
+          source: 'schedule'
+        )
+
+        Sidekiq::Cron::Job.load_from_array!(
+          [{ 'name' => 'domain_a_job', 'cron' => '* * * * *', 'class' => 'CronTestClass' }],
+          { source: 'schedule', namespace: 'domain_a' }
+        )
+
+        assert Sidekiq::Cron::Job.find('domain_a_job', 'domain_a')
+        refute Sidekiq::Cron::Job.find('stale_domain_a_job', 'domain_a')
+        assert Sidekiq::Cron::Job.find('domain_b_job', 'domain_b')
+        assert_equal 'domain_a', Sidekiq::Cron::Job.find('domain_a_job', 'domain_a').namespace
       end
     end
 

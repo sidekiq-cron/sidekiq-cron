@@ -52,6 +52,10 @@ module Sidekiq
       # a warning will be logged, and the job will be assigned to the default namespace.
       attr_accessor :available_namespaces
 
+      # The namespace to poll for cron jobs. When set, the poller will only fetch and
+      # enqueue jobs from this namespace. When nil (default), polls all namespaces.
+      attr_accessor :cron_poll_namespace
+
       # The parsing mode when using the natural language cron syntax from the `fugit` gem.
       #
       # :single -- use the first parsed cron line and ignore the rest (default)
@@ -75,6 +79,7 @@ module Sidekiq
         @available_namespaces = [@default_namespace]
         @natural_cron_parsing_mode = :single
         @reschedule_grace_period = 60
+        @cron_poll_namespace = nil
       end
 
       def natural_cron_parsing_mode=(mode)

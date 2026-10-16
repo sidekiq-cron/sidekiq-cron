@@ -18,7 +18,9 @@ module Sidekiq
 
       def enqueue
         time = Time.now.utc
-        Sidekiq::Cron::Job.all('*').each do |job|
+        namespace = Sidekiq::Cron.configuration.cron_poll_namespace || '*'
+        
+        Sidekiq::Cron::Job.all(namespace).each do |job|
           enqueue_job(job, time)
         end
       rescue => ex
