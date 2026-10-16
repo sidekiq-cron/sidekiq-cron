@@ -17,11 +17,8 @@ Gem::Specification.new do |s|
   ]
   s.files = Dir.glob('lib/**/*') + [
     "CHANGELOG.md",
-    "Gemfile",
     "LICENSE.txt",
-    "Rakefile",
     "README.md",
-    "sidekiq-cron.gemspec",
   ]
 
   s.required_ruby_version = ">= 2.7"
