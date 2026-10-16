@@ -302,7 +302,7 @@ module Sidekiq
             end
           end
         end
-        job_hashes.compact.reject(&:empty?).collect do |h|
+        job_hashes.compact.map { |h| normalize_redis_hash(h) }.reject(&:empty?).collect do |h|
           # No need to fetch missing args from Redis since we just got this hash from there
           Sidekiq::Cron::Job.new(h.merge(fetch_missing_args: false))
         end
@@ -326,10 +326,20 @@ module Sidekiq
         output = nil
         Sidekiq.redis do |conn|
           if exists? name, namespace
-            output = Job.new conn.hgetall(redis_key(name, namespace))
+            output = Job.new normalize_redis_hash(conn.hgetall(redis_key(name, namespace)))
           end
         end
         output if output && output.valid?
+      end
+
+      # Redis clients using RESP3 may return HGETALL as a flat array instead
+      # of a Hash. Normalize both response shapes before constructing a job.
+      def self.normalize_redis_hash(value)
+        return value unless value.is_a?(Array)
+        return value.to_h if value.all? { |entry| entry.is_a?(Array) && entry.length == 2 }
+        return value unless value.length.even?
+
+        Hash[*value]
       end
 
       # Create new instance of cron job.
@@ -705,7 +715,7 @@ module Sidekiq
         Sidekiq.redis do |conn|
           old_job_keys = conn.smembers('cron_jobs')
           old_job_keys.each do |old_job|
-            old_job_hash = conn.hgetall(old_job)
+            old_job_hash = normalize_redis_hash(conn.hgetall(old_job))
             old_job_hash[:namespace] = Sidekiq::Cron.configuration.default_namespace
             create(old_job_hash)
             conn.srem('cron_jobs', old_job)

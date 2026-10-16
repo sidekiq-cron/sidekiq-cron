@@ -47,6 +47,13 @@ describe "Cron Job" do
     it "have find" do
       assert_respond_to Sidekiq::Cron::Job, :find
     end
+
+    it "normalizes flat RESP3 HGETALL responses" do
+      assert_equal({ "name" => "Test", "cron" => "* * * * *" },
+                   Sidekiq::Cron::Job.normalize_redis_hash(["name", "Test", "cron", "* * * * *"]))
+      assert_equal({ "name" => "Test" },
+                   Sidekiq::Cron::Job.normalize_redis_hash({ "name" => "Test" }))
+    end
   end
 
   describe "instance methods" do
