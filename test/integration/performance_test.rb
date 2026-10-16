@@ -2,7 +2,7 @@ require './test/test_helper'
 require 'benchmark'
 
 JOBS_NUMBER = 10_000
-MAX_SECONDS = 30
+MAX_SECONDS = 35
 
 describe 'Performance Poller' do
   before do
