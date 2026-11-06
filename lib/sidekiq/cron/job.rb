@@ -574,8 +574,18 @@ module Sidekiq
         last_time(now).getutc.to_f.to_s
       end
 
+      # A cron pinned to particular hours means those hours on the wall clock,
+      # so the last time has to be formatted in the cron's own zone. In UTC the
+      # hour repeated when DST ends gives two different values and the job is
+      # enqueued twice. Crons without an hour restriction keep the UTC value,
+      # because they are meant to run in the repeated hour as well.
       def formatted_last_time now = Time.now.utc
-        last_time(now).getutc.iso8601
+        return last_time(now).getutc.iso8601 unless parsed_cron.hours
+
+        previous_time = parsed_cron.previous_time(now.utc)
+        zone = parsed_cron.timezone
+
+        (zone ? previous_time.translate(zone) : previous_time.to_local_time).strftime('%Y-%m-%dT%H:%M:%S')
       end
 
       def self.exists?(name, namespace = Sidekiq::Cron.configuration.default_namespace)

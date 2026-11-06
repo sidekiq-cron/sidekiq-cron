@@ -1529,6 +1529,27 @@ describe "Cron Job" do
       end
     end
 
+    # On 2026-11-01 America/New_York goes back to EST and 01:00-01:59 happens twice,
+    # at 05:00-05:59 UTC and again at 06:00-06:59 UTC.
+    it "should enqueue a daily job only once in the hour repeated when DST ends" do
+      daily = @args.merge(name: "DailyDST", cron: "30 1 * * * America/New_York")
+
+      assert Sidekiq::Cron::Job.new(daily).should_enqueue?(Time.new(2026, 11, 1, 5, 30, 30, "UTC")), "01:30 EDT - true"
+      refute Sidekiq::Cron::Job.new(daily).should_enqueue?(Time.new(2026, 11, 1, 6, 30, 30, "UTC")), "01:30 EST - false"
+    end
+
+    it "should enqueue jobs without an hour restriction in both passes of the hour repeated when DST ends" do
+      hourly = @args.merge(name: "HourlyDST", cron: "0 * * * * America/New_York")
+
+      assert Sidekiq::Cron::Job.new(hourly).should_enqueue?(Time.new(2026, 11, 1, 5, 0, 30, "UTC")), "01:00 EDT - true"
+      assert Sidekiq::Cron::Job.new(hourly).should_enqueue?(Time.new(2026, 11, 1, 6, 0, 30, "UTC")), "01:00 EST - true"
+
+      half_hourly = @args.merge(name: "HalfHourlyDST", cron: "*/30 * * * * America/New_York")
+
+      assert Sidekiq::Cron::Job.new(half_hourly).should_enqueue?(Time.new(2026, 11, 1, 5, 30, 30, "UTC")), "01:30 EDT - true"
+      assert Sidekiq::Cron::Job.new(half_hourly).should_enqueue?(Time.new(2026, 11, 1, 6, 30, 30, "UTC")), "01:30 EST - true"
+    end
+
     it 'doesnt skip enqueuing if job is resaved near next enqueue time' do
       job = Sidekiq::Cron::Job.new(@args)
       assert job.test_and_enqueue_for_time!(@time), "should enqueue"
